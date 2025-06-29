@@ -2,14 +2,12 @@ import React from 'react';
 import { View } from 'react-native';
 import TimeRecord from '@components/TimeRecord';
 import { styles } from '@components/TimeRecord.styles';
-import { Text } from 'react-native';
+import { Header } from '@components/Header';
 
 const TimeRecordScreen = () => {
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text>時間記録</Text>
-      </View>
+      <Header title="記録" />
       <TimeRecord />
     </View>
   );
