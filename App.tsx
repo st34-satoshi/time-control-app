@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { Text, View } from 'react-native';
 import { styles } from './App.styles';
-import { Footer } from './components/Footer';
+import { Footer } from '@components/Footer';
 
 export default function App() {
   return (

@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { styles } from '../components/Footer.styles';
+import { styles } from '@components/Footer.styles';
 
 export const Footer = () => {
   return (
