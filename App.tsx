@@ -1,6 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { Text, View, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { styles } from './App.styles';
 
 export default function App() {
   return (
@@ -25,34 +26,3 @@ export default function App() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  content: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  footer: {
-    flexDirection: 'row',
-    backgroundColor: '#f8f9fa',
-    borderTopWidth: 1,
-    borderTopColor: '#e9ecef',
-    paddingVertical: 20,
-    paddingHorizontal: 20,
-  },
-  footerItem: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 12,
-  },
-  footerText: {
-    fontSize: 12,
-    color: '#495057',
-    fontWeight: '500',
-    marginTop: 4,
-  },
-});
