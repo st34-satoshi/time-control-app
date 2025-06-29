@@ -1,13 +1,12 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { styles } from '@components/TimeRecord.styles';
+import { Header } from '@components/Header';
 
 const ReportScreen = () => {
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>レポート</Text>
-      </View>
+      <Header title="レポート" />
       <View style={styles.content}>
         <Text>レポート画面の内容をここに実装します</Text>
       </View>

@@ -27,13 +27,13 @@ export default function AppNavigator() {
           },
           tabBarActiveTintColor: '#2563eb',
           tabBarInactiveTintColor: 'gray',
-          headerShown: false,
+          headerShown: false
         })}
       >
         <Tab.Screen 
           name="TimeRecord" 
           component={TimeRecord}
-          options={{ title: '時間記録' }}
+          options={{ title: '記録' }}
         />
         <Tab.Screen 
           name="Report" 
