@@ -7,9 +7,9 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import { styles } from '@components/TimeRecordScreen.styles';
+import { styles } from '@components/TimeRecord.styles';
 
-const TimeRecordScreen = () => {
+const TimeRecord = () => {
   const [activeTab, setActiveTab] = useState<'current' | 'past'>('current');
   const [isRecording, setIsRecording] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
@@ -296,4 +296,4 @@ const TimeRecordScreen = () => {
   );
 };
 
-export default TimeRecordScreen; 
+export default TimeRecord; 
