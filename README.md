@@ -3,3 +3,4 @@
 
 ## 開発
 - `npx expo start`
+- `npx expo start --ios`
