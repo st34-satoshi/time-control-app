@@ -12,16 +12,12 @@ export default function App() {
       {/* Footer */}
       <View style={styles.footer}>
         <TouchableOpacity style={styles.footerItem}>
-          <Ionicons name="home" size={24} color="#495057" />
-          <Text style={styles.footerText}>ホーム</Text>
+          <Ionicons name="time" size={24} color="#495057" />
+          <Text style={styles.footerText}>記録</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.footerItem}>
-          <Ionicons name="timer" size={24} color="#495057" />
-          <Text style={styles.footerText}>タイマー</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.footerItem}>
-          <Ionicons name="settings" size={24} color="#495057" />
-          <Text style={styles.footerText}>設定</Text>
+          <Ionicons name="bar-chart" size={24} color="#495057" />
+          <Text style={styles.footerText}>レポート</Text>
         </TouchableOpacity>
       </View>
       
