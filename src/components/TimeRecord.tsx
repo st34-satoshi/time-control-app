@@ -8,6 +8,7 @@ import {
   Alert,
 } from 'react-native';
 import { styles } from '@components/TimeRecord.styles';
+import { FirestoreService } from '@services/firestoreService';
 
 const TimeRecord = () => {
   const [activeTab, setActiveTab] = useState<'current' | 'past'>('current');
@@ -59,14 +60,30 @@ const TimeRecord = () => {
     setElapsedTime(0);
   };
   
-  // Stop recording
-  const stopRecording = () => {
+  // Stop recording and save to Firestore
+  const stopRecording = async () => {
+    if (!startTime) return;
+    
     setIsRecording(false);
     const endTime = new Date();
-    Alert.alert(
-      '記録完了！',
-      `タスク: ${currentTask}\nプロジェクト: ${currentProject}\n時間: ${formatTime(elapsedTime)}`
-    );
+    
+    try {
+      await FirestoreService.saveTimeRecord({
+        task: currentTask,
+        project: currentProject,
+        startTime,
+        endTime,
+      });
+      
+      Alert.alert(
+        '記録完了！',
+        `タスク: ${currentTask}\nプロジェクト: ${currentProject}\n時間: ${formatTime(elapsedTime)}\n\nFirestoreに保存されました！`
+      );
+    } catch (error) {
+      Alert.alert('エラー', '記録の保存に失敗しました');
+      console.error('Error saving record:', error);
+    }
+    
     // Reset form
     setCurrentTask('');
     setCurrentProject('');
@@ -74,8 +91,8 @@ const TimeRecord = () => {
     setStartTime(null);
   };
   
-  // Save past record
-  const savePastRecord = () => {
+  // Save past record to Firestore
+  const savePastRecord = async () => {
     if (!pastTask.trim() || !pastProject.trim() || !pastStartTime || !pastEndTime) {
       Alert.alert('エラー', 'すべての項目を入力してください');
       return;
@@ -89,11 +106,23 @@ const TimeRecord = () => {
       return;
     }
     
-    const duration = Math.floor((end.getTime() - start.getTime()) / 1000);
-    Alert.alert(
-      '記録保存完了！',
-      `タスク: ${pastTask}\nプロジェクト: ${pastProject}\n時間: ${formatTime(duration)}`
-    );
+    try {
+      await FirestoreService.saveTimeRecord({
+        task: pastTask,
+        project: pastProject,
+        startTime: start,
+        endTime: end,
+      });
+      
+      const duration = Math.floor((end.getTime() - start.getTime()) / 1000);
+      Alert.alert(
+        '記録保存完了！',
+        `タスク: ${pastTask}\nプロジェクト: ${pastProject}\n時間: ${formatTime(duration)}\n\nFirestoreに保存されました！`
+      );
+    } catch (error) {
+      Alert.alert('エラー', '記録の保存に失敗しました');
+      console.error('Error saving past record:', error);
+    }
     
     // Reset form
     setPastTask('');
