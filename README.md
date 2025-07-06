@@ -7,3 +7,7 @@
 
 ### パッケージをインストール
 - `npx expo install package-name`
+
+### 環境変数
+環境変数はgitignoreされている
+- .env
