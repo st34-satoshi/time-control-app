@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 
 // Firebase設定を環境変数から取得
 const firebaseConfig = {
@@ -22,5 +23,8 @@ const app = initializeApp(firebaseConfig);
 
 // Firestoreインスタンス
 export const db = getFirestore(app);
+
+// Authインスタンス
+export const auth = getAuth(app);
 
 export default app;
