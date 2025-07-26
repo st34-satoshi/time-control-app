@@ -4,7 +4,7 @@
 ## 開発
 - `npm install expo`
 - `npx expo start`
-- `npx expo start --ios`
+- シミュレーターを起動: `npx expo start --ios`
 
 ### パッケージをインストール
 - `npx expo install package-name`
