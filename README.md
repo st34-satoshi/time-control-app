@@ -2,6 +2,7 @@
 時間管理アプリ
 
 ## 開発
+- `npm install expo`
 - `npx expo start`
 - `npx expo start --ios`
 
