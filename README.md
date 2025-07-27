@@ -12,3 +12,6 @@
 ### 環境変数
 環境変数はgitignoreされている
 - .env
+
+### ビルド
+- `npx expo run:ios`

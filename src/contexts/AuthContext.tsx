@@ -6,6 +6,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   signInAnonymously: () => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -28,37 +29,67 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = authService.onAuthStateChanged(async (user) => {
-      setUser(user);
-      
-      // ユーザーが未認証の場合、自動で匿名ログイン
-      if (!user) {
-        try {
-          await authService.signInAnonymously();
-        } catch (error) {
-          console.error('自動匿名ログインに失敗:', error);
-        }
-      }
-      
-      setLoading(false);
-    });
+    // Google Sign-In初期化
+    authService.initializeGoogleSignIn();
 
-    return unsubscribe;
+    let unsubscribe: (() => void) | undefined;
+
+    const initializeAuth = async () => {
+      try {
+        // 認証状態の変更を監視
+        unsubscribe = authService.onAuthStateChanged((user) => {
+          console.log('認証状態変更:', user ? 'ログイン済み' : '未ログイン');
+          setUser(user);
+          setLoading(false);
+        });
+      } catch (error) {
+        console.error('認証初期化エラー:', error);
+        setLoading(false);
+      }
+    };
+
+    initializeAuth();
+
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
   }, []);
 
   const signInAnonymously = async () => {
     try {
+      setLoading(true);
       await authService.signInAnonymously();
     } catch (error) {
+      console.error('匿名ログインエラー:', error);
       throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signInWithGoogle = async () => {
+    try {
+      setLoading(true);
+      await authService.signInWithGoogle();
+    } catch (error) {
+      console.error('Googleログインエラー:', error);
+      throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
   const signOut = async () => {
     try {
+      setLoading(true);
       await authService.signOut();
     } catch (error) {
+      console.error('ログアウトエラー:', error);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -66,6 +97,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     user,
     loading,
     signInAnonymously,
+    signInWithGoogle,
     signOut
   };
 

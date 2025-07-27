@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 
 // Firebase設定を環境変数から取得
 const firebaseConfig = {
@@ -26,5 +26,8 @@ export const db = getFirestore(app);
 
 // Authインスタンス
 export const auth = getAuth(app);
+
+// Google認証プロバイダー
+export const googleProvider = new GoogleAuthProvider();
 
 export default app;
