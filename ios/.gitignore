@@ -28,3 +28,6 @@ project.xcworkspace
 
 # CocoaPods
 /Pods/
+
+GoogleService-Info.plist
+timecontrolapp/GoogleService-Info.plist
