@@ -1,6 +1,9 @@
 # time-control-app
 時間管理アプリ
 
+## 準備
+- `GoogleService-Info.plist`を用意する
+
 ## 開発
 - `npm install expo`
 - `npx expo start`
