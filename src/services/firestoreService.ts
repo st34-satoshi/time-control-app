@@ -5,7 +5,9 @@ import {
   query, 
   where, 
   orderBy,
-  Timestamp 
+  Timestamp,
+  doc,
+  deleteDoc
 } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { TimeRecordData, TimeRecordFormData } from '../types/TimeRecord';
@@ -14,7 +16,7 @@ export class FirestoreService {
   private static collection = 'timeRecords';
 
   // 時間記録を保存
-  static async saveTimeRecord(data: TimeRecordFormData): Promise<string> {
+  static async saveTimeRecord(data: TimeRecordFormData, userId: string): Promise<string> {
     try {
       const duration = Math.floor((data.endTime.getTime() - data.startTime.getTime()) / 1000);
       
@@ -28,7 +30,8 @@ export class FirestoreService {
         updatedAt: new Date(),
       };
 
-      const docRef = await addDoc(collection(db, this.collection), {
+      const userCollection = collection(db, this.collection, userId, 'records');
+      const docRef = await addDoc(userCollection, {
         ...timeRecord,
         timestamp: Timestamp.fromDate(new Date())
       });
@@ -40,10 +43,11 @@ export class FirestoreService {
   }
 
   // 時間記録を取得
-  static async getTimeRecords(): Promise<TimeRecordData[]> {
+  static async getTimeRecords(userId: string): Promise<TimeRecordData[]> {
     try {
+      const userCollection = collection(db, this.collection, userId, 'records');
       const q = query(
-        collection(db, this.collection),
+        userCollection,
         orderBy('timestamp', 'desc')
       );
       const querySnapshot = await getDocs(q);
@@ -58,12 +62,11 @@ export class FirestoreService {
   }
 
   // 時間記録を削除
-  static async deleteTimeRecord(id: string): Promise<void> {
+  static async deleteTimeRecord(id: string, userId: string): Promise<void> {
     try {
-      await addDoc(collection(db, this.collection), {
-        id: id,
-        timestamp: Timestamp.fromDate(new Date())
-      });
+      const userCollection = collection(db, this.collection, userId, 'records');
+      const docRef = doc(userCollection, id);
+      await deleteDoc(docRef);
     } catch (error) {
       console.error('Error deleting time record:', error);
       throw new Error('時間記録の削除に失敗しました');
@@ -71,10 +74,11 @@ export class FirestoreService {
   }
 
   // プロジェクト別の時間記録を取得
-  static async getTimeRecordsByProject(project: string): Promise<TimeRecordData[]> {
+  static async getTimeRecordsByProject(project: string, userId: string): Promise<TimeRecordData[]> {
     try {
+      const userCollection = collection(db, this.collection, userId, 'records');
       const q = query(
-        collection(db, this.collection),
+        userCollection,
         where('project', '==', project),
         orderBy('timestamp', 'desc')
       );

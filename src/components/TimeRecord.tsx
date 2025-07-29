@@ -9,8 +9,10 @@ import {
 } from 'react-native';
 import { styles } from '@components/TimeRecord.styles';
 import { FirestoreService } from '@services/firestoreService';
+import { useAuth } from '@contexts/AuthContext';
 
 const TimeRecord = () => {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'current' | 'past'>('current');
   const [isRecording, setIsRecording] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
@@ -62,7 +64,7 @@ const TimeRecord = () => {
   
   // Stop recording and save to Firestore
   const stopRecording = async () => {
-    if (!startTime) return;
+    if (!startTime || !user) return;
     
     setIsRecording(false);
     const endTime = new Date();
@@ -73,7 +75,7 @@ const TimeRecord = () => {
         project: currentProject,
         startTime,
         endTime,
-      });
+      }, user.uid);
       
       Alert.alert(
         '記録完了！',
@@ -97,6 +99,10 @@ const TimeRecord = () => {
       Alert.alert('エラー', 'すべての項目を入力してください');
       return;
     }
+    if (!user) {
+      Alert.alert('エラー', 'ログインしてください');
+      return;
+    }
     
     const start = new Date(`2025-06-29T${pastStartTime}`);
     const end = new Date(`2025-06-29T${pastEndTime}`);
@@ -112,7 +118,7 @@ const TimeRecord = () => {
         project: pastProject,
         startTime: start,
         endTime: end,
-      });
+      }, user.uid);
       
       const duration = Math.floor((end.getTime() - start.getTime()) / 1000);
       Alert.alert(
