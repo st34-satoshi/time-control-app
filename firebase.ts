@@ -26,10 +26,17 @@ if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 
-// Firebase Auth を一度だけ初期化（2回目は getAuth を使う）
-export const auth = initializeAuth(app, {
+let auth: Auth;
+try {
+  auth = initializeAuth(app, {
     persistence: getReactNativePersistence(AsyncStorage),
   });
+} catch (e) {
+  // すでに初期化済みならそのインスタンスを使う. 開発中にリロードしたときに発生する
+  auth = getAuth(app);
+}
+
+export { auth };
 
 // Google認証プロバイダー
 export const googleProvider = new GoogleAuthProvider();
