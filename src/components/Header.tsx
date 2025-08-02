@@ -10,9 +10,9 @@ export const Header = ({ title = '時間記録' }: HeaderProps) => {
     <View style={styles.header}>
       <View style={styles.headerContent}>
         <Text style={styles.title}>{title}</Text>
-        <TouchableOpacity style={styles.settingsButton}>
+        {/* <TouchableOpacity style={styles.settingsButton}>
           <Ionicons name="settings-outline" size={24} color="#495057" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </View>
   );
