@@ -13,7 +13,10 @@ install! 'cocoapods',
 
 prepare_react_native_project!
 
+use_modular_headers!
+
 target 'timecontrolapp' do
+  use_frameworks! :linkage => :static
   use_expo_modules!
 
   # Firebase依存関係を追加

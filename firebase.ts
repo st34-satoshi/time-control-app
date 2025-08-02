@@ -1,6 +1,11 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
-import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, Auth } from 'firebase/auth';
+import {
+  initializeAuth,
+  getReactNativePersistence,
+} from 'firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Firebase設定を環境変数から取得
 const firebaseConfig = {
@@ -18,14 +23,13 @@ if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
   throw new Error('Firebase設定の環境変数が正しく設定されていません。.envファイルを確認してください。');
 }
 
-// Firebase初期化
 const app = initializeApp(firebaseConfig);
-
-// Firestoreインスタンス
 export const db = getFirestore(app);
 
-// Authインスタンス
-export const auth = getAuth(app);
+// Firebase Auth を一度だけ初期化（2回目は getAuth を使う）
+export const auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(AsyncStorage),
+  });
 
 // Google認証プロバイダー
 export const googleProvider = new GoogleAuthProvider();

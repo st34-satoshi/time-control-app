@@ -1,5 +1,5 @@
 import { signInAnonymously, signOut, onAuthStateChanged, User, signInWithCredential, GoogleAuthProvider } from 'firebase/auth';
-import { auth, googleProvider } from '../../firebase';
+import { auth } from '@root/firebase';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 export const authService = {
