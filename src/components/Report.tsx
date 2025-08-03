@@ -5,6 +5,12 @@ import { FirestoreService } from '@services/firestoreService';
 import { TimeRecordData } from '../types/TimeRecord';
 import { styles } from './Report.styles';
 
+type FirestoreTimestamp = {
+  seconds: number;
+  nanoseconds: number;
+  type?: string; // 任意（ある場合のみ）
+};
+
 const Report = () => {
   const { user } = useAuth();
   const [timeRecords, setTimeRecords] = useState<TimeRecordData[]>([]);
@@ -31,8 +37,8 @@ const Report = () => {
     }
   };
 
-  const formatDateTime = (date: Date) => {
-    const d = new Date(date);
+  const formatDateTime = (date: FirestoreTimestamp) => {
+    const d = new Date(date.seconds * 1000);
     const month = (d.getMonth() + 1).toString().padStart(2, '0');
     const day = d.getDate().toString().padStart(2, '0');
     const hours = d.getHours().toString().padStart(2, '0');
