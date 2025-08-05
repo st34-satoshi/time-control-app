@@ -22,7 +22,8 @@ export class FirestoreService {
       
       const timeRecord: Omit<TimeRecordData, 'id'> = {
         task: data.task,
-        project: data.project,
+        category: data.category,
+
         startTime: data.startTime,
         endTime: data.endTime,
         duration,
@@ -73,13 +74,13 @@ export class FirestoreService {
     }
   }
 
-  // プロジェクト別の時間記録を取得
-  static async getTimeRecordsByProject(project: string, userId: string): Promise<TimeRecordData[]> {
+  // カテゴリ別の時間記録を取得
+  static async getTimeRecordsByCategory(category: string, userId: string): Promise<TimeRecordData[]> {
     try {
       const userCollection = collection(db, this.collection, userId, 'records');
       const q = query(
         userCollection,
-        where('project', '==', project),
+        where('category', '==', category),
         orderBy('timestamp', 'desc')
       );
       const querySnapshot = await getDocs(q);
@@ -88,8 +89,8 @@ export class FirestoreService {
         ...doc.data()
       })) as TimeRecordData[];
     } catch (error) {
-      console.error('Error getting time records by project:', error);
-      throw new Error('プロジェクト別の時間記録の取得に失敗しました');
+      console.error('Error getting time records by category:', error);
+      throw new Error('カテゴリ別の時間記録の取得に失敗しました');
     }
   }
 } 

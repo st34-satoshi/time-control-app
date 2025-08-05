@@ -20,11 +20,11 @@ const TimeRecord = () => {
   
   // Current recording form
   const [currentTask, setCurrentTask] = useState('');
-  const [currentProject, setCurrentProject] = useState('');
+  const [currentCategory, setCurrentCategory] = useState('');
   
   // Past recording form
   const [pastTask, setPastTask] = useState('');
-  const [pastProject, setPastProject] = useState('');
+  const [pastCategory, setPastCategory] = useState('');
   const [pastStartTime, setPastStartTime] = useState('');
   const [pastEndTime, setPastEndTime] = useState('');
   
@@ -53,8 +53,8 @@ const TimeRecord = () => {
   
   // Start recording
   const startRecording = () => {
-    if (!currentTask.trim() || !currentProject.trim()) {
-      Alert.alert('エラー', 'タスクとプロジェクトを入力してください');
+    if (!currentTask.trim() || !currentCategory.trim()) {
+      Alert.alert('エラー', 'タスクとカテゴリを入力してください');
       return;
     }
     setIsRecording(true);
@@ -72,14 +72,14 @@ const TimeRecord = () => {
     try {
       await FirestoreService.saveTimeRecord({
         task: currentTask,
-        project: currentProject,
+        category: currentCategory,
         startTime,
         endTime,
       }, user.uid);
       
       Alert.alert(
         '記録完了！',
-        `タスク: ${currentTask}\nプロジェクト: ${currentProject}\n時間: ${formatTime(elapsedTime)}\n\nFirestoreに保存されました！`
+        `タスク: ${currentTask}\nカテゴリ: ${currentCategory}\n時間: ${formatTime(elapsedTime)}\n\n保存されました！`
       );
     } catch (error) {
       Alert.alert('エラー', '記録の保存に失敗しました');
@@ -88,14 +88,14 @@ const TimeRecord = () => {
     
     // Reset form
     setCurrentTask('');
-    setCurrentProject('');
+    setCurrentCategory('');
     setElapsedTime(0);
     setStartTime(null);
   };
   
   // Save past record to Firestore
   const savePastRecord = async () => {
-    if (!pastTask.trim() || !pastProject.trim() || !pastStartTime || !pastEndTime) {
+    if (!pastTask.trim() || !pastCategory.trim() || !pastStartTime || !pastEndTime) {
       Alert.alert('エラー', 'すべての項目を入力してください');
       return;
     }
@@ -115,7 +115,7 @@ const TimeRecord = () => {
     try {
       await FirestoreService.saveTimeRecord({
         task: pastTask,
-        project: pastProject,
+        category: pastCategory,
         startTime: start,
         endTime: end,
       }, user.uid);
@@ -123,7 +123,7 @@ const TimeRecord = () => {
       const duration = Math.floor((end.getTime() - start.getTime()) / 1000);
       Alert.alert(
         '記録保存完了！',
-        `タスク: ${pastTask}\nプロジェクト: ${pastProject}\n時間: ${formatTime(duration)}\n\nFirestoreに保存されました！`
+        `タスク: ${pastTask}\nカテゴリ: ${pastCategory}\n時間: ${formatTime(duration)}\n\nFirestoreに保存されました！`
       );
     } catch (error) {
       Alert.alert('エラー', '記録の保存に失敗しました');
@@ -132,12 +132,12 @@ const TimeRecord = () => {
     
     // Reset form
     setPastTask('');
-    setPastProject('');
+    setPastCategory('');
     setPastStartTime('');
     setPastEndTime('');
   };
 
-  const projects = [
+  const categories = [
     { value: 'アプリ開発', label: '📱 アプリ開発' },
     { value: '勉強', label: '📚 勉強' },
     { value: '運動', label: '💪 運動' },
@@ -146,27 +146,27 @@ const TimeRecord = () => {
     { value: 'その他', label: '📋 その他' },
   ];
 
-  const renderProjectOptions = () => {
-    return projects.map((project) => (
+  const renderCategoryOptions = () => {
+    return categories.map((category) => (
       <TouchableOpacity
-        key={project.value}
+        key={category.value}
         style={[
           styles.projectOption,
-          (currentProject === project.value || pastProject === project.value) && styles.projectOptionSelected
+          (currentCategory === category.value || pastCategory === category.value) && styles.projectOptionSelected
         ]}
         onPress={() => {
           if (activeTab === 'current') {
-            setCurrentProject(project.value);
+            setCurrentCategory(category.value);
           } else {
-            setPastProject(project.value);
+            setPastCategory(category.value);
           }
         }}
       >
         <Text style={[
           styles.projectOptionText,
-          (currentProject === project.value || pastProject === project.value) && styles.projectOptionTextSelected
+          (currentCategory === category.value || pastCategory === category.value) && styles.projectOptionTextSelected
         ]}>
-          {project.label}
+          {category.label}
         </Text>
       </TouchableOpacity>
     ));
@@ -221,9 +221,9 @@ const TimeRecord = () => {
               </View>
               
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>🏷️ プロジェクト</Text>
+                <Text style={styles.label}>🏷️ カテゴリ</Text>
                 <View style={styles.projectOptionsContainer}>
-                  {renderProjectOptions()}
+                  {renderCategoryOptions()}
                 </View>
               </View>
             </View>
@@ -250,7 +250,7 @@ const TimeRecord = () => {
             {isRecording && (
               <View style={styles.recordingInfo}>
                 <Text style={styles.recordingInfoText}>{currentTask}</Text>
-                <Text style={styles.recordingInfoSubtext}>{currentProject}</Text>
+                <Text style={styles.recordingInfoSubtext}>{currentCategory}</Text>
               </View>
             )}
           </View>
@@ -271,9 +271,9 @@ const TimeRecord = () => {
               </View>
               
               <View style={styles.inputGroup}>
-                <Text style={styles.label}>🏷️ プロジェクト</Text>
+                <Text style={styles.label}>🏷️ カテゴリ</Text>
                 <View style={styles.projectOptionsContainer}>
-                  {renderProjectOptions()}
+                  {renderCategoryOptions()}
                 </View>
               </View>
               

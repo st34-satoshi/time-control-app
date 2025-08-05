@@ -59,9 +59,10 @@ const Report = () => {
     return `${minutes}m`;
   };
 
-  const getProjectIcon = (project: string) => {
-    // プロジェクト名の最初の文字をアイコンとして使用
-    return project.charAt(0).toUpperCase();
+  const getCategoryIcon = (category: string) => {
+    // TODO: アイコンを取得する
+    // return category.charAt(0).toUpperCase();
+    return '🔥';
   };
 
   const renderTimeRecord = ({ item }: { item: TimeRecordData }) => (
@@ -73,12 +74,12 @@ const Report = () => {
       
       <View style={styles.projectIconContainer}>
         <View style={styles.projectIcon}>
-          <Text style={styles.projectIconText}>{getProjectIcon(item.project)}</Text>
+          <Text style={styles.projectIconText}>{getCategoryIcon(item.category)}</Text>
         </View>
       </View>
       
       <View style={styles.projectInfoContainer}>
-        <Text style={styles.projectName}>{item.project}</Text>
+        <Text style={styles.projectName}>{item.category}</Text>
         <Text style={styles.taskText} numberOfLines={2}>{item.task}</Text>
       </View>
     </View>

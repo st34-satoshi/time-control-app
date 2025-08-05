@@ -7,17 +7,17 @@ export interface FirestoreTimestamp {
 export interface TimeRecordData {
   id?: string;
   task: string;
-  project: string;
-  startTime: FirestoreTimestamp;
-  endTime: FirestoreTimestamp;
+  category: string;
+  startTime: Date;
+  endTime: Date;
   duration: number; // 秒単位
-  createdAt: FirestoreTimestamp;
-  updatedAt: FirestoreTimestamp;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface TimeRecordFormData {
   task: string;
-  project: string;
+  category: string;
   startTime: Date;
   endTime: Date;
 } 
