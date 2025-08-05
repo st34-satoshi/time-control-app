@@ -38,7 +38,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         // 認証状態の変更を監視
         unsubscribe = authService.onAuthStateChanged((user) => {
-          console.log('認証状態変更:', user ? 'ログイン済み' : '未ログイン');
           setUser(user);
           setLoading(false);
         });
