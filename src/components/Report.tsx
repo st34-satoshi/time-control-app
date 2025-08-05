@@ -28,7 +28,11 @@ const Report = () => {
       setLoading(true);
       setError(null);
       const records = await FirestoreService.getTimeRecords(user!.uid);
-      setTimeRecords(records);
+      // start_timeでソート（新しい順）
+      const sortedRecords = records.sort((a, b) => {
+        return b.startTime.seconds - a.startTime.seconds; // 降順（新しい順）
+      });
+      setTimeRecords(sortedRecords);
     } catch (err) {
       setError('データの取得に失敗しました');
       console.error('Error loading time records:', err);
