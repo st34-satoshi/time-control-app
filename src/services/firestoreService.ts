@@ -10,7 +10,7 @@ import {
   deleteDoc
 } from 'firebase/firestore';
 import { db } from '../../firebase';
-import { TimeRecordData, TimeRecordFormData } from '../types/TimeRecord';
+import { TimeRecordDataForSave, TimeRecordFormData, TimeRecordDataForGet } from '../types/TimeRecord';
 
 export class FirestoreService {
   private static collection = 'timeRecords';
@@ -20,7 +20,7 @@ export class FirestoreService {
     try {
       const duration = Math.floor((data.endTime.getTime() - data.startTime.getTime()) / 1000);
       
-      const timeRecord: Omit<TimeRecordData, 'id'> = {
+      const timeRecord: Omit<TimeRecordDataForSave, 'id'> = {
         task: data.task,
         category: data.category,
 
@@ -44,7 +44,7 @@ export class FirestoreService {
   }
 
   // 時間記録を取得
-  static async getTimeRecords(userId: string): Promise<TimeRecordData[]> {
+  static async getTimeRecords(userId: string): Promise<TimeRecordDataForGet[]> {
     try {
       const userCollection = collection(db, this.collection, userId, 'records');
       const q = query(
@@ -55,7 +55,7 @@ export class FirestoreService {
       return querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
-      })) as TimeRecordData[];
+      })) as TimeRecordDataForGet[];
     } catch (error) {
       console.error('Error getting time records:', error);
       throw new Error('時間記録の取得に失敗しました');
@@ -74,23 +74,4 @@ export class FirestoreService {
     }
   }
 
-  // カテゴリ別の時間記録を取得
-  static async getTimeRecordsByCategory(category: string, userId: string): Promise<TimeRecordData[]> {
-    try {
-      const userCollection = collection(db, this.collection, userId, 'records');
-      const q = query(
-        userCollection,
-        where('category', '==', category),
-        orderBy('timestamp', 'desc')
-      );
-      const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as TimeRecordData[];
-    } catch (error) {
-      console.error('Error getting time records by category:', error);
-      throw new Error('カテゴリ別の時間記録の取得に失敗しました');
-    }
-  }
 } 

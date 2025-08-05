@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, ActivityIndicator } from 'react-native';
 import { useAuth } from '@contexts/AuthContext';
 import { FirestoreService } from '@services/firestoreService';
-import { TimeRecordData } from '../types/TimeRecord';
+import { TimeRecordDataForGet } from '../types/TimeRecord';
 import { styles } from './Report.styles';
 
 type FirestoreTimestamp = {
@@ -13,7 +13,7 @@ type FirestoreTimestamp = {
 
 const Report = () => {
   const { user } = useAuth();
-  const [timeRecords, setTimeRecords] = useState<TimeRecordData[]>([]);
+  const [timeRecords, setTimeRecords] = useState<TimeRecordDataForGet[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -65,7 +65,7 @@ const Report = () => {
     return '🔥';
   };
 
-  const renderTimeRecord = ({ item }: { item: TimeRecordData }) => (
+  const renderTimeRecord = ({ item }: { item: TimeRecordDataForGet }) => (
     <View style={styles.recordItem}>
       <View style={styles.dateTimeContainer}>
         <Text style={styles.dateTimeText}>{formatDateTime(item.startTime)}</Text>
