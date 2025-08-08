@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import { useAuth } from '@contexts/AuthContext';
 import { FirestoreService } from '@services/firestoreService';
 import { TimeRecordDataForGet } from '../types/TimeRecord';
@@ -16,6 +16,7 @@ const Report = () => {
   const { user } = useAuth();
   const [timeRecords, setTimeRecords] = useState<TimeRecordDataForGet[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -24,21 +25,36 @@ const Report = () => {
     }
   }, [user]);
 
+  const fetchAndSortRecords = async () => {
+    const records = await FirestoreService.getTimeRecords(user!.uid);
+    const sortedRecords = records.sort((a, b) => {
+      return b.startTime.seconds - a.startTime.seconds; // 降順（新しい順）
+    });
+    setTimeRecords(sortedRecords);
+    setError(null);
+  };
+
   const loadTimeRecords = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      setError(null);
-      const records = await FirestoreService.getTimeRecords(user!.uid);
-      // start_timeでソート（新しい順）
-      const sortedRecords = records.sort((a, b) => {
-        return b.startTime.seconds - a.startTime.seconds; // 降順（新しい順）
-      });
-      setTimeRecords(sortedRecords);
+      await fetchAndSortRecords();
     } catch (err) {
       setError('データの取得に失敗しました');
       console.error('Error loading time records:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await fetchAndSortRecords();
+    } catch (err) {
+      setError('データの取得に失敗しました');
+      console.error('Error refreshing time records:', err);
+    } finally {
+      setRefreshing(false);
     }
   };
 
@@ -117,6 +133,14 @@ const Report = () => {
       keyExtractor={(item) => item.id || item.startTime.toString()}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.listContainer}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          colors={['#2563eb']}
+          tintColor="#2563eb"
+        />
+      }
     />
   );
 };
