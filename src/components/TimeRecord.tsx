@@ -10,6 +10,7 @@ import {
 import { styles } from '@components/TimeRecord.styles';
 import { FirestoreService } from '@services/firestoreService';
 import { useAuth } from '@contexts/AuthContext';
+import { CategoryManager } from '@app-types/Category';
 
 const TimeRecord = () => {
   const { user } = useAuth();
@@ -137,17 +138,8 @@ const TimeRecord = () => {
     setPastEndTime('');
   };
 
-  const categories = [
-    { value: 'アプリ開発', label: '📱 アプリ開発' },
-    { value: '勉強', label: '📚 勉強' },
-    { value: '運動', label: '💪 運動' },
-    { value: 'デザイン', label: '🎨 デザイン' },
-    { value: '会議', label: '👥 会議' },
-    { value: 'その他', label: '📋 その他' },
-  ];
-
   const renderCategoryOptions = () => {
-    return categories.map((category) => (
+    return CategoryManager.getAllCategories().map((category) => (
       <TouchableOpacity
         key={category.value}
         style={[

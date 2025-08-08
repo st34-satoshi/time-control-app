@@ -10,7 +10,7 @@
       "@navigation/*": ["src/navigation/*"],
       "@screens/*": ["src/screens/*"],
       "@services/*": ["src/services/*"],
-      "@types/*": ["src/types/*"],
+      "@app-types/*": ["src/types/*"],
       "@contexts/*": ["src/contexts/*"]
     }
   }
