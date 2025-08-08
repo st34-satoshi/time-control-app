@@ -4,6 +4,7 @@ import { useAuth } from '@contexts/AuthContext';
 import { FirestoreService } from '@services/firestoreService';
 import { TimeRecordDataForGet } from '../types/TimeRecord';
 import { styles } from './Report.styles';
+import { CategoryManager } from '@app-types/Category';
 
 type FirestoreTimestamp = {
   seconds: number;
@@ -59,10 +60,8 @@ const Report = () => {
     return `${minutes}m`;
   };
 
-  const getCategoryIcon = (category: string) => {
-    // TODO: アイコンを取得する
-    // return category.charAt(0).toUpperCase();
-    return '🔥';
+  const getCategoryIcon = (categoryValue: string) => {
+    return CategoryManager.getIconByValue(categoryValue);
   };
 
   const renderTimeRecord = ({ item }: { item: TimeRecordDataForGet }) => (
