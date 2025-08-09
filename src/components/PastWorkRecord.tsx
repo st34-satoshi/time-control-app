@@ -162,6 +162,8 @@ const PastWorkRecord = () => {
             onCancel={hideDatePicker}
             maximumDate={new Date()} // 今日以前の日付のみ選択可能
             locale="ja"
+            confirmTextIOS="決定"
+            cancelTextIOS="キャンセル"
           />
         </View>
         
