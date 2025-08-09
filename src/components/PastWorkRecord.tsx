@@ -46,6 +46,13 @@ const PastWorkRecord = () => {
     const secs = seconds % 60;
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
+
+  // Helper function to format time to HH:MM
+  const formatTimeHHMM = (date: Date) => {
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  };
   
   // Save past record to Firestore
   const savePastRecord = async () => {
@@ -120,10 +127,41 @@ const PastWorkRecord = () => {
     setDatePickerVisibility(false);
   };
   const handleConfirm = (date: Date) => {
-    console.log('handleConfirm', date);
     const formattedDate = formatDateToJST(date);
     setPastDate(formattedDate);
     hideDatePicker();
+  };
+
+  // Time picker states
+  const [isStartTimePickerVisible, setStartTimePickerVisibility] = useState(false);
+  const [isEndTimePickerVisible, setEndTimePickerVisibility] = useState(false);
+
+  const showStartTimePicker = () => {
+    setStartTimePickerVisibility(true);
+  };
+
+  const hideStartTimePicker = () => {
+    setStartTimePickerVisibility(false);
+  };
+
+  const showEndTimePicker = () => {
+    setEndTimePickerVisibility(true);
+  };
+
+  const hideEndTimePicker = () => {
+    setEndTimePickerVisibility(false);
+  };
+
+  const handleStartTimeConfirm = (time: Date) => {
+    const formattedTime = formatTimeHHMM(time);
+    setPastStartTime(formattedTime);
+    hideStartTimePicker();
+  };
+
+  const handleEndTimeConfirm = (time: Date) => {
+    const formattedTime = formatTimeHHMM(time);
+    setPastEndTime(formattedTime);
+    hideEndTimePicker();
   };
 
   return (
@@ -170,24 +208,46 @@ const PastWorkRecord = () => {
         <View style={styles.timeInputContainer}>
           <View style={styles.timeInputGroup}>
             <Text style={styles.label}>🕐 開始時間</Text>
-            <TextInput
-              style={styles.textInput}
-              value={pastStartTime}
-              onChangeText={setPastStartTime}
-              placeholder="09:00"
-            />
+            <TouchableOpacity style={styles.textInput} onPress={showStartTimePicker}>
+              <Text style={pastStartTime ? styles.dateText : styles.placeholderText}>
+                {pastStartTime || '09:00'}
+              </Text>
+            </TouchableOpacity>
           </View>
         
           <View style={styles.timeInputGroup}>
             <Text style={styles.label}>🕐 終了時間</Text>
-            <TextInput
-              style={styles.textInput}
-              value={pastEndTime}
-              onChangeText={setPastEndTime}
-              placeholder="10:30"
-            />
+            <TouchableOpacity style={styles.textInput} onPress={showEndTimePicker}>
+              <Text style={pastEndTime ? styles.dateText : styles.placeholderText}>
+                {pastEndTime || '10:30'}
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
+
+        {/* Start Time Picker */}
+        <DateTimePickerModal
+          isVisible={isStartTimePickerVisible}
+          mode="time"
+          onConfirm={handleStartTimeConfirm}
+          onCancel={hideStartTimePicker}
+          is24Hour={true}
+          locale="ja"
+          confirmTextIOS="決定"
+          cancelTextIOS="キャンセル"
+        />
+
+        {/* End Time Picker */}
+        <DateTimePickerModal
+          isVisible={isEndTimePickerVisible}
+          mode="time"
+          onConfirm={handleEndTimeConfirm}
+          onCancel={hideEndTimePicker}
+          is24Hour={true}
+          locale="ja"
+          confirmTextIOS="決定"
+          cancelTextIOS="キャンセル"
+        />
         
         {pastStartTime && pastEndTime && pastDate && (
           <View style={styles.durationDisplay}>
