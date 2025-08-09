@@ -174,7 +174,7 @@ const TimeRecord = () => {
           onPress={() => setActiveTab('current')}
         >
           <Text style={[styles.tabText, activeTab === 'current' && styles.tabTextActive]}>
-            🔴 現在の作業
+            🔴 現在の作業を記録
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -182,7 +182,7 @@ const TimeRecord = () => {
           onPress={() => setActiveTab('past')}
         >
           <Text style={[styles.tabText, activeTab === 'past' && styles.tabTextActive]}>
-            📝 過去の作業
+            📝 過去の作業を記録
           </Text>
         </TouchableOpacity>
       </View>
