@@ -26,8 +26,16 @@ const TimeRecord = () => {
   // Past recording form
   const [pastTask, setPastTask] = useState('');
   const [pastCategory, setPastCategory] = useState('');
-  const [pastStartTime, setPastStartTime] = useState('');
+  const [pastDate, setPastDate] = useState('');
+  const [pastStartTime, setPastStartTime] = useState(''); // YYYY-MM-DD
   const [pastEndTime, setPastEndTime] = useState('');
+
+  // Initialize past date to today
+  useEffect(() => {
+    const today = new Date();
+    const formattedDate = today.toISOString().split('T')[0]; // YYYY-MM-DD format
+    setPastDate(formattedDate);
+  }, []);
   
   // Timer effect
   useEffect(() => {
@@ -96,7 +104,7 @@ const TimeRecord = () => {
   
   // Save past record to Firestore
   const savePastRecord = async () => {
-    if (!pastTask.trim() || !pastCategory.trim() || !pastStartTime || !pastEndTime) {
+    if (!pastTask.trim() || !pastCategory.trim() || !pastDate || !pastStartTime || !pastEndTime) {
       Alert.alert('エラー', 'すべての項目を入力してください');
       return;
     }
@@ -105,8 +113,8 @@ const TimeRecord = () => {
       return;
     }
     
-    const start = new Date(`2025-06-29T${pastStartTime}`);
-    const end = new Date(`2025-06-29T${pastEndTime}`);
+    const start = new Date(`${pastDate}T${pastStartTime}`);
+    const end = new Date(`${pastDate}T${pastEndTime}`);
     
     if (end <= start) {
       Alert.alert('エラー', '終了時間は開始時間より後にしてください');
@@ -269,6 +277,16 @@ const TimeRecord = () => {
                 </View>
               </View>
               
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>📅 日付</Text>
+                <TextInput
+                  style={styles.textInput}
+                  value={pastDate}
+                  onChangeText={setPastDate}
+                  placeholder="YYYY-MM-DD"
+                />
+              </View>
+              
               <View style={styles.timeInputContainer}>
                 <View style={styles.timeInputGroup}>
                   <Text style={styles.label}>🕐 開始時間</Text>
@@ -291,13 +309,13 @@ const TimeRecord = () => {
                 </View>
               </View>
               
-              {pastStartTime && pastEndTime && (
+              {pastStartTime && pastEndTime && pastDate && (
                 <View style={styles.durationDisplay}>
                   <Text style={styles.durationText}>
                     所要時間: <Text style={styles.durationValue}>
                       {(() => {
-                        const start = new Date(`2025-06-29T${pastStartTime}`);
-                        const end = new Date(`2025-06-29T${pastEndTime}`);
+                        const start = new Date(`${pastDate}T${pastStartTime}`);
+                        const end = new Date(`${pastDate}T${pastEndTime}`);
                         if (end > start) {
                           const duration = Math.floor((end.getTime() - start.getTime()) / 1000);
                           return formatTime(duration);
