@@ -18,9 +18,8 @@ const PastWorkRecord = () => {
   // Past recording form
   const [pastTask, setPastTask] = useState('');
   const [pastCategory, setPastCategory] = useState('');
-  const [pastDate, setPastDate] = useState('');
-  const [pastStartTime, setPastStartTime] = useState('');
-  const [pastEndTime, setPastEndTime] = useState('');
+  const [pastStartDateTime, setPastStartDateTime] = useState<Date | null>(null);
+  const [pastEndDateTime, setPastEndDateTime] = useState<Date | null>(null);
 
   // Helper function to format date in JST (Japan Standard Time)
   const formatDateToJST = (date: Date) => {
@@ -32,12 +31,6 @@ const PastWorkRecord = () => {
     return `${year}-${month}-${day}`;
   };
 
-  // Initialize past date to today
-  useEffect(() => {
-    const today = new Date();
-    const formattedDate = formatDateToJST(today);
-    setPastDate(formattedDate);
-  }, []);
   
   // Format seconds to HH:MM:SS
   const formatTime = (seconds: number) => {
@@ -53,10 +46,20 @@ const PastWorkRecord = () => {
     const minutes = String(date.getMinutes()).padStart(2, '0');
     return `${hours}:${minutes}`;
   };
+
+  // Helper function to format date time to readable format
+  const formatDateTime = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
+  };
   
   // Save past record to Firestore
   const savePastRecord = async () => {
-    if (!pastTask.trim() || !pastCategory.trim() || !pastDate || !pastStartTime || !pastEndTime) {
+    if (!pastTask.trim() || !pastCategory.trim() || !pastStartDateTime || !pastEndDateTime) {
       Alert.alert('エラー', 'すべての項目を入力してください');
       return;
     }
@@ -65,10 +68,7 @@ const PastWorkRecord = () => {
       return;
     }
     
-    const start = new Date(`${pastDate}T${pastStartTime}`);
-    const end = new Date(`${pastDate}T${pastEndTime}`);
-    
-    if (end <= start) {
+    if (pastEndDateTime <= pastStartDateTime) {
       Alert.alert('エラー', '終了時間は開始時間より後にしてください');
       return;
     }
@@ -77,11 +77,11 @@ const PastWorkRecord = () => {
       await FirestoreService.saveTimeRecord({
         task: pastTask,
         category: pastCategory,
-        startTime: start,
-        endTime: end,
+        startTime: pastStartDateTime,
+        endTime: pastEndDateTime,
       }, user.uid);
       
-      const duration = Math.floor((end.getTime() - start.getTime()) / 1000);
+      const duration = Math.floor((pastEndDateTime.getTime() - pastStartDateTime.getTime()) / 1000);
       Alert.alert(
         '記録保存完了！',
         `タスク: ${pastTask}\nカテゴリ: ${pastCategory}\n時間: ${formatTime(duration)}\n\n保存されました！`
@@ -94,8 +94,8 @@ const PastWorkRecord = () => {
     // Reset form
     setPastTask('');
     setPastCategory('');
-    setPastStartTime('');
-    setPastEndTime('');
+    setPastStartDateTime(null);
+    setPastEndDateTime(null);
   };
 
   const renderCategoryOptions = () => {
@@ -118,50 +118,43 @@ const PastWorkRecord = () => {
     ));
   };
 
-  // Date picker state
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const showDatePicker = () => {
-    setDatePickerVisibility(true);
-  };
-  const hideDatePicker = () => {
-    setDatePickerVisibility(false);
-  };
-  const handleConfirm = (date: Date) => {
-    const formattedDate = formatDateToJST(date);
-    setPastDate(formattedDate);
-    hideDatePicker();
+  // DateTime picker states
+  const [isStartDateTimePickerVisible, setStartDateTimePickerVisibility] = useState(false);
+  const [isEndDateTimePickerVisible, setEndDateTimePickerVisibility] = useState(false);
+
+  const showStartDateTimePicker = () => {
+    setStartDateTimePickerVisibility(true);
   };
 
-  // Time picker states
-  const [isStartTimePickerVisible, setStartTimePickerVisibility] = useState(false);
-  const [isEndTimePickerVisible, setEndTimePickerVisibility] = useState(false);
-
-  const showStartTimePicker = () => {
-    setStartTimePickerVisibility(true);
+  const hideStartDateTimePicker = () => {
+    setStartDateTimePickerVisibility(false);
   };
 
-  const hideStartTimePicker = () => {
-    setStartTimePickerVisibility(false);
+  const showEndDateTimePicker = () => {
+    setEndDateTimePickerVisibility(true);
   };
 
-  const showEndTimePicker = () => {
-    setEndTimePickerVisibility(true);
+  const hideEndDateTimePicker = () => {
+    setEndDateTimePickerVisibility(false);
   };
 
-  const hideEndTimePicker = () => {
-    setEndTimePickerVisibility(false);
+  const handleStartDateTimeConfirm = (dateTime: Date) => {
+    setPastStartDateTime(dateTime);
+    
+    // Auto-sync end date to match start date, but preserve time if already set
+    if (pastEndDateTime) {
+      const newEndDateTime = new Date(dateTime);
+      newEndDateTime.setHours(pastEndDateTime.getHours());
+      newEndDateTime.setMinutes(pastEndDateTime.getMinutes());
+      setPastEndDateTime(newEndDateTime);
+    }
+    
+    hideStartDateTimePicker();
   };
 
-  const handleStartTimeConfirm = (time: Date) => {
-    const formattedTime = formatTimeHHMM(time);
-    setPastStartTime(formattedTime);
-    hideStartTimePicker();
-  };
-
-  const handleEndTimeConfirm = (time: Date) => {
-    const formattedTime = formatTimeHHMM(time);
-    setPastEndTime(formattedTime);
-    hideEndTimePicker();
+  const handleEndDateTimeConfirm = (dateTime: Date) => {
+    setPastEndDateTime(dateTime);
+    hideEndDateTimePicker();
   };
 
   return (
@@ -186,78 +179,59 @@ const PastWorkRecord = () => {
           </View>
         </View>
         
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>📅 日付</Text>
-          <TouchableOpacity style={styles.textInput} onPress={showDatePicker}>
-            <Text style={pastDate ? styles.dateText : styles.placeholderText}>
-              {pastDate || 'YYYY-MM-DD'}
-            </Text>
-          </TouchableOpacity>
-          <DateTimePickerModal
-            isVisible={isDatePickerVisible}
-            mode="date"
-            onConfirm={handleConfirm}
-            onCancel={hideDatePicker}
-            maximumDate={new Date()} // 今日以前の日付のみ選択可能
-            locale="ja"
-            confirmTextIOS="決定"
-            cancelTextIOS="キャンセル"
-          />
-        </View>
-        
         <View style={styles.timeInputContainer}>
           <View style={styles.timeInputGroup}>
-            <Text style={styles.label}>🕐 開始時間</Text>
-            <TouchableOpacity style={styles.textInput} onPress={showStartTimePicker}>
-              <Text style={pastStartTime ? styles.dateText : styles.placeholderText}>
-                {pastStartTime || '09:00'}
+            <Text style={styles.label}>🕐 開始日時</Text>
+            <TouchableOpacity style={styles.textInput} onPress={showStartDateTimePicker}>
+              <Text style={pastStartDateTime ? styles.dateText : styles.placeholderText}>
+                {pastStartDateTime ? formatDateTime(pastStartDateTime) : 'YYYY-MM-DD HH:MM'}
               </Text>
             </TouchableOpacity>
           </View>
         
           <View style={styles.timeInputGroup}>
-            <Text style={styles.label}>🕐 終了時間</Text>
-            <TouchableOpacity style={styles.textInput} onPress={showEndTimePicker}>
-              <Text style={pastEndTime ? styles.dateText : styles.placeholderText}>
-                {pastEndTime || '10:30'}
+            <Text style={styles.label}>🕐 終了日時</Text>
+            <TouchableOpacity style={styles.textInput} onPress={showEndDateTimePicker}>
+              <Text style={pastEndDateTime ? styles.dateText : styles.placeholderText}>
+                {pastEndDateTime ? formatDateTime(pastEndDateTime) : 'YYYY-MM-DD HH:MM'}
               </Text>
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* Start Time Picker */}
+        {/* Start DateTime Picker */}
         <DateTimePickerModal
-          isVisible={isStartTimePickerVisible}
-          mode="time"
-          onConfirm={handleStartTimeConfirm}
-          onCancel={hideStartTimePicker}
+          isVisible={isStartDateTimePickerVisible}
+          mode="datetime"
+          onConfirm={handleStartDateTimeConfirm}
+          onCancel={hideStartDateTimePicker}
           is24Hour={true}
           locale="ja"
           confirmTextIOS="決定"
           cancelTextIOS="キャンセル"
+          maximumDate={new Date()} // 今日以前の日時のみ選択可能
         />
 
-        {/* End Time Picker */}
+        {/* End DateTime Picker */}
         <DateTimePickerModal
-          isVisible={isEndTimePickerVisible}
-          mode="time"
-          onConfirm={handleEndTimeConfirm}
-          onCancel={hideEndTimePicker}
+          isVisible={isEndDateTimePickerVisible}
+          mode="datetime"
+          onConfirm={handleEndDateTimeConfirm}
+          onCancel={hideEndDateTimePicker}
           is24Hour={true}
           locale="ja"
           confirmTextIOS="決定"
           cancelTextIOS="キャンセル"
+          maximumDate={new Date()} // 今日以前の日時のみ選択可能
         />
         
-        {pastStartTime && pastEndTime && pastDate && (
+        {pastStartDateTime && pastEndDateTime && (
           <View style={styles.durationDisplay}>
             <Text style={styles.durationText}>
               所要時間: <Text style={styles.durationValue}>
                 {(() => {
-                  const start = new Date(`${pastDate}T${pastStartTime}`);
-                  const end = new Date(`${pastDate}T${pastEndTime}`);
-                  if (end > start) {
-                    const duration = Math.floor((end.getTime() - start.getTime()) / 1000);
+                  if (pastEndDateTime > pastStartDateTime) {
+                    const duration = Math.floor((pastEndDateTime.getTime() - pastStartDateTime.getTime()) / 1000);
                     return formatTime(duration);
                   }
                   return '--:--:--';
