@@ -66,11 +66,10 @@ export const pastWorkStyles = StyleSheet.create({
     color: 'white',
   },
   timeInputContainer: {
-    flexDirection: 'row',
-    gap: 12,
+    gap: 16,
   },
   timeInputGroup: {
-    flex: 1,
+    marginBottom: 0,
   },
   durationDisplay: {
     backgroundColor: '#f9fafb',
