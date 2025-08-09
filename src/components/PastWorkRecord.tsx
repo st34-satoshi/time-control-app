@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { pastWorkStyles as styles } from '@components/PastWorkRecord.styles';
 import { FirestoreService } from '@services/firestoreService';
 import { useAuth } from '@contexts/AuthContext';
@@ -21,10 +22,20 @@ const PastWorkRecord = () => {
   const [pastStartTime, setPastStartTime] = useState('');
   const [pastEndTime, setPastEndTime] = useState('');
 
+  // Helper function to format date in JST (Japan Standard Time)
+  const formatDateToJST = (date: Date) => {
+    // Create a new date in JST (UTC+9)
+    const jstDate = new Date(date.getTime() + (9 * 60 * 60 * 1000)); // Add 9 hours for JST
+    const year = jstDate.getUTCFullYear();
+    const month = String(jstDate.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(jstDate.getUTCDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   // Initialize past date to today
   useEffect(() => {
     const today = new Date();
-    const formattedDate = today.toISOString().split('T')[0]; // YYYY-MM-DD format
+    const formattedDate = formatDateToJST(today);
     setPastDate(formattedDate);
   }, []);
   
@@ -100,6 +111,21 @@ const PastWorkRecord = () => {
     ));
   };
 
+  // Date picker state
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
+  };
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+  const handleConfirm = (date: Date) => {
+    console.log('handleConfirm', date);
+    const formattedDate = formatDateToJST(date);
+    setPastDate(formattedDate);
+    hideDatePicker();
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.formContainer}>
@@ -124,11 +150,17 @@ const PastWorkRecord = () => {
         
         <View style={styles.inputGroup}>
           <Text style={styles.label}>📅 日付</Text>
-          <TextInput
-            style={styles.textInput}
-            value={pastDate}
-            onChangeText={setPastDate}
-            placeholder="YYYY-MM-DD"
+          <TouchableOpacity style={styles.textInput} onPress={showDatePicker}>
+            <Text style={pastDate ? styles.dateText : styles.placeholderText}>
+              {pastDate || 'YYYY-MM-DD'}
+            </Text>
+          </TouchableOpacity>
+          <DateTimePickerModal
+            isVisible={isDatePickerVisible}
+            mode="date"
+            onConfirm={handleConfirm}
+            onCancel={hideDatePicker}
+            maximumDate={new Date()} // 今日以前の日付のみ選択可能
           />
         </View>
         

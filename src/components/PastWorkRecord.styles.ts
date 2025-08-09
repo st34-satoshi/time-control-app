@@ -99,4 +99,12 @@ export const pastWorkStyles = StyleSheet.create({
     fontWeight: '500',
     color: 'white',
   },
+  dateText: {
+    fontSize: 16,
+    color: '#374151',
+  },
+  placeholderText: {
+    fontSize: 16,
+    color: '#9CA3AF',
+  },
 });
