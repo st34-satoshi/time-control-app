@@ -4,7 +4,7 @@ import {getFirestore, FieldValue} from "firebase-admin/firestore";
 
 initializeApp();
 
-export const createUserDefaults = auth.user().onCreate(async (user) => {
+export const createDefaultCategories = auth.user().onCreate(async (user) => {
   console.log(`Creating defaults for user: ${user.uid}`);
   // デフォルトカテゴリを作成
   const defaultCategories = [

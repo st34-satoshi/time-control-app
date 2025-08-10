@@ -20,5 +20,12 @@
 - `npx expo run:ios`
 
 ## デプロイ
+
 ### Cloud Functions
-- `firebase deploy`
+#### 準備
+- `npm install -g firebase-tools`
+- `firebase login`
+
+#### 実行
+- `cd cloud-functions`
+- `firebase deploy --only functions`
