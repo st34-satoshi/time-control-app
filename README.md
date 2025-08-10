@@ -18,3 +18,7 @@
 
 ### ビルド
 - `npx expo run:ios`
+
+## デプロイ
+### Cloud Functions
+- `firebase deploy`
