@@ -9,8 +9,7 @@ import {
 import { currentWorkStyles as styles } from '@components/record/CurrentWorkRecord.styles';
 import { timeRecordService } from '@root/src/services/firestore/timeRecordService';
 import { useAuth } from '@contexts/AuthContext';
-import { CategoryManager } from '@domain/Category';
-import { Category } from '@app-types/Category';
+import Categories from '@components/record/Categories';
 
 const CurrentWorkRecord = () => {
   const { user } = useAuth();
@@ -21,31 +20,6 @@ const CurrentWorkRecord = () => {
   // Current recording form
   const [currentTask, setCurrentTask] = useState('');
   const [currentCategory, setCurrentCategory] = useState('');
-  
-  // Categories state
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
-  
-  // Load categories on component mount
-  useEffect(() => {
-    if(!isLoadingCategories) return;
-    const loadCategories = async () => {
-      if (user?.uid) {
-        try {
-          setIsLoadingCategories(true);
-          const fetchedCategories = await CategoryManager.getAllCategories(user.uid);
-          setCategories(fetchedCategories);
-        } catch (error) {
-          console.error('Error loading categories:', error);
-          Alert.alert('エラー', 'カテゴリの読み込みに失敗しました');
-        } finally {
-          setIsLoadingCategories(false);
-        }
-      }
-    };
-    
-    loadCategories();
-  }, [user?.uid]);
   
   // Timer effect
   useEffect(() => {
@@ -112,37 +86,7 @@ const CurrentWorkRecord = () => {
     setStartTime(null);
   };
 
-  const renderCategoryOptions = () => {
-    if (isLoadingCategories) {
-      return (
-        <Text style={styles.loadingText}>カテゴリを読み込み中...</Text>
-      );
-    }
-    
-    if (categories.length === 0) {
-      return (
-        <Text style={styles.noCategoriesText}>カテゴリがありません</Text>
-      );
-    }
-    
-    return categories.map((category) => (
-      <TouchableOpacity
-        key={category.value}
-        style={[
-          styles.projectOption,
-          currentCategory === category.value && styles.projectOptionSelected
-        ]}
-        onPress={() => setCurrentCategory(category.value)}
-      >
-        <Text style={[
-          styles.projectOptionText,
-          currentCategory === category.value && styles.projectOptionTextSelected
-        ]}>
-          {category.icon} {category.label}
-        </Text>
-      </TouchableOpacity>
-    ));
-  };
+
 
   return (
     <View style={styles.container}>
@@ -169,9 +113,11 @@ const CurrentWorkRecord = () => {
         
         <View style={styles.inputGroup}>
           <Text style={styles.label}>🏷️ カテゴリ</Text>
-          <View style={styles.projectOptionsContainer}>
-            {renderCategoryOptions()}
-          </View>
+          <Categories
+            userId={user?.uid}
+            currentCategory={currentCategory}
+            onCategorySelect={setCurrentCategory}
+          />
         </View>
       </View>
       
