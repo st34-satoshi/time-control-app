@@ -5,9 +5,9 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import { styles } from '@components/TimeRecord.styles';
-import CurrentWorkRecord from '@components/CurrentWorkRecord';
-import PastWorkRecord from '@components/PastWorkRecord';
+import { styles } from '@components/record/TimeRecord.styles';
+import CurrentWorkRecord from '@components/record/CurrentWorkRecord';
+import PastWorkRecord from '@components/record/PastWorkRecord';
 
 const TimeRecord = () => {
   const [activeTab, setActiveTab] = useState<'current' | 'past'>('current');

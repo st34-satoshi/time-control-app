@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import { useAuth } from '@contexts/AuthContext';
 import { timeRecordService } from '@root/src/services/firestore/timeRecordService';
-import { TimeRecordDataForGet } from '../types/TimeRecord';
-import { styles } from './Report.styles';
+import { TimeRecordDataForGet } from '../../types/TimeRecord';
+import { styles } from '@components/report/Report.styles';
 import { CategoryManager } from '@domain/Category';
 
 type FirestoreTimestamp = {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,10 +7,10 @@ import {
   Alert,
 } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { pastWorkStyles as styles } from '@components/PastWorkRecord.styles';
+import { pastWorkStyles as styles } from '@components/record/PastWorkRecord.styles';
 import { timeRecordService } from '@root/src/services/firestore/timeRecordService';
 import { useAuth } from '@contexts/AuthContext';
-import { CategoryManager } from '@app-types/Category';
+import { CategoryManager } from '@domain/Category';
 
 const PastWorkRecord = () => {
   const { user } = useAuth();
@@ -98,8 +98,10 @@ const PastWorkRecord = () => {
     setPastEndDateTime(null);
   };
 
-  const renderCategoryOptions = () => {
-    return CategoryManager.getAllCategories().map((category) => (
+  const renderCategoryOptions = async () => {
+    return [];
+    const categories = await CategoryManager.getAllCategories(user?.uid || '');
+    return categories.map((category) => (
       <TouchableOpacity
         key={category.value}
         style={[

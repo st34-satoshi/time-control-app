@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import { currentWorkStyles as styles } from '@components/CurrentWorkRecord.styles';
+import { currentWorkStyles as styles } from '@components/record/CurrentWorkRecord.styles';
 import { timeRecordService } from '@root/src/services/firestore/timeRecordService';
 import { useAuth } from '@contexts/AuthContext';
 import { CategoryManager } from '@domain/Category';

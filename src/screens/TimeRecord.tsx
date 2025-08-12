@@ -1,8 +1,8 @@
 import React from 'react';
 import { View } from 'react-native';
-import TimeRecord from '@components/TimeRecord';
-import { styles } from '@components/TimeRecord.styles';
-import { Header } from '@components/Header';
+import TimeRecord from '@root/src/components/record/TimeRecord';
+import { styles } from '@root/src/components/record/TimeRecord.styles';
+import { Header } from '@root/src/components/common/Header';
 
 const TimeRecordScreen = () => {
   return (

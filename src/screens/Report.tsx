@@ -1,8 +1,8 @@
 import React from 'react';
 import { View } from 'react-native';
-import { styles as baseStyles } from '@components/TimeRecord.styles';
-import { Header } from '@components/Header';
-import Report from '@components/Report';
+import { styles as baseStyles } from '@root/src/components/record/TimeRecord.styles';
+import { Header } from '@root/src/components/common/Header';
+import Report from '@root/src/components/report/Report';
 
 const ReportScreen = () => {
   return (
