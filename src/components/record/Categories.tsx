@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, Modal, ScrollView } from 'react-native';
 import { Category } from '@app-types/Category';
 import { CategoryManager } from '@domain/Category';
 
@@ -7,6 +7,12 @@ interface CategoriesProps {
   userId?: string;
   onCategorySelect: (categoryValue: string) => void;
   currentCategory: string;
+}
+
+interface GroupedCategory {
+  baseName: string;
+  baseCategory: Category;
+  subCategories: Category[];
 }
 
 const Categories: React.FC<CategoriesProps> = ({
@@ -17,6 +23,35 @@ const Categories: React.FC<CategoriesProps> = ({
   // Categories state
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
+  const [groupedCategories, setGroupedCategories] = useState<GroupedCategory[]>([]);
+  const [selectedGroup, setSelectedGroup] = useState<GroupedCategory | null>(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  
+  // Group categories by base name
+  const groupCategories = (categories: Category[]): GroupedCategory[] => {
+    const groups: { [key: string]: GroupedCategory } = {};
+    
+    categories.forEach(category => {
+      const parts = category.label.split('|');
+      const baseName = parts[0];
+      
+      if (!groups[baseName]) {
+        // Find the base category (without subcategory)
+        const baseCategory = categories.find(c => c.label === baseName) || category;
+        groups[baseName] = {
+          baseName,
+          baseCategory,
+          subCategories: []
+        };
+      }else{
+        if (parts.length > 1) {
+          groups[baseName].subCategories.push(category);
+        }
+      }
+    });
+    
+    return Object.values(groups);
+  };
   
   // Load categories on component mount
   useEffect(() => {
@@ -27,6 +62,8 @@ const Categories: React.FC<CategoriesProps> = ({
           setIsLoadingCategories(true);
           const fetchedCategories = await CategoryManager.getAllCategories(userId);
           setCategories(fetchedCategories);
+          const grouped = groupCategories(fetchedCategories);
+          setGroupedCategories(grouped);
         } catch (error) {
           console.error('Error loading categories:', error);
           Alert.alert('エラー', 'カテゴリの読み込みに失敗しました');
@@ -38,6 +75,29 @@ const Categories: React.FC<CategoriesProps> = ({
     
     loadCategories();
   }, [userId]);
+
+  const handleCategoryPress = (group: GroupedCategory) => {
+    if (group.subCategories.length === 0) {
+      // No subcategories, select directly
+      onCategorySelect(group.baseCategory.value);
+    } else {
+      // Has subcategories, show modal
+      setSelectedGroup(group);
+      setIsModalVisible(true);
+    }
+  };
+
+  const handleSubCategorySelect = (category: Category) => {
+    onCategorySelect(category.value);
+    setIsModalVisible(false);
+    setSelectedGroup(null);
+  };
+
+  const closeModal = () => {
+    setIsModalVisible(false);
+    setSelectedGroup(null);
+  };
+  
   if (isLoadingCategories) {
     return (
       <View style={{ padding: 16 }}>
@@ -46,7 +106,7 @@ const Categories: React.FC<CategoriesProps> = ({
     );
   }
   
-  if (categories.length === 0) {
+  if (groupedCategories.length === 0) {
     return (
       <View style={{ padding: 16 }}>
         <Text style={{ textAlign: 'center', color: '#666' }}>カテゴリがありません</Text>
@@ -55,30 +115,141 @@ const Categories: React.FC<CategoriesProps> = ({
   }
   
   return (
-    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-      {categories.map((category) => (
-        <TouchableOpacity
-          key={category.value}
-          style={{
-            paddingHorizontal: 16,
-            paddingVertical: 8,
-            borderRadius: 20,
-            backgroundColor: currentCategory === category.value ? '#007AFF' : '#F0F0F0',
-            borderWidth: 1,
-            borderColor: currentCategory === category.value ? '#007AFF' : '#E0E0E0',
-          }}
-          onPress={() => onCategorySelect(category.value)}
-        >
-          <Text style={{
-            color: currentCategory === category.value ? '#FFFFFF' : '#333333',
-            fontSize: 14,
-            fontWeight: currentCategory === category.value ? '600' : '400',
+    <>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+        {groupedCategories.map((group) => (
+          <TouchableOpacity
+            key={group.baseName}
+            style={{
+              paddingHorizontal: 16,
+              paddingVertical: 8,
+              borderRadius: 20,
+              backgroundColor: currentCategory === group.baseCategory.value ? '#007AFF' : '#F0F0F0',
+              borderWidth: 1,
+              borderColor: currentCategory === group.baseCategory.value ? '#007AFF' : '#E0E0E0',
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 8,
+            }}
+            onPress={() => handleCategoryPress(group)}
+          >
+            <Text style={{
+              color: currentCategory === group.baseCategory.value ? '#FFFFFF' : '#333333',
+              fontSize: 14,
+              fontWeight: currentCategory === group.baseCategory.value ? '600' : '400',
+            }}>
+              {group.baseCategory.icon} {group.baseName}
+            </Text>
+            {group.subCategories.length > 0 && (
+              <Text style={{
+                color: currentCategory === group.baseCategory.value ? '#FFFFFF' : '#666666',
+                fontSize: 12,
+              }}>
+                ▶
+              </Text>
+            )}
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {/* Subcategory Selection Modal */}
+      <Modal
+        visible={isModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={closeModal}
+      >
+        <View style={{
+          flex: 1,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+          <View style={{
+            backgroundColor: '#FFFFFF',
+            borderRadius: 16,
+            padding: 24,
+            margin: 20,
+            minWidth: 300,
+            maxHeight: '80%',
           }}>
-            {category.icon} {category.label}
-          </Text>
-        </TouchableOpacity>
-      ))}
-    </View>
+            <Text style={{
+              fontSize: 18,
+              fontWeight: '600',
+              marginBottom: 20,
+              textAlign: 'center',
+            }}>
+              {selectedGroup?.baseName} を選択
+            </Text>
+            
+            <ScrollView style={{ maxHeight: 300 }}>
+              {/* Base category option */}
+              <TouchableOpacity
+                style={{
+                  paddingVertical: 12,
+                  paddingHorizontal: 16,
+                  borderRadius: 8,
+                  backgroundColor: currentCategory === selectedGroup?.baseCategory.value ? '#007AFF' : '#F8F8F8',
+                  marginBottom: 8,
+                }}
+                onPress={() => handleSubCategorySelect(selectedGroup!.baseCategory)}
+              >
+                <Text style={{
+                  color: currentCategory === selectedGroup?.baseCategory.value ? '#FFFFFF' : '#333333',
+                  fontSize: 16,
+                  fontWeight: '500',
+                }}>
+                  {selectedGroup?.baseCategory.icon} {selectedGroup?.baseName}
+                </Text>
+              </TouchableOpacity>
+
+              {/* Subcategories */}
+              {selectedGroup?.subCategories.map((subCategory) => (
+                <TouchableOpacity
+                  key={subCategory.value}
+                  style={{
+                    paddingVertical: 12,
+                    paddingHorizontal: 16,
+                    borderRadius: 8,
+                    backgroundColor: currentCategory === subCategory.value ? '#007AFF' : '#F8F8F8',
+                    marginBottom: 8,
+                  }}
+                  onPress={() => handleSubCategorySelect(subCategory)}
+                >
+                  <Text style={{
+                    color: currentCategory === subCategory.value ? '#FFFFFF' : '#333333',
+                    fontSize: 16,
+                    fontWeight: '500',
+                  }}>
+                    {subCategory.icon} {subCategory.label.split('|')[1]}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+
+            <TouchableOpacity
+              style={{
+                marginTop: 20,
+                paddingVertical: 12,
+                paddingHorizontal: 24,
+                borderRadius: 8,
+                backgroundColor: '#E0E0E0',
+                alignItems: 'center',
+              }}
+              onPress={closeModal}
+            >
+              <Text style={{
+                color: '#666666',
+                fontSize: 16,
+                fontWeight: '500',
+              }}>
+                キャンセル
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </>
   );
 };
 
