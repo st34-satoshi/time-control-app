@@ -130,39 +130,45 @@ const Categories: React.FC<CategoriesProps> = ({
   return (
     <>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-        {groupedCategories.map((group) => (
-          <TouchableOpacity
-            key={group.baseName}
-            style={{
-              paddingHorizontal: 16,
-              paddingVertical: 8,
-              borderRadius: 20,
-              backgroundColor: currentCategory === group.baseCategory.value ? '#007AFF' : '#F0F0F0',
-              borderWidth: 1,
-              borderColor: currentCategory === group.baseCategory.value ? '#007AFF' : '#E0E0E0',
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 8,
-            }}
-            onPress={() => handleCategoryPress(group)}
-          >
-            <Text style={{
-              color: currentCategory === group.baseCategory.value ? '#FFFFFF' : '#333333',
-              fontSize: 14,
-              fontWeight: currentCategory === group.baseCategory.value ? '600' : '400',
-            }}>
-              {group.baseCategory.icon} {group.baseName}
-            </Text>
-            {group.subCategories.length > 0 && (
+        {groupedCategories.map((group) => {
+          // Check if current category is in this group (base or subcategory)
+          const isGroupSelected = currentCategory === group.baseCategory.value || 
+            group.subCategories.some(sub => sub.value === currentCategory);
+          
+          return (
+            <TouchableOpacity
+              key={group.baseName}
+              style={{
+                paddingHorizontal: 16,
+                paddingVertical: 8,
+                borderRadius: 20,
+                backgroundColor: isGroupSelected ? '#007AFF' : '#F0F0F0',
+                borderWidth: 1,
+                borderColor: isGroupSelected ? '#007AFF' : '#E0E0E0',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 8,
+              }}
+              onPress={() => handleCategoryPress(group)}
+            >
               <Text style={{
-                color: currentCategory === group.baseCategory.value ? '#FFFFFF' : '#666666',
-                fontSize: 12,
+                color: isGroupSelected ? '#FFFFFF' : '#333333',
+                fontSize: 14,
+                fontWeight: isGroupSelected ? '600' : '400',
               }}>
-                ▶
+                {group.baseCategory.icon} {group.baseName}
               </Text>
-            )}
-          </TouchableOpacity>
-        ))}
+              {group.subCategories.length > 0 && (
+                <Text style={{
+                  color: isGroupSelected ? '#FFFFFF' : '#666666',
+                  fontSize: 12,
+                }}>
+                  ▶
+                </Text>
+              )}
+            </TouchableOpacity>
+          );
+        })}
       </View>
 
       {/* Subcategory Selection Modal */}
