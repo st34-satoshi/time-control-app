@@ -119,10 +119,27 @@ const Report = () => {
 
   if (timeRecords.length === 0) {
     return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>記録されたデータがありません</Text>
-        <Text style={styles.emptySubtext}>時間記録を開始すると、ここに表示されます</Text>
-      </View>
+      <FlatList
+        data={[]}
+        renderItem={() => null}
+        keyExtractor={() => 'empty'}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.emptyContainer}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={['#2563eb']}
+            tintColor="#2563eb"
+          />
+        }
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>記録されたデータがありません</Text>
+            <Text style={styles.emptySubtext}>時間記録を開始すると、ここに表示されます</Text>
+          </View>
+        }
+      />
     );
   }
 
