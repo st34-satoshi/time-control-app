@@ -9,7 +9,7 @@ import { CategoryManager } from '@domain/Category';
 type FirestoreTimestamp = {
   seconds: number;
   nanoseconds: number;
-  type?: string; // 任意（ある場合のみ）
+  type?: string;
 };
 
 const Report = () => {
@@ -77,7 +77,7 @@ const Report = () => {
   };
 
   const getCategoryIcon = (categoryValue: string) => {
-    return CategoryManager.getIconByValue(categoryValue);
+    return CategoryManager.getIconByValue(categoryValue, user!.uid);
   };
 
   const renderTimeRecord = ({ item }: { item: TimeRecordDataForGet }) => (
