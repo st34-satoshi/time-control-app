@@ -22,7 +22,7 @@ const TimeRecord = () => {
           onPress={() => setActiveTab('current')}
         >
           <Text style={[styles.tabText, activeTab === 'current' && styles.tabTextActive]}>
-            🔴 現在の作業を記録
+            🟢 現在の作業を記録
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
