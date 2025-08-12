@@ -4,7 +4,7 @@ import { useAuth } from '@contexts/AuthContext';
 import { timeRecordService } from '@root/src/services/firestore/timeRecordService';
 import { TimeRecordDataForGet } from '../types/TimeRecord';
 import { styles } from './Report.styles';
-import { CategoryManager } from '@app-types/Category';
+import { CategoryManager } from '@domain/Category';
 
 type FirestoreTimestamp = {
   seconds: number;

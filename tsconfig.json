@@ -11,7 +11,8 @@
       "@screens/*": ["src/screens/*"],
       "@services/*": ["src/services/*"],
       "@app-types/*": ["src/types/*"],
-      "@contexts/*": ["src/contexts/*"]
+      "@contexts/*": ["src/contexts/*"],
+      "@domain/*": ["src/domain/*"]
     }
   }
 }

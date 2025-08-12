@@ -9,7 +9,7 @@ import {
 import { currentWorkStyles as styles } from '@components/CurrentWorkRecord.styles';
 import { timeRecordService } from '@root/src/services/firestore/timeRecordService';
 import { useAuth } from '@contexts/AuthContext';
-import { CategoryManager } from '@app-types/Category';
+import { CategoryManager } from '@domain/Category';
 import { Category } from '@app-types/Category';
 
 const CurrentWorkRecord = () => {
