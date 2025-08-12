@@ -41,8 +41,20 @@ const PastWorkRecord = () => {
   
   // Save past record to Firestore
   const savePastRecord = async () => {
-    if (!pastTask.trim() || !pastCategory.trim() || !pastStartDateTime || !pastEndDateTime) {
-      Alert.alert('エラー', 'すべての項目を入力してください');
+    if (!pastTask.trim()) {
+      Alert.alert('エラー', 'タスク内容を入力してください');
+      return;
+    }
+    if (!pastCategory.trim()) {
+      Alert.alert('エラー', 'カテゴリを選択してください');
+      return;
+    }
+    if (!pastStartDateTime) {
+      Alert.alert('エラー', '開始時間を選択してください');
+      return;
+    }
+    if (!pastEndDateTime) {
+      Alert.alert('エラー', '終了時間を選択してください');
       return;
     }
     if (!user) {
