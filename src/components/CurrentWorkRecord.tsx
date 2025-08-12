@@ -7,7 +7,7 @@ import {
   Alert,
 } from 'react-native';
 import { currentWorkStyles as styles } from '@components/CurrentWorkRecord.styles';
-import { FirestoreService } from '@services/firestoreService';
+import { timeRecordService } from '@root/src/services/firestore/timeRecordService';
 import { useAuth } from '@contexts/AuthContext';
 import { CategoryManager } from '@app-types/Category';
 
@@ -63,7 +63,7 @@ const CurrentWorkRecord = () => {
     const endTime = new Date();
     
     try {
-      await FirestoreService.saveTimeRecord({
+      await timeRecordService.saveTimeRecord({
         task: currentTask,
         category: currentCategory,
         startTime,

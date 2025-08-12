@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { pastWorkStyles as styles } from '@components/PastWorkRecord.styles';
-import { FirestoreService } from '@services/firestoreService';
+import { timeRecordService } from '@root/src/services/firestore/timeRecordService';
 import { useAuth } from '@contexts/AuthContext';
 import { CategoryManager } from '@app-types/Category';
 
@@ -74,7 +74,7 @@ const PastWorkRecord = () => {
     }
     
     try {
-      await FirestoreService.saveTimeRecord({
+      await timeRecordService.saveTimeRecord({
         task: pastTask,
         category: pastCategory,
         startTime: pastStartDateTime,

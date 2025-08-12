@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import { useAuth } from '@contexts/AuthContext';
-import { FirestoreService } from '@services/firestoreService';
+import { timeRecordService } from '@root/src/services/firestore/timeRecordService';
 import { TimeRecordDataForGet } from '../types/TimeRecord';
 import { styles } from './Report.styles';
 import { CategoryManager } from '@app-types/Category';
@@ -26,7 +26,7 @@ const Report = () => {
   }, [user]);
 
   const fetchAndSortRecords = async () => {
-    const records = await FirestoreService.getTimeRecords(user!.uid);
+    const records = await timeRecordService.getTimeRecords(user!.uid);
     const sortedRecords = records.sort((a, b) => {
       return b.startTime.seconds - a.startTime.seconds; // 降順（新しい順）
     });

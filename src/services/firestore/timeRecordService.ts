@@ -3,16 +3,15 @@ import {
   addDoc, 
   getDocs, 
   query, 
-  where, 
   orderBy,
   Timestamp,
   doc,
   deleteDoc
 } from 'firebase/firestore';
-import { db } from '../../firebase';
-import { TimeRecordDataForSave, TimeRecordFormData, TimeRecordDataForGet } from '../types/TimeRecord';
+import { db } from '../../../firebase';
+import { TimeRecordDataForSave, TimeRecordFormData, TimeRecordDataForGet } from '../../types/TimeRecord';
 
-export class FirestoreService {
+export class timeRecordService {
   private static collection = 'timeRecords';
 
   // 時間記録を保存
