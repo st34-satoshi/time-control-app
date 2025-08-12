@@ -10,7 +10,7 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { pastWorkStyles as styles } from '@components/record/PastWorkRecord.styles';
 import { timeRecordService } from '@root/src/services/firestore/timeRecordService';
 import { useAuth } from '@contexts/AuthContext';
-import { CategoryManager } from '@domain/Category';
+import Categories from '@components/record/Categories';
 
 const PastWorkRecord = () => {
   const { user } = useAuth();
@@ -21,30 +21,12 @@ const PastWorkRecord = () => {
   const [pastStartDateTime, setPastStartDateTime] = useState<Date | null>(null);
   const [pastEndDateTime, setPastEndDateTime] = useState<Date | null>(null);
 
-  // Helper function to format date in JST (Japan Standard Time)
-  const formatDateToJST = (date: Date) => {
-    // Create a new date in JST (UTC+9)
-    const jstDate = new Date(date.getTime() + (9 * 60 * 60 * 1000)); // Add 9 hours for JST
-    const year = jstDate.getUTCFullYear();
-    const month = String(jstDate.getUTCMonth() + 1).padStart(2, '0');
-    const day = String(jstDate.getUTCDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-
-  
   // Format seconds to HH:MM:SS
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  // Helper function to format time to HH:MM
-  const formatTimeHHMM = (date: Date) => {
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    return `${hours}:${minutes}`;
   };
 
   // Helper function to format date time to readable format
@@ -83,7 +65,7 @@ const PastWorkRecord = () => {
       
       const duration = Math.floor((pastEndDateTime.getTime() - pastStartDateTime.getTime()) / 1000);
       Alert.alert(
-        '記録保存完了！',
+        '記録を保存しました！',
         `タスク: ${pastTask}\nカテゴリ: ${pastCategory}\n時間: ${formatTime(duration)}\n\n保存されました！`
       );
     } catch (error) {
@@ -96,28 +78,6 @@ const PastWorkRecord = () => {
     setPastCategory('');
     setPastStartDateTime(null);
     setPastEndDateTime(null);
-  };
-
-  const renderCategoryOptions = async () => {
-    return [];
-    const categories = await CategoryManager.getAllCategories(user?.uid || '');
-    return categories.map((category) => (
-      <TouchableOpacity
-        key={category.value}
-        style={[
-          styles.projectOption,
-          pastCategory === category.value && styles.projectOptionSelected
-        ]}
-        onPress={() => setPastCategory(category.value)}
-      >
-        <Text style={[
-          styles.projectOptionText,
-          pastCategory === category.value && styles.projectOptionTextSelected
-        ]}>
-          {category.label}
-        </Text>
-      </TouchableOpacity>
-    ));
   };
 
   // DateTime picker states
@@ -176,9 +136,11 @@ const PastWorkRecord = () => {
         
         <View style={styles.inputGroup}>
           <Text style={styles.label}>🏷️ カテゴリ</Text>
-          <View style={styles.projectOptionsContainer}>
-            {renderCategoryOptions()}
-          </View>
+          <Categories
+            userId={user?.uid}
+            currentCategory={pastCategory}
+            onCategorySelect={setPastCategory}
+          />
         </View>
         
         <View style={styles.timeInputContainer}>
