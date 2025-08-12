@@ -46,24 +46,6 @@ export default function Login() {
         <Text style={styles.subtitle}>ログインしてください</Text>
         
         <TouchableOpacity
-          style={[styles.googleButton, googleLoading && styles.buttonDisabled]}
-          onPress={handleGoogleLogin}
-          disabled={googleLoading}
-        >
-          {googleLoading ? (
-            <ActivityIndicator color="white" />
-          ) : (
-            <Text style={styles.buttonText}>Googleでログイン</Text>
-          )}
-        </TouchableOpacity>
-
-        <View style={styles.divider}>
-          <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>または</Text>
-          <View style={styles.dividerLine} />
-        </View>
-        
-        <TouchableOpacity
           style={[styles.button, loading && styles.buttonDisabled]}
           onPress={handleAnonymousLogin}
           disabled={loading}
