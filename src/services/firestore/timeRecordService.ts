@@ -8,7 +8,7 @@ import {
   doc,
   deleteDoc
 } from 'firebase/firestore';
-import { db } from '../../../firebase';
+import { db } from '@root/firebase';
 import { TimeRecordDataForSave, TimeRecordFormData, TimeRecordDataForGet } from '../../types/TimeRecord';
 
 export class timeRecordService {
