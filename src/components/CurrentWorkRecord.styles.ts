@@ -147,4 +147,17 @@ export const currentWorkStyles = StyleSheet.create({
     fontSize: 12,
     color: '#3b82f6',
   },
+  loadingText: {
+    fontSize: 14,
+    color: '#6b7280',
+    fontStyle: 'italic',
+    textAlign: 'center',
+    padding: 16,
+  },
+  noCategoriesText: {
+    fontSize: 14,
+    color: '#6b7280',
+    textAlign: 'center',
+    padding: 16,
+  },
 });

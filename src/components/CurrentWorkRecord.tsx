@@ -10,6 +10,7 @@ import { currentWorkStyles as styles } from '@components/CurrentWorkRecord.style
 import { timeRecordService } from '@root/src/services/firestore/timeRecordService';
 import { useAuth } from '@contexts/AuthContext';
 import { CategoryManager } from '@app-types/Category';
+import { Category } from '@app-types/Category';
 
 const CurrentWorkRecord = () => {
   const { user } = useAuth();
@@ -20,6 +21,31 @@ const CurrentWorkRecord = () => {
   // Current recording form
   const [currentTask, setCurrentTask] = useState('');
   const [currentCategory, setCurrentCategory] = useState('');
+  
+  // Categories state
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
+  
+  // Load categories on component mount
+  useEffect(() => {
+    if(!isLoadingCategories) return;
+    const loadCategories = async () => {
+      if (user?.uid) {
+        try {
+          setIsLoadingCategories(true);
+          const fetchedCategories = await CategoryManager.getAllCategories(user.uid);
+          setCategories(fetchedCategories);
+        } catch (error) {
+          console.error('Error loading categories:', error);
+          Alert.alert('エラー', 'カテゴリの読み込みに失敗しました');
+        } finally {
+          setIsLoadingCategories(false);
+        }
+      }
+    };
+    
+    loadCategories();
+  }, [user?.uid]);
   
   // Timer effect
   useEffect(() => {
@@ -87,7 +113,19 @@ const CurrentWorkRecord = () => {
   };
 
   const renderCategoryOptions = () => {
-    return CategoryManager.getAllCategories().map((category) => (
+    if (isLoadingCategories) {
+      return (
+        <Text style={styles.loadingText}>カテゴリを読み込み中...</Text>
+      );
+    }
+    
+    if (categories.length === 0) {
+      return (
+        <Text style={styles.noCategoriesText}>カテゴリがありません</Text>
+      );
+    }
+    
+    return categories.map((category) => (
       <TouchableOpacity
         key={category.value}
         style={[
@@ -100,7 +138,7 @@ const CurrentWorkRecord = () => {
           styles.projectOptionText,
           currentCategory === category.value && styles.projectOptionTextSelected
         ]}>
-          {category.label}
+          {category.icon} {category.label}
         </Text>
       </TouchableOpacity>
     ));
