@@ -50,7 +50,20 @@ const Categories: React.FC<CategoriesProps> = ({
       }
     });
     
-    return Object.values(groups);
+    // Sort groups by base category order, then by baseName if order is the same
+    const sortedGroups = Object.values(groups).sort((a, b) => {
+      const orderA = a.baseCategory.order || 0;
+      const orderB = b.baseCategory.order || 0;
+      
+      if (orderA !== orderB) {
+        return orderA - orderB;
+      }
+      
+      // If order is the same, sort alphabetically by baseName
+      return a.baseName.localeCompare(b.baseName);
+    });
+    
+    return sortedGroups;
   };
   
   // Load categories on component mount
