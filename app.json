@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "time-control-app",
-    "slug": "time-control-app",
+    "name": "time-control-app-24",
+    "slug": "time-control-app-24",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/time-control-app-24-icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -14,7 +14,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.time-control-app"
+      "bundleIdentifier": "com.stu345.time-control-app-24"
     },
     "android": {
       "adaptiveIcon": {
