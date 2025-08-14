@@ -15,7 +15,10 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.stu345.time-control-app-24",
-      "googleServicesFile": "./ios/timecontrolapp/GoogleService-Info.plist"
+      "googleServicesFile": "./ios/timecontrolapp/GoogleService-Info.plist",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {

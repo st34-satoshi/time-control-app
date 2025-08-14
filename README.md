@@ -29,3 +29,9 @@
 #### 実行
 - `cd cloud-functions`
 - `firebase deploy --only functions`
+
+### Expo
+- `npm install -g eas-cli`
+- `eas login`
+- `eas build --platform ios`
+- `eas submit --platform ios`
