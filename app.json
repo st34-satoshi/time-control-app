@@ -14,7 +14,8 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.stu345.time-control-app-24"
+      "bundleIdentifier": "com.stu345.time-control-app-24",
+      "googleServicesFile": "./ios/timecontrolapp/GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
@@ -28,8 +29,9 @@
     },
     "extra": {
       "eas": {
-        "projectId": "9a81f53c-a17f-482a-ba78-91b77abbc433"
+        "projectId": "3078a34c-06ec-4f84-8d12-726fbce40165"
       }
-    }
+    },
+    "owner": "st34"
   }
 }
