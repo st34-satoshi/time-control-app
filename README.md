@@ -35,6 +35,7 @@
 - `firebase deploy --only functions`
 
 ### Expo
+変更内容はコミット・プッシュする
 - `npm install -g eas-cli`
 - `eas login`
 - `eas build --platform ios`
