@@ -9,6 +9,14 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       "./GoogleService-Info.plist",
       Buffer.from(iosPlistBase64, "base64")
     );
+    fs.writeFileSync(
+      "./ios/GoogleService-Info.plist",
+      Buffer.from(iosPlistBase64, "base64")
+    );
+    fs.writeFileSync(
+      "./ios/timecontrolapp/GoogleService-Info.plist",
+      Buffer.from(iosPlistBase64, "base64")
+    );
   }
 
   return {
