@@ -8,7 +8,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
   const iosPlistPath = path.resolve("./ios/GoogleService-Info.plist");
 
   if (!iosPlistBase64) {
-    // CIでは早めに落として原因をはっきりさせる
     if (process.env.CI) {
       throw new Error("IOS_GOOGLESERVICE_INFO_PLIST_BASE64 is not set for this environment (e.g. production).");
     } else {
@@ -18,20 +17,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     fs.mkdirSync(path.dirname(iosPlistPath), { recursive: true });
     fs.writeFileSync(iosPlistPath, Buffer.from(iosPlistBase64, "base64"));
   }
-  // if (iosPlistBase64) {
-  //   fs.writeFileSync(
-  //     "./GoogleService-Info.plist",
-  //     Buffer.from(iosPlistBase64, "base64")
-  //   );
-  //   fs.writeFileSync(
-  //     "./ios/GoogleService-Info.plist",
-  //     Buffer.from(iosPlistBase64, "base64")
-  //   );
-  //   fs.writeFileSync(
-  //     "./ios/timecontrolapp/GoogleService-Info.plist",
-  //     Buffer.from(iosPlistBase64, "base64")
-  //   );
-  // }
 
   return {
     ...config,
