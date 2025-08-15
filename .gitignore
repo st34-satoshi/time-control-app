@@ -38,3 +38,5 @@ yarn-error.*
 
 .vscode/
 .env
+
+GoogleService-Info.plist

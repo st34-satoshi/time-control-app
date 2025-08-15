@@ -6,7 +6,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
   const iosPlistBase64 = process.env.IOS_GOOGLESERVICE_INFO_PLIST_BASE64;
   if (iosPlistBase64) {
     fs.writeFileSync(
-      "./ios/timecontrolapp/GoogleService-Info.plist",
+      "./GoogleService-Info.plist",
       Buffer.from(iosPlistBase64, "base64")
     );
   }
@@ -28,7 +28,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ios: {
       supportsTablet: true,
       bundleIdentifier: "com.stu345.time-control-app-24",
-      googleServicesFile: "./ios/timecontrolapp/GoogleService-Info.plist",
+      googleServicesFile: "./GoogleService-Info.plist",
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false
       }
