@@ -16,6 +16,10 @@
 環境変数はgitignoreされている
 - .env
 
+#### Expoの環境変数に登録する
+- `eas env:list`
+- `eas env:create --name IOS_GOOGLESERVICE_INFO_PLIST_BASE64 --value "base64に変換した値"`
+
 ### ビルド
 - `npx expo run:ios`
 
