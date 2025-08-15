@@ -21,6 +21,7 @@
 - `eas env:create --name IOS_GOOGLESERVICE_INFO_PLIST_BASE64 --value "base64に変換した値"`
 
 ### ビルド
+- `npx expo prebuild --platform ios`
 - `npx expo run:ios`
 
 ## デプロイ
