@@ -18,11 +18,10 @@
 
 #### Expoの環境変数に登録する
 - `eas env:list`
-- `eas env:create --name IOS_GOOGLESERVICE_INFO_PLIST_BASE64 --value "base64に変換した値"`
 
 ### ビルド
+- `npx expo run:ios` : 新しいシミュレーターでアプリがないときにはビルドが必要
 - `npx expo prebuild --platform ios`
-- `npx expo run:ios`
 
 ## デプロイ
 
@@ -36,6 +35,11 @@
 - `firebase deploy --only functions`
 
 ### Expo
+#### 準備
+Expo管理画面でプロジェクトを選択->サイドバーのEnvironment variablesから.envをアップロードする
+アプリからみられないようにする情報はSecretにする
+
+#### 実行
 変更内容はコミット・プッシュする
 - `npm install -g eas-cli`
 - `eas login`

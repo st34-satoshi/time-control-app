@@ -15,11 +15,10 @@
 		9DB0F02FA5218508C07FA9AC /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF21A720BE7DE1C58844EE3 /* ExpoModulesProvider.swift */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
-		D76932A8FDAC4D20B7F94BDB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 17E42BF38DB84E1D84F9BA16 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		13B07F961A680F5B00A75B9A /* timecontrolapp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = timecontrolapp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07F961A680F5B00A75B9A /* timecontrolapp24.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = timecontrolapp24.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = timecontrolapp/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = timecontrolapp/Info.plist; sourceTree = "<group>"; };
 		235EDFC3BF949D35964ED445 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = timecontrolapp/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -33,7 +32,6 @@
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = timecontrolapp/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* timecontrolapp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "timecontrolapp-Bridging-Header.h"; path = "timecontrolapp/timecontrolapp-Bridging-Header.h"; sourceTree = "<group>"; };
-		17E42BF38DB84E1D84F9BA16 /* GoogleService-Info.plist */ = {isa = PBXFileReference; name = "GoogleService-Info.plist"; path = "timecontrolapp/GoogleService-Info.plist"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.xml; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,7 +56,6 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
 				235EDFC3BF949D35964ED445 /* PrivacyInfo.xcprivacy */,
-				17E42BF38DB84E1D84F9BA16 /* GoogleService-Info.plist */,
 			);
 			name = timecontrolapp;
 			sourceTree = "<group>";
@@ -106,7 +103,7 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* timecontrolapp.app */,
+				13B07F961A680F5B00A75B9A /* timecontrolapp24.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -159,7 +156,7 @@
 			);
 			name = timecontrolapp;
 			productName = timecontrolapp;
-			productReference = 13B07F961A680F5B00A75B9A /* timecontrolapp.app */;
+			productReference = 13B07F961A680F5B00A75B9A /* timecontrolapp24.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -203,7 +200,6 @@
 				74E878DE2E3630BE004DD31A /* GoogleService-Info.plist in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
 				943D4F556346729B3ECC320F /* PrivacyInfo.xcprivacy in Resources */,
-				D76932A8FDAC4D20B7F94BDB /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -404,7 +400,7 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.stu345.time-control-app-24";
-				PRODUCT_NAME = "timecontrolapp24";
+				PRODUCT_NAME = timecontrolapp24;
 				SWIFT_OBJC_BRIDGING_HEADER = "timecontrolapp/timecontrolapp-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -435,7 +431,7 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.stu345.time-control-app-24";
-				PRODUCT_NAME = "timecontrolapp24";
+				PRODUCT_NAME = timecontrolapp24;
 				SWIFT_OBJC_BRIDGING_HEADER = "timecontrolapp/timecontrolapp-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -509,10 +505,7 @@
 				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -578,10 +571,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
