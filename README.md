@@ -39,9 +39,10 @@
 Expo管理画面でプロジェクトを選択->サイドバーのEnvironment variablesから.envをアップロードする
 アプリからみられないようにする情報はSecretにする
 
-#### 実行
-変更内容はコミット・プッシュする
 - `npm install -g eas-cli`
 - `eas login`
+
+#### 実行
+変更内容はコミット・プッシュする
 - `eas build --platform ios`
 - `eas submit --platform ios`
