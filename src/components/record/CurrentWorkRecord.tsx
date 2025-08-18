@@ -101,7 +101,7 @@ const CurrentWorkRecord = () => {
       {/* Form */}
       <View style={styles.formContainer}>
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>📋 タスク内容</Text>
+          <Text style={styles.label}>📋 タスク内容を入力</Text>
           <TextInput
             style={[styles.textInput, isRecording && styles.textInputDisabled]}
             value={currentTask}
