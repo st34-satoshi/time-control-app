@@ -73,7 +73,31 @@ const Categories: React.FC<CategoriesProps> = ({
       if (userId) {
         try {
           setIsLoadingCategories(true);
-          const fetchedCategories = await CategoryManager.getAllCategories(userId);
+          
+          // Retry logic for fetching categories
+          let fetchedCategories: Category[] = [];
+          let retryCount = 0;
+          const maxRetries = 5;
+          const retryDelay = 1000; // 1 second delay
+          
+          while (retryCount < maxRetries) {
+            fetchedCategories = await CategoryManager.getAllCategories(userId);
+            
+            if (fetchedCategories.length > 0) {
+              break; // Successfully got categories, exit loop
+            }
+            
+            retryCount++;
+            if (retryCount < maxRetries) {
+              console.log(`カテゴリが0件です。${retryDelay}ms後にリトライします... (${retryCount}/${maxRetries})`);
+              await new Promise(resolve => setTimeout(resolve, retryDelay));
+            }
+          }
+          
+          if (fetchedCategories.length === 0) {
+            console.warn(`カテゴリの取得に失敗しました。${maxRetries}回リトライしましたが、カテゴリが見つかりませんでした。`);
+          }
+          
           setCategories(fetchedCategories);
           const grouped = groupCategories(fetchedCategories);
           setGroupedCategories(grouped);
