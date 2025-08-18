@@ -35,14 +35,23 @@ export const createDefaultCategories = auth.user().onCreate(async (user) => {
   ];
 
   const db = getFirestore();
-  for (const category of defaultCategories) {
-    await db.doc(`timeRecords/${user.uid}/categories/${category.value}`).set({
-      ...category,
-      createdAt: FieldValue.serverTimestamp(),
-      updatedAt: FieldValue.serverTimestamp(),
+  
+  try {
+    await db.runTransaction(async (transaction) => {
+      for (const category of defaultCategories) {
+        const docRef = db.doc(`timeRecords/${user.uid}/categories/${category.value}`);
+        transaction.set(docRef, {
+          ...category,
+          createdAt: FieldValue.serverTimestamp(),
+          updatedAt: FieldValue.serverTimestamp(),
+        });
+      }
     });
+    
+    console.log(`Created defaults for user: ${user.uid}`);
+  } catch (error) {
+    console.error(`Failed to create defaults for user: ${user.uid}`, error);
+    throw error;
   }
-
-  console.log(`Created defaults for user: ${user.uid}`);
 });
 
