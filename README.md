@@ -30,6 +30,10 @@
 - `npm install -g firebase-tools`
 - `firebase login`
 
+#### lint
+- `cd cloud-functions/functions`
+- `npm run lint:fix`
+
 #### 実行
 - `cd cloud-functions`
 - `firebase deploy --only functions`
