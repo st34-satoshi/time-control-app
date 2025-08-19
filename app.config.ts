@@ -37,7 +37,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       supportsTablet: true,
       bundleIdentifier: "com.stu345.time-control-app-24",
       infoPlist: {
-        ITSAppUsesNonExemptEncryption: false
+        ITSAppUsesNonExemptEncryption: false,
+        CFBundleShortVersionString: packageJson.version,
+        CFBundleVersion: "1"
       }
     },
     android: {
