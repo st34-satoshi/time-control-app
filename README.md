@@ -23,6 +23,11 @@
 - `npx expo run:ios` : 新しいシミュレーターでアプリがないときにはビルドが必要
 - `npx expo prebuild --platform ios`
 
+### バージョン
+- メジャー: 互換性に影響する大きな変更
+- マイナー: 互換性に影響しない新規機能追加
+- パッチ: バグ修正
+
 ## デプロイ
 
 ### Cloud Functions
@@ -50,3 +55,6 @@ Expo管理画面でプロジェクトを選択->サイドバーのEnvironment va
 変更内容はコミット・プッシュする
 - `eas build --platform ios`
 - `eas submit --platform ios`
+
+jsの変更を更新
+- `eas update --branch production --message "コメントを書く"`

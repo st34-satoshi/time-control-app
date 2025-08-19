@@ -1,6 +1,7 @@
 import { ExpoConfig, ConfigContext } from 'expo/config';
 import * as fs from "fs";
 import * as path from "path";
+import packageJson from './package.json';
 
 export default ({ config }: ConfigContext): ExpoConfig => {
   // iOS用 GoogleService-Info.plist
@@ -22,7 +23,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ...config,
     name: "time-control-app-24",
     slug: "time-control-app-24",
-    version: "1.0.0",
+    version: packageJson.version,
     orientation: "portrait",
     icon: "./assets/time-control-app-24-icon.png",
     userInterfaceStyle: "light",
@@ -58,7 +59,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     updates: {
       enabled: true,
       checkAutomatically: "ON_LOAD",
-      fallbackToCacheTimeout: 0
-    }
+      fallbackToCacheTimeout: 0,
+      url: "https://u.expo.dev/3078a34c-06ec-4f84-8d12-726fbce40165"
+    },
+    runtimeVersion: packageJson.version,
   };
 };
