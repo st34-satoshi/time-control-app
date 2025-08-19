@@ -28,7 +28,8 @@
 - マイナー: 互換性に影響しない新規機能追加
 - パッチ: バグ修正
 
-更新したら`npx expo run:ios`を実行
+更新したら`npx expo prebuild --platform ios`を実行
+
 
 ## デプロイ
 
