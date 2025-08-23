@@ -5,6 +5,7 @@ import { timeRecordService } from '@root/src/services/firestore/timeRecordServic
 import { TimeRecordDataForGet } from '../../types/TimeRecord';
 import { styles } from '@components/report/Report.styles';
 import { CategoryManager } from '@domain/Category';
+import { Alert } from 'react-native';
 
 type FirestoreTimestamp = {
   seconds: number;
@@ -17,7 +18,6 @@ const Report = () => {
   const [timeRecords, setTimeRecords] = useState<TimeRecordDataForGet[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -31,7 +31,6 @@ const Report = () => {
       return b.startTime.seconds - a.startTime.seconds; // 降順（新しい順）
     });
     setTimeRecords(sortedRecords);
-    setError(null);
   };
 
   const loadTimeRecords = async () => {
@@ -39,8 +38,8 @@ const Report = () => {
     try {
       await fetchAndSortRecords();
     } catch (err) {
-      setError('データの取得に失敗しました');
       console.error('Error loading time records:', err);
+      Alert.alert('データの取得に失敗しました');
     } finally {
       setLoading(false);
     }
@@ -51,7 +50,7 @@ const Report = () => {
     try {
       await fetchAndSortRecords();
     } catch (err) {
-      setError('データの取得に失敗しました');
+      Alert.alert('データの取得に失敗しました');
       console.error('Error refreshing time records:', err);
     } finally {
       setRefreshing(false);
@@ -105,14 +104,6 @@ const Report = () => {
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#2563eb" />
         <Text style={styles.loadingText}>データを読み込み中...</Text>
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>{error}</Text>
       </View>
     );
   }
