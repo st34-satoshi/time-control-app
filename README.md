@@ -56,6 +56,7 @@ Expo管理画面でプロジェクトを選択->サイドバーのEnvironment va
 
 #### 実行
 変更内容はコミット・プッシュする
+不要な変更は削除する。コミットしてなくても反映されているかも
 - `eas build --platform ios`
 - `eas submit --platform ios`
 
