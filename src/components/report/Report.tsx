@@ -17,6 +17,17 @@ const Report = () => {
   const { user } = useAuth();
   const [timeRecords, setTimeRecords] = useState<TimeRecordDataForGet[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [categoryManager, setCategoryManager] = useState<CategoryManager | null>(null);
+
+  useEffect(() => {
+    if (user && !categoryManager) {
+      const createCategoryManager = async () => {
+        const manager = await CategoryManager.create(user!.uid);
+        setCategoryManager(manager);
+      }
+      createCategoryManager();
+    }
+  }, [user, categoryManager]);
 
   const fetchAndSortRecords = async () => {
     const records = await timeRecordService.getTimeRecords(user!.uid);
@@ -57,7 +68,9 @@ const Report = () => {
   };
 
   const getCategoryIcon = (categoryValue: string) => {
-    return CategoryManager.getIconByValue(categoryValue, user!.uid);
+    console.log('categoryValue', categoryValue);
+    console.log('user!.uid', user!.uid);
+    return categoryManager?.getIconByValue(categoryValue);
   };
 
   const renderTimeRecord = ({ item }: { item: TimeRecordDataForGet }) => (
@@ -107,6 +120,7 @@ const Report = () => {
   }
 
   return (
+  //   <Text>test</Text>
     <FlatList
       data={timeRecords}
       renderItem={renderTimeRecord}

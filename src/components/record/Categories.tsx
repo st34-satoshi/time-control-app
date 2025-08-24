@@ -20,12 +20,11 @@ const Categories: React.FC<CategoriesProps> = ({
   onCategorySelect,
   currentCategory,
 }) => {
-  // Categories state
-  const [categories, setCategories] = useState<Category[]>([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [groupedCategories, setGroupedCategories] = useState<GroupedCategory[]>([]);
   const [selectedGroup, setSelectedGroup] = useState<GroupedCategory | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [categoryManager, setCategoryManager] = useState<CategoryManager | null>(null);
   
   // Group categories by base name
   const groupCategories = (categories: Category[]): GroupedCategory[] => {
@@ -66,52 +65,44 @@ const Categories: React.FC<CategoriesProps> = ({
     return sortedGroups;
   };
   
-  // Load categories on component mount
+  // Create CategoryManager instance on mount
   useEffect(() => {
-    if(!isLoadingCategories) return;
-    const loadCategories = async () => {
-      if (userId) {
+    if (userId && !categoryManager) {
+      const createCategoryManager = async () => {
         try {
-          setIsLoadingCategories(true);
-          
-          // Retry logic for fetching categories
-          let fetchedCategories: Category[] = [];
-          let retryCount = 0;
-          const maxRetries = 5;
-          const retryDelay = 1000; // 1 second delay
-          
-          while (retryCount < maxRetries) {
-            fetchedCategories = await CategoryManager.getAllCategories(userId);
-            
-            if (fetchedCategories.length > 0) {
-              break; // Successfully got categories, exit loop
-            }
-            
-            retryCount++;
-            if (retryCount < maxRetries) {
-              console.log(`カテゴリが0件です。${retryDelay}ms後にリトライします... (${retryCount}/${maxRetries})`);
-              await new Promise(resolve => setTimeout(resolve, retryDelay));
-            }
-          }
-          
-          if (fetchedCategories.length === 0) {
-            console.warn(`カテゴリの取得に失敗しました。${maxRetries}回リトライしましたが、カテゴリが見つかりませんでした。`);
-          }
-          
-          setCategories(fetchedCategories);
-          const grouped = groupCategories(fetchedCategories);
-          setGroupedCategories(grouped);
+          const manager = await CategoryManager.create(userId);
+          setCategoryManager(manager);
         } catch (error) {
-          console.error('Error loading categories:', error);
-          Alert.alert('エラー', 'カテゴリの読み込みに失敗しました');
-        } finally {
-          setIsLoadingCategories(false);
+          console.error('Error creating CategoryManager:', error);
         }
+      };
+      
+      createCategoryManager();
+    }
+  }, [userId, categoryManager]);
+
+  // Load categories when CategoryManager is ready
+  useEffect(() => {
+    if (!categoryManager || !isLoadingCategories) return;
+    
+    const loadCategories = () => {
+      try {
+        setIsLoadingCategories(true);
+        
+        const fetchedCategories = categoryManager.getAllCategories();
+        
+        const grouped = groupCategories(fetchedCategories);
+        setGroupedCategories(grouped);
+      } catch (error) {
+        console.error('Error loading categories:', error);
+        Alert.alert('エラー', 'カテゴリの読み込みに失敗しました');
+      } finally {
+        setIsLoadingCategories(false);
       }
     };
     
     loadCategories();
-  }, [userId]);
+  }, [categoryManager]);
 
   const handleCategoryPress = (group: GroupedCategory) => {
     if (group.subCategories.length === 0) {
