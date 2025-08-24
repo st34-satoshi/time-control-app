@@ -16,14 +16,7 @@ type FirestoreTimestamp = {
 const Report = () => {
   const { user } = useAuth();
   const [timeRecords, setTimeRecords] = useState<TimeRecordDataForGet[]>([]);
-  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-
-  useEffect(() => {
-    if (user) {
-      loadTimeRecords();
-    }
-  }, [user]);
 
   const fetchAndSortRecords = async () => {
     const records = await timeRecordService.getTimeRecords(user!.uid);
@@ -31,18 +24,6 @@ const Report = () => {
       return b.startTime.seconds - a.startTime.seconds; // 降順（新しい順）
     });
     setTimeRecords(sortedRecords);
-  };
-
-  const loadTimeRecords = async () => {
-    setLoading(true);
-    try {
-      await fetchAndSortRecords();
-    } catch (err) {
-      console.error('Error loading time records:', err);
-      Alert.alert('データの取得に失敗しました');
-    } finally {
-      setLoading(false);
-    }
   };
 
   const onRefresh = async () => {
@@ -98,15 +79,6 @@ const Report = () => {
       </View>
     </View>
   );
-
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#2563eb" />
-        <Text style={styles.loadingText}>データを読み込み中...</Text>
-      </View>
-    );
-  }
 
   if (timeRecords.length === 0) {
     return (
