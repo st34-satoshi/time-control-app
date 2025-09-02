@@ -5,11 +5,13 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  AppState,
 } from 'react-native';
 import { currentWorkStyles as styles } from '@components/record/CurrentWorkRecord.styles';
 import { timeRecordService } from '@root/src/services/firestore/timeRecordService';
 import { useAuth } from '@contexts/AuthContext';
 import Categories from '@components/record/Categories';
+import { RecordingController, RecordingState } from '../../domain/recordingController';
 
 const CurrentWorkRecord = () => {
   const { user } = useAuth();
@@ -20,6 +22,41 @@ const CurrentWorkRecord = () => {
   // Current recording form
   const [currentTask, setCurrentTask] = useState('');
   const [currentCategory, setCurrentCategory] = useState('');
+  
+  // アプリの状態変化を監視
+  useEffect(() => {
+    const handleAppStateChange = (nextAppState: string) => {
+      if (nextAppState === 'active' && isRecording) {
+        // アプリがアクティブになった時に経過時間を再計算
+        if (startTime) {
+          const newElapsedTime = RecordingController.calculateElapsedTime(startTime.toISOString());
+          setElapsedTime(newElapsedTime);
+        }
+      }
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    return () => subscription?.remove();
+  }, [isRecording, startTime]);
+
+  // コンポーネントマウント時に保存された状態を復元
+  useEffect(() => {
+    const restoreRecordingState = async () => {
+      const savedState = await RecordingController.getRecordingState();
+      if (savedState && savedState.isRecording) {
+        setIsRecording(true);
+        setCurrentTask(savedState.task);
+        setCurrentCategory(savedState.category);
+        setStartTime(new Date(savedState.startTime));
+        
+        // 経過時間を再計算
+        const newElapsedTime = RecordingController.calculateElapsedTime(savedState.startTime);
+        setElapsedTime(newElapsedTime);
+      }
+    };
+
+    restoreRecordingState();
+  }, []);
   
   // Timer effect
   useEffect(() => {
@@ -35,6 +72,20 @@ const CurrentWorkRecord = () => {
       if (interval) clearInterval(interval);
     };
   }, [isRecording]);
+
+  // レコーディング状態を保存
+  useEffect(() => {
+    if (isRecording && startTime) {
+      const state: RecordingState = {
+        isRecording,
+        startTime: startTime.toISOString(),
+        elapsedTime,
+        task: currentTask,
+        category: currentCategory,
+      };
+      RecordingController.saveRecordingState(state);
+    }
+  }, [isRecording, startTime, elapsedTime, currentTask, currentCategory]);
   
   // Format seconds to HH:MM:SS
   const formatTime = (seconds: number) => {
@@ -79,14 +130,13 @@ const CurrentWorkRecord = () => {
       console.error('Error saving record:', error);
     }
     
-    // Reset form
+    // Reset form and clear saved state
     setCurrentTask('');
     setCurrentCategory('');
     setElapsedTime(0);
     setStartTime(null);
+    await RecordingController.clearRecordingState();
   };
-
-
 
   return (
     <View style={styles.container}>
