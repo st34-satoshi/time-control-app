@@ -133,16 +133,6 @@ const PastWorkRecord = () => {
         <Text style={styles.sectionTitle}>📝 過去の作業を記録</Text>
         
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>📋 タスク内容</Text>
-          <TextInput
-            style={styles.textInput}
-            value={pastTask}
-            onChangeText={setPastTask}
-            placeholder="何をしましたか？"
-          />
-        </View>
-        
-        <View style={styles.inputGroup}>
           <Text style={styles.label}>🏷️ カテゴリ</Text>
           <Categories
             userId={user?.uid}
@@ -169,6 +159,16 @@ const PastWorkRecord = () => {
               </Text>
             </TouchableOpacity>
           </View>
+        
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>📋 タスク内容(任意)</Text>
+          <TextInput
+            style={styles.textInput}
+            value={pastTask}
+            onChangeText={setPastTask}
+            placeholder="何をしましたか？"
+          />
+        </View>
         </View>
 
         {/* Start DateTime Picker */}

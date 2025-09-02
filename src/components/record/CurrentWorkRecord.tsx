@@ -149,22 +149,22 @@ const CurrentWorkRecord = () => {
       {/* Form */}
       <View style={styles.formContainer}>
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>📋 タスク内容を入力</Text>
+          <Text style={styles.label}>🏷️ カテゴリ</Text>
+          <Categories
+            userId={user?.uid}
+            currentCategory={currentCategory}
+            onCategorySelect={setCurrentCategory}
+          />
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>📋 タスク内容(任意)</Text>
           <TextInput
             style={[styles.textInput, isRecording && styles.textInputDisabled]}
             value={currentTask}
             onChangeText={setCurrentTask}
             placeholder="何をしていますか？"
             editable={!isRecording}
-          />
-        </View>
-        
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>🏷️ カテゴリ</Text>
-          <Categories
-            userId={user?.uid}
-            currentCategory={currentCategory}
-            onCategorySelect={setCurrentCategory}
           />
         </View>
       </View>
