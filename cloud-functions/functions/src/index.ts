@@ -1,6 +1,7 @@
 import {auth} from "firebase-functions/v1";
 import {initializeApp} from "firebase-admin/app";
 import {getFirestore, FieldValue} from "firebase-admin/firestore";
+import {v4 as uuidv4} from "uuid";
 
 initializeApp();
 
@@ -40,7 +41,7 @@ export const createDefaultCategories = auth.user().onCreate(async (user) => {
     await db.runTransaction(async (transaction) => {
       for (const category of defaultCategories) {
         const docRef = db.doc(
-          `timeRecords/${user.uid}/categories/${category.value}`
+          `timeRecords/${user.uid}/categories/${uuidv4()}`
         );
         transaction.set(docRef, {
           ...category,
