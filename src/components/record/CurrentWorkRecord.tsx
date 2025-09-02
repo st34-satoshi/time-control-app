@@ -26,12 +26,10 @@ const CurrentWorkRecord = () => {
   // アプリの状態変化を監視
   useEffect(() => {
     const handleAppStateChange = (nextAppState: string) => {
-      if (nextAppState === 'active' && isRecording) {
+      if (nextAppState === 'active' && isRecording && startTime) {
         // アプリがアクティブになった時に経過時間を再計算
-        if (startTime) {
-          const newElapsedTime = RecordingController.calculateElapsedTime(startTime.toISOString());
-          setElapsedTime(newElapsedTime);
-        }
+        const newElapsedTime = RecordingController.calculateElapsedTime(startTime.toISOString());
+        setElapsedTime(newElapsedTime);
       }
     };
 
@@ -58,12 +56,13 @@ const CurrentWorkRecord = () => {
     restoreRecordingState();
   }, []);
   
-  // Timer effect
+  // Timer effect - レコーディング中は1秒ごとに経過時間を更新
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
-    if (isRecording) {
+    if (isRecording && startTime) {
       interval = setInterval(() => {
-        setElapsedTime(prev => prev + 1);
+        const newElapsedTime = RecordingController.calculateElapsedTime(startTime.toISOString());
+        setElapsedTime(newElapsedTime);
       }, 1000);
     } else {
       if (interval) clearInterval(interval);
@@ -71,7 +70,7 @@ const CurrentWorkRecord = () => {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isRecording]);
+  }, [isRecording, startTime]);
 
   // レコーディング状態を保存
   useEffect(() => {
@@ -79,13 +78,12 @@ const CurrentWorkRecord = () => {
       const state: RecordingState = {
         isRecording,
         startTime: startTime.toISOString(),
-        elapsedTime,
         task: currentTask,
         category: currentCategory,
       };
       RecordingController.saveRecordingState(state);
     }
-  }, [isRecording, startTime, elapsedTime, currentTask, currentCategory]);
+  }, [isRecording, startTime, currentTask, currentCategory]);
   
   // Format seconds to HH:MM:SS
   const formatTime = (seconds: number) => {

@@ -3,7 +3,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export interface RecordingState {
   isRecording: boolean;
   startTime: string; // ISO string
-  elapsedTime: number;
   task: string;
   category: string;
 }
@@ -43,7 +42,7 @@ export class RecordingController {
     }
   }
 
-  // 経過時間を計算
+  // 経過時間を計算（現在時刻 - 開始時刻）
   static calculateElapsedTime(startTime: string): number {
     const start = new Date(startTime);
     const now = new Date();
