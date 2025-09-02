@@ -95,8 +95,8 @@ const CurrentWorkRecord = () => {
   
   // Start recording
   const startRecording = () => {
-    if (!currentTask.trim() || !currentCategory.trim()) {
-      Alert.alert('エラー', 'タスクとカテゴリを入力してください');
+    if (!currentCategory.trim()) {
+      Alert.alert('エラー', 'カテゴリを選択してください');
       return;
     }
     setIsRecording(true);

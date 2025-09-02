@@ -41,10 +41,6 @@ const PastWorkRecord = () => {
   
   // Save past record to Firestore
   const savePastRecord = async () => {
-    if (!pastTask.trim()) {
-      Alert.alert('エラー', 'タスク内容を入力してください');
-      return;
-    }
     if (!pastCategory.trim()) {
       Alert.alert('エラー', 'カテゴリを選択してください');
       return;
