@@ -286,7 +286,7 @@ const Categories: React.FC<CategoriesProps> = ({
           fontSize: 11,
           fontWeight: '400',
         }}>
-          ✏️ 編集
+          ➕ カテゴリを追加
         </Text>
       </TouchableOpacity>
 
