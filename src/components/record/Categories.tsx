@@ -26,6 +26,20 @@ const Categories: React.FC<CategoriesProps> = ({
     label: '',
     icon: '📋'
   });
+
+  // カテゴリの並び順を統一する関数
+  const sortCategories = (categories: Category[]) => {
+    return categories.sort((a, b) => {
+      const orderA = a.order || 0;
+      const orderB = b.order || 0;
+      
+      if (orderA !== orderB) {
+        return orderA - orderB;
+      }
+      
+      return a.label.localeCompare(b.label);
+    });
+  };
   
   // Create CategoryManager instance on mount
   useEffect(() => {
@@ -53,17 +67,8 @@ const Categories: React.FC<CategoriesProps> = ({
         
         const fetchedCategories = categoryManager.getAllCategories();
         
-        // Sort categories by order property, then by label alphabetically
-        const sortedCategories = fetchedCategories.sort((a, b) => {
-          const orderA = a.order || 0;
-          const orderB = b.order || 0;
-          
-          if (orderA !== orderB) {
-            return orderA - orderB;
-          }
-          
-          return a.label.localeCompare(b.label);
-        });
+        // Sort categories using the common sorting function
+        const sortedCategories = sortCategories(fetchedCategories);
         
         setCategories(sortedCategories);
       } catch (error) {
@@ -122,7 +127,8 @@ const Categories: React.FC<CategoriesProps> = ({
       // カテゴリ一覧を再読み込み
       await categoryManager.reloadCategories();
       const updatedCategories = categoryManager.getAllCategories();
-      setCategories(updatedCategories);
+      const sortedCategories = sortCategories(updatedCategories);
+      setCategories(sortedCategories);
       
       setIsEditModalVisible(false);
       setEditingCategory(null);
@@ -149,7 +155,8 @@ const Categories: React.FC<CategoriesProps> = ({
               await categoryManager.deleteCategory(category.id!);
               await categoryManager.reloadCategories();
               const updatedCategories = categoryManager.getAllCategories();
-              setCategories(updatedCategories);
+              const sortedCategories = sortCategories(updatedCategories);
+              setCategories(sortedCategories);
               
               // ポップアップを閉じる
               setIsEditModalVisible(false);
