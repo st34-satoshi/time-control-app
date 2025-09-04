@@ -50,6 +50,12 @@ export class CategoryManager {
     return category?.icon || '📋'; // デフォルトアイコン
   }
 
+  // valueからラベルを取得（同期的に実行）
+  getLabelByValue(value: string): string {
+    const category = this.categories.find(cat => cat.value === value);
+    return category?.label || value; // デフォルトはvalueをそのまま返す
+  }
+
   // カテゴリを追加
   async addCategory(categoryData: CategoryData): Promise<void> {
     try {

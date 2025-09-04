@@ -73,6 +73,10 @@ const Report = () => {
     return categoryManager?.getIconByValue(categoryValue);
   };
 
+  const getCategoryLabel = (categoryValue: string) => {
+    return categoryManager?.getLabelByValue(categoryValue) || categoryValue;
+  };
+
   const renderTimeRecord = ({ item }: { item: TimeRecordDataForGet }) => (
     <View style={styles.recordItem}>
       <View style={styles.dateTimeContainer}>
@@ -87,7 +91,7 @@ const Report = () => {
       </View>
       
       <View style={styles.projectInfoContainer}>
-        <Text style={styles.projectName}>{item.category}</Text>
+        <Text style={styles.projectName}>{getCategoryLabel(item.category)}</Text>
         <Text style={styles.taskText} numberOfLines={2}>{item.task}</Text>
       </View>
     </View>
@@ -120,7 +124,6 @@ const Report = () => {
   }
 
   return (
-  //   <Text>test</Text>
     <FlatList
       data={timeRecords}
       renderItem={renderTimeRecord}
