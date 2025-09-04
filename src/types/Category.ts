@@ -4,6 +4,7 @@ export interface Category {
   label: string;
   icon: string;
   order?: number;
+  hidden?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 } 

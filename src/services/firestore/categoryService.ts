@@ -60,11 +60,14 @@ export class CategoryService {
     }
   }
 
-  // カテゴリを削除
+  // カテゴリを論理削除（hiddenをtrueに設定）
   static async deleteCategory(userId: string, categoryId: string): Promise<void> {
     try {
       const categoryDoc = doc(db, this.collection, userId, 'categories', categoryId);
-      await deleteDoc(categoryDoc);
+      await updateDoc(categoryDoc, {
+        hidden: true,
+        updatedAt: new Date()
+      });
     } catch (error) {
       console.error('Error deleting category:', error);
       throw new Error('カテゴリの削除に失敗しました');

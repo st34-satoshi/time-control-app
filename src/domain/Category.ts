@@ -39,9 +39,9 @@ export class CategoryManager {
     Alert.alert('カテゴリの取得に失敗しました。カテゴリが見つかりませんでした。');
   }
 
-  // 全カテゴリを取得
+  // 全カテゴリを取得（hiddenでないもののみ）
   getAllCategories(): Category[] {
-    return this.categories;
+    return this.categories.filter(category => !category.hidden);
   }
 
   // valueからアイコンを取得（同期的に実行）
@@ -91,13 +91,20 @@ export class CategoryManager {
     }
   }
 
-  // カテゴリを削除
+  // カテゴリを論理削除
   async deleteCategory(categoryId: string): Promise<void> {
     try {
       await CategoryService.deleteCategory(this.userId, categoryId);
       
-      // ローカルキャッシュを更新
-      this.categories = this.categories.filter(cat => cat.id !== categoryId);
+      // ローカルキャッシュを更新（hiddenをtrueに設定）
+      const index = this.categories.findIndex(cat => cat.id === categoryId);
+      if (index !== -1) {
+        this.categories[index] = {
+          ...this.categories[index],
+          hidden: true,
+          updatedAt: new Date()
+        };
+      }
     } catch (error) {
       console.error('Error deleting category:', error);
       throw error;
