@@ -97,7 +97,10 @@ const Categories: React.FC<CategoriesProps> = ({
           <TouchableOpacity
             key={category.value}
             style={{
-              paddingHorizontal: 16,
+              flex: 1,
+              minWidth: 0,
+              maxWidth: '30%',
+              paddingHorizontal: 12,
               paddingVertical: 8,
               borderRadius: 20,
               backgroundColor: isSelected ? '#007AFF' : '#F0F0F0',
@@ -105,15 +108,21 @@ const Categories: React.FC<CategoriesProps> = ({
               borderColor: isSelected ? '#007AFF' : '#E0E0E0',
               flexDirection: 'row',
               alignItems: 'center',
-              gap: 8,
+              justifyContent: 'center',
+              gap: 4,
             }}
             onPress={() => handleCategoryPress(category)}
           >
-            <Text style={{
-              color: isSelected ? '#FFFFFF' : '#333333',
-              fontSize: 14,
-              fontWeight: isSelected ? '600' : '400',
-            }}>
+            <Text 
+              style={{
+                color: isSelected ? '#FFFFFF' : '#333333',
+                fontSize: 12,
+                fontWeight: isSelected ? '600' : '400',
+                textAlign: 'center',
+              }}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
               {category.icon} {category.label}
             </Text>
           </TouchableOpacity>
