@@ -323,7 +323,7 @@ const Categories: React.FC<CategoriesProps> = ({
             <ScrollView style={{ maxHeight: 400 }}>
               {/* Icon Input */}
               <View style={{ marginBottom: 16 }}>
-                <Text style={{ fontSize: 14, fontWeight: '500', marginBottom: 8 }}>アイコン</Text>
+                <Text style={{ fontSize: 14, fontWeight: '500', marginBottom: 8 }}>アイコン(絵文字を1文字)</Text>
                 <TextInput
                   style={{
                     borderWidth: 1,
