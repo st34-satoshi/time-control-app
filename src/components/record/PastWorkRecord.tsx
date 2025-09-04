@@ -18,6 +18,7 @@ const PastWorkRecord = () => {
   // Past recording form
   const [pastTask, setPastTask] = useState('');
   const [pastCategory, setPastCategory] = useState('');
+  const [pastCategoryLabel, setPastCategoryLabel] = useState('');
   const [pastStartDateTime, setPastStartDateTime] = useState<Date | null>(null);
   const [pastEndDateTime, setPastEndDateTime] = useState<Date | null>(null);
 
@@ -137,7 +138,10 @@ const PastWorkRecord = () => {
           <Categories
             userId={user?.uid}
             currentCategory={pastCategory}
-            onCategorySelect={setPastCategory}
+            onCategorySelect={(categoryValue, categoryLabel) => {
+              setPastCategory(categoryValue);
+              setPastCategoryLabel(categoryLabel);
+            }}
           />
         </View>
         

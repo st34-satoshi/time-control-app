@@ -22,6 +22,7 @@ const CurrentWorkRecord = () => {
   // Current recording form
   const [currentTask, setCurrentTask] = useState('');
   const [currentCategory, setCurrentCategory] = useState('');
+  const [currentCategoryLabel, setCurrentCategoryLabel] = useState('');
   
   // アプリの状態変化を監視
   useEffect(() => {
@@ -121,7 +122,7 @@ const CurrentWorkRecord = () => {
       
       Alert.alert(
         '記録完了！',
-        `タスク: ${currentTask}\nカテゴリ: ${currentCategory}\n時間: ${formatTime(elapsedTime)}\n\n保存されました！`
+        `タスク: ${currentTask}\nカテゴリ: ${currentCategoryLabel}\n時間: ${formatTime(elapsedTime)}\n\n保存されました！`
       );
     } catch (error) {
       Alert.alert('エラー', '記録の保存に失敗しました');
@@ -153,7 +154,10 @@ const CurrentWorkRecord = () => {
           <Categories
             userId={user?.uid}
             currentCategory={currentCategory}
-            onCategorySelect={setCurrentCategory}
+            onCategorySelect={(categoryValue, categoryLabel) => {
+              setCurrentCategory(categoryValue);
+              setCurrentCategoryLabel(categoryLabel);
+            }}
           />
         </View>
 
@@ -191,7 +195,7 @@ const CurrentWorkRecord = () => {
       {isRecording && (
         <View style={styles.recordingInfo}>
           <Text style={styles.recordingInfoText}>{currentTask}</Text>
-          <Text style={styles.recordingInfoSubtext}>{currentCategory}</Text>
+          <Text style={styles.recordingInfoSubtext}>{currentCategoryLabel}</Text>
         </View>
       )}
     </View>
