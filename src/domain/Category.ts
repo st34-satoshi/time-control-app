@@ -1,5 +1,5 @@
 import { Category } from '@app-types/Category';
-import { CategoryService } from '@services/firestore/categoryService';
+import { CategoryService, CategoryData } from '@services/firestore/categoryService';
 import { Alert } from 'react-native';
 
 export class CategoryManager {
@@ -48,5 +48,64 @@ export class CategoryManager {
   getIconByValue(value: string): string {
     const category = this.categories.find(cat => cat.value === value);
     return category?.icon || '📋'; // デフォルトアイコン
+  }
+
+  // カテゴリを追加
+  async addCategory(categoryData: CategoryData): Promise<void> {
+    try {
+      const newOrder = Math.max(...this.categories.map(c => c.order || 0), 0) + 1;
+      const categoryWithOrder = { ...categoryData, order: newOrder };
+      
+      const categoryId = await CategoryService.addCategory(this.userId, categoryWithOrder);
+      
+      // ローカルキャッシュを更新
+      this.categories.push({
+        id: categoryId,
+        ...categoryWithOrder,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+    } catch (error) {
+      console.error('Error adding category:', error);
+      throw error;
+    }
+  }
+
+  // カテゴリを更新
+  async updateCategory(categoryId: string, categoryData: Partial<CategoryData>): Promise<void> {
+    try {
+      await CategoryService.updateCategory(this.userId, categoryId, categoryData);
+      
+      // ローカルキャッシュを更新
+      const index = this.categories.findIndex(cat => cat.id === categoryId);
+      if (index !== -1) {
+        this.categories[index] = {
+          ...this.categories[index],
+          ...categoryData,
+          updatedAt: new Date()
+        };
+      }
+    } catch (error) {
+      console.error('Error updating category:', error);
+      throw error;
+    }
+  }
+
+  // カテゴリを削除
+  async deleteCategory(categoryId: string): Promise<void> {
+    try {
+      await CategoryService.deleteCategory(this.userId, categoryId);
+      
+      // ローカルキャッシュを更新
+      this.categories = this.categories.filter(cat => cat.id !== categoryId);
+    } catch (error) {
+      console.error('Error deleting category:', error);
+      throw error;
+    }
+  }
+
+  // カテゴリを再読み込み
+  async reloadCategories(): Promise<void> {
+    this.categories = await CategoryService.getCategories(this.userId);
   }
 }
