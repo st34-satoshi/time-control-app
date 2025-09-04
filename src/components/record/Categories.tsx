@@ -149,6 +149,11 @@ const Categories: React.FC<CategoriesProps> = ({
               await categoryManager.reloadCategories();
               const updatedCategories = categoryManager.getAllCategories();
               setCategories(updatedCategories);
+              
+              // ポップアップを閉じる
+              setIsEditModalVisible(false);
+              setEditingCategory(null);
+              setEditForm({ value: '', label: '', icon: '📋' });
             } catch (error) {
               console.error('Error deleting category:', error);
               Alert.alert('エラー', 'カテゴリの削除に失敗しました');
