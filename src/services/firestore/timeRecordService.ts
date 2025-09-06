@@ -21,8 +21,7 @@ export class timeRecordService {
       
       const timeRecord: Omit<TimeRecordDataForSave, 'id'> = {
         task: data.task,
-        category: data.category,
-
+        categoryId: data.categoryId,
         startTime: data.startTime,
         endTime: data.endTime,
         duration,

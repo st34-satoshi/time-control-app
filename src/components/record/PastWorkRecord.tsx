@@ -11,14 +11,14 @@ import { pastWorkStyles as styles } from '@components/record/PastWorkRecord.styl
 import { timeRecordService } from '@root/src/services/firestore/timeRecordService';
 import { useAuth } from '@contexts/AuthContext';
 import Categories from '@components/record/Categories';
+import { Category } from '@app-types/Category';
 
 const PastWorkRecord = () => {
   const { user } = useAuth();
   
   // Past recording form
   const [pastTask, setPastTask] = useState('');
-  const [pastCategory, setPastCategory] = useState('');
-  const [pastCategoryLabel, setPastCategoryLabel] = useState('');
+  const [pastCategory, setPastCategory] = useState<Category | null>(null);
   const [pastStartDateTime, setPastStartDateTime] = useState<Date | null>(null);
   const [pastEndDateTime, setPastEndDateTime] = useState<Date | null>(null);
 
@@ -42,7 +42,7 @@ const PastWorkRecord = () => {
   
   // Save past record to Firestore
   const savePastRecord = async () => {
-    if (!pastCategory.trim()) {
+    if (!pastCategory) {
       Alert.alert('エラー', 'カテゴリを選択してください');
       return;
     }
@@ -67,7 +67,7 @@ const PastWorkRecord = () => {
     try {
       await timeRecordService.saveTimeRecord({
         task: pastTask,
-        category: pastCategory,
+        categoryId: pastCategory.id!,
         startTime: pastStartDateTime,
         endTime: pastEndDateTime,
       }, user.uid);
@@ -75,7 +75,7 @@ const PastWorkRecord = () => {
       const duration = Math.floor((pastEndDateTime.getTime() - pastStartDateTime.getTime()) / 1000);
       Alert.alert(
         '記録を保存しました！',
-        `タスク: ${pastTask}\nカテゴリ: ${pastCategory}\n時間: ${formatTime(duration)}\n\n保存されました！`
+        `タスク: ${pastTask}\nカテゴリ: ${pastCategory.label}\n時間: ${formatTime(duration)}\n\n保存されました！`
       );
     } catch (error) {
       Alert.alert('エラー', '記録の保存に失敗しました');
@@ -84,7 +84,7 @@ const PastWorkRecord = () => {
     
     // Reset form
     setPastTask('');
-    setPastCategory('');
+    setPastCategory(null);
     setPastStartDateTime(null);
     setPastEndDateTime(null);
   };
@@ -137,10 +137,9 @@ const PastWorkRecord = () => {
           <Text style={styles.label}>🏷️ カテゴリ</Text>
           <Categories
             userId={user?.uid}
-            currentCategory={pastCategory}
-            onCategorySelect={(categoryValue, categoryLabel) => {
-              setPastCategory(categoryValue);
-              setPastCategoryLabel(categoryLabel);
+            currentCategory={pastCategory?.value || ''}
+            onCategorySelect={(category) => {
+              setPastCategory(category);
             }}
           />
         </View>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
+import { View, Text, FlatList, RefreshControl } from 'react-native';
 import { useAuth } from '@contexts/AuthContext';
 import { timeRecordService } from '@root/src/services/firestore/timeRecordService';
 import { TimeRecordDataForGet } from '../../types/TimeRecord';
@@ -67,14 +67,16 @@ const Report = () => {
     return `${minutes}m`;
   };
 
-  const getCategoryIcon = (categoryValue: string) => {
-    console.log('categoryValue', categoryValue);
-    console.log('user!.uid', user!.uid);
-    return categoryManager?.getIconByValue(categoryValue);
+  const getCategoryIcon = (categoryId: string) => {
+    if (!categoryManager) return '📋';
+    const category = categoryManager.getAllCategories().find(cat => cat.id === categoryId);
+    return category?.icon || '📋';
   };
 
-  const getCategoryLabel = (categoryValue: string) => {
-    return categoryManager?.getLabelByValue(categoryValue) || categoryValue;
+  const getCategoryLabel = (categoryId: string) => {
+    if (!categoryManager) return 'Unknown';
+    const category = categoryManager.getAllCategories().find(cat => cat.id === categoryId);
+    return category?.label || 'Unknown';
   };
 
   const renderTimeRecord = ({ item }: { item: TimeRecordDataForGet }) => (
@@ -86,12 +88,12 @@ const Report = () => {
       
       <View style={styles.projectIconContainer}>
         <View style={styles.projectIcon}>
-          <Text style={styles.projectIconText}>{getCategoryIcon(item.category)}</Text>
+          <Text style={styles.projectIconText}>{getCategoryIcon(item.categoryId)}</Text>
         </View>
       </View>
       
       <View style={styles.projectInfoContainer}>
-        <Text style={styles.projectName}>{getCategoryLabel(item.category)}</Text>
+        <Text style={styles.projectName}>{getCategoryLabel(item.categoryId)}</Text>
         <Text style={styles.taskText} numberOfLines={2}>{item.task}</Text>
       </View>
     </View>

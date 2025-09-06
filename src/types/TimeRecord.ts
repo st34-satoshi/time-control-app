@@ -1,3 +1,4 @@
+
 export interface FirestoreTimestamp {
   seconds: number;
   nanoseconds: number;
@@ -8,7 +9,7 @@ export interface FirestoreTimestamp {
 
 interface TimeRecordData {
   task: string;
-  category: string;
+  categoryId: string;
   duration: number; // 秒単位
 }
 // 保存用のインターフェース
@@ -30,7 +31,7 @@ export interface TimeRecordDataForGet extends TimeRecordData {
 
 export interface TimeRecordFormData {
   task: string;
-  category: string;
+  categoryId: string;
   startTime: Date;
   endTime: Date;
 } 

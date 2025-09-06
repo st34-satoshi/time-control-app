@@ -12,6 +12,8 @@ import { timeRecordService } from '@root/src/services/firestore/timeRecordServic
 import { useAuth } from '@contexts/AuthContext';
 import Categories from '@components/record/Categories';
 import { RecordingController, RecordingState } from '../../domain/recordingController';
+import { Category } from '@app-types/Category';
+import { CategoryManager } from '../../domain/Category';
 
 const CurrentWorkRecord = () => {
   const { user } = useAuth();
@@ -21,8 +23,8 @@ const CurrentWorkRecord = () => {
   
   // Current recording form
   const [currentTask, setCurrentTask] = useState('');
-  const [currentCategory, setCurrentCategory] = useState('');
-  const [currentCategoryLabel, setCurrentCategoryLabel] = useState('');
+  const [currentCategory, setCurrentCategory] = useState<Category | null>(null);
+  const [categoryManager, setCategoryManager] = useState<CategoryManager | null>(null);
   
   // アプリの状態変化を監視
   useEffect(() => {
@@ -38,14 +40,36 @@ const CurrentWorkRecord = () => {
     return () => subscription?.remove();
   }, [isRecording, startTime]);
 
+  // CategoryManagerを初期化
+  useEffect(() => {
+    const initializeCategoryManager = async () => {
+      if (user?.uid) {
+        try {
+          const manager = await CategoryManager.create(user.uid);
+          setCategoryManager(manager);
+        } catch (error) {
+          console.error('Error initializing category manager:', error);
+        }
+      }
+    };
+
+    initializeCategoryManager();
+  }, [user?.uid]);
+
   // コンポーネントマウント時に保存された状態を復元
   useEffect(() => {
     const restoreRecordingState = async () => {
       const savedState = await RecordingController.getRecordingState();
-      if (savedState && savedState.isRecording) {
+      if (savedState && savedState.isRecording && categoryManager) {
         setIsRecording(true);
         setCurrentTask(savedState.task);
-        setCurrentCategory(savedState.category);
+        
+        // categoryIdからCategoryオブジェクトを取得
+        const category = categoryManager.getAllCategories().find(cat => cat.id === savedState.categoryId);
+        if (category) {
+          setCurrentCategory(category);
+        }
+        
         setStartTime(new Date(savedState.startTime));
         
         // 経過時間を再計算
@@ -54,8 +78,10 @@ const CurrentWorkRecord = () => {
       }
     };
 
-    restoreRecordingState();
-  }, []);
+    if (categoryManager) {
+      restoreRecordingState();
+    }
+  }, [categoryManager]);
   
   // Timer effect - レコーディング中は1秒ごとに経過時間を更新
   useEffect(() => {
@@ -75,12 +101,12 @@ const CurrentWorkRecord = () => {
 
   // レコーディング状態を保存
   useEffect(() => {
-    if (isRecording && startTime) {
+    if (isRecording && startTime && currentCategory) {
       const state: RecordingState = {
         isRecording,
         startTime: startTime.toISOString(),
         task: currentTask,
-        category: currentCategory,
+        categoryId: currentCategory.id!,
       };
       RecordingController.saveRecordingState(state);
     }
@@ -96,7 +122,7 @@ const CurrentWorkRecord = () => {
   
   // Start recording
   const startRecording = () => {
-    if (!currentCategory.trim()) {
+    if (!currentCategory) {
       Alert.alert('エラー', 'カテゴリを選択してください');
       return;
     }
@@ -107,7 +133,7 @@ const CurrentWorkRecord = () => {
   
   // Stop recording and save to Firestore
   const stopRecording = async () => {
-    if (!startTime || !user) return;
+    if (!startTime || !user || !currentCategory) return;
     
     setIsRecording(false);
     const endTime = new Date();
@@ -115,14 +141,14 @@ const CurrentWorkRecord = () => {
     try {
       await timeRecordService.saveTimeRecord({
         task: currentTask,
-        category: currentCategory,
+        categoryId: currentCategory.id!,
         startTime,
         endTime,
       }, user.uid);
       
       Alert.alert(
         '記録完了！',
-        `タスク: ${currentTask}\nカテゴリ: ${currentCategoryLabel}\n時間: ${formatTime(elapsedTime)}\n\n保存されました！`
+        `タスク: ${currentTask}\nカテゴリ: ${currentCategory.label}\n時間: ${formatTime(elapsedTime)}\n\n保存されました！`
       );
     } catch (error) {
       Alert.alert('エラー', '記録の保存に失敗しました');
@@ -131,7 +157,7 @@ const CurrentWorkRecord = () => {
     
     // Reset form and clear saved state
     setCurrentTask('');
-    setCurrentCategory('');
+    setCurrentCategory(null);
     setElapsedTime(0);
     setStartTime(null);
     await RecordingController.clearRecordingState();
@@ -153,10 +179,9 @@ const CurrentWorkRecord = () => {
           <Text style={styles.label}>🏷️ カテゴリ</Text>
           <Categories
             userId={user?.uid}
-            currentCategory={currentCategory}
-            onCategorySelect={(categoryValue, categoryLabel) => {
-              setCurrentCategory(categoryValue);
-              setCurrentCategoryLabel(categoryLabel);
+            currentCategory={currentCategory?.value || ''}
+            onCategorySelect={(category) => {
+              setCurrentCategory(category);
             }}
           />
         </View>
@@ -195,7 +220,7 @@ const CurrentWorkRecord = () => {
       {isRecording && (
         <View style={styles.recordingInfo}>
           <Text style={styles.recordingInfoText}>{currentTask}</Text>
-          <Text style={styles.recordingInfoSubtext}>{currentCategoryLabel}</Text>
+          <Text style={styles.recordingInfoSubtext}>{currentCategory?.label}</Text>
         </View>
       )}
     </View>

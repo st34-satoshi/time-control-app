@@ -7,7 +7,7 @@ import EditCategory from './EditCategory';
 
 interface CategoriesProps {
   userId?: string;
-  onCategorySelect: (categoryValue: string, categoryLabel: string) => void;
+  onCategorySelect: (category: Category) => void;
   currentCategory: string;
 }
 
@@ -83,7 +83,7 @@ const Categories: React.FC<CategoriesProps> = ({
   }, [categoryManager]);
 
   const handleCategoryPress = (category: Category) => {
-    onCategorySelect(category.value, category.label);
+    onCategorySelect(category);
   };
 
   const handleEditButtonPress = () => {

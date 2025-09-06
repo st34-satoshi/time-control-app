@@ -4,7 +4,7 @@ export interface RecordingState {
   isRecording: boolean;
   startTime: string; // ISO string
   task: string;
-  category: string;
+  categoryId: string;
 }
 
 const RECORDING_STATE_KEY = 'current_recording_state';
