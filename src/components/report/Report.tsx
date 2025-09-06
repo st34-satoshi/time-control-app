@@ -40,6 +40,10 @@ const Report = () => {
   const onRefresh = async () => {
     setRefreshing(true);
     try {
+      if (user) {
+        const manager = await CategoryManager.create(user.uid);
+        setCategoryManager(manager);
+      }
       await fetchAndSortRecords();
     } catch (err) {
       Alert.alert('データの取得に失敗しました');
