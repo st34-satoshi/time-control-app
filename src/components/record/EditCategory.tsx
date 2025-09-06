@@ -99,7 +99,7 @@ const EditCategory: React.FC<EditCategoryProps> = ({
                 }}
                 value={editForm.label}
                 onChangeText={handleLabelChange}
-                placeholder="カテゴリ名を入力"
+                placeholder="睡眠"
               />
             </View>
           </ScrollView>
