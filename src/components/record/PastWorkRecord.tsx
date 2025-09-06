@@ -220,7 +220,7 @@ const PastWorkRecord = () => {
           style={styles.saveButton}
           onPress={savePastRecord}
         >
-          <Text style={styles.saveButtonText}>💾 記録を保存</Text>
+          <Text style={styles.saveButtonText}>保存</Text>
         </TouchableOpacity>
       </View>
     </View>
