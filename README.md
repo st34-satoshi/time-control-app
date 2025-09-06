@@ -34,17 +34,25 @@
 ## デプロイ
 
 ### Cloud Functions
-#### 準備
+#### functionデプロイ
+##### 準備
 - `npm install -g firebase-tools`
 - `firebase login`
 
-#### lint
+##### lint
 - `cd cloud-functions/functions`
 - `npm run lint:fix`
 
-#### 実行
+##### 実行
 - `cd cloud-functions`
 - `firebase deploy --only functions`
+
+#### マイグレーション実行
+Firestore Databaseにあるデータを変更するとき
+
+1. cloud-functions/functions/scripts/migrate-*.tsファイルを作成する
+1. `cd cloud-functions/functions`
+2. `GOOGLE_APPLICATION_CREDENTIALS="secret/serviceAccountKey.json" npx ts-node scripts/migrate-*.ts`
 
 ### Expo
 #### 準備
