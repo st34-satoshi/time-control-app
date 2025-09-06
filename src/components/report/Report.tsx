@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, FlatList, RefreshControl } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { useAuth } from '@contexts/AuthContext';
 import { timeRecordService } from '@root/src/services/firestore/timeRecordService';
 import { TimeRecordDataForGet } from '../../types/TimeRecord';
@@ -28,6 +29,21 @@ const Report = () => {
       createCategoryManager();
     }
   }, [user, categoryManager]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (user) {
+        const initializeData = async () => {
+          // カテゴリマネージャーを再取得
+          const manager = await CategoryManager.create(user!.uid);
+          setCategoryManager(manager);
+          // タイムレコードも取得
+          await fetchAndSortRecords();
+        }
+        initializeData();
+      }
+    }, [user])
+  );
 
   const fetchAndSortRecords = async () => {
     const records = await timeRecordService.getTimeRecords(user!.uid);
