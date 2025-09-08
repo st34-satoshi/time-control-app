@@ -107,7 +107,7 @@ export const DailyTimePie: React.FC<Props> = ({
             const ly = cy + labelR * Math.sin(mid);
 
             const minutes = s.endMin - s.startMin;
-            const showLabel = minutes >= 45; // 45分未満は窮屈なので非表示
+            const showLabel = minutes >= 10; // 非表示
 
             return (
               <G key={`${s.label}-${i}`}>
