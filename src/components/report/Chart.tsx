@@ -8,12 +8,6 @@ import { styles } from '@components/report/Chart.styles';
 import { CategoryManager } from '@domain/Category';
 import { Alert } from 'react-native';
 
-type FirestoreTimestamp = {
-  seconds: number;
-  nanoseconds: number;
-  type?: string;
-};
-
 type CategoryData = {
   categoryId: string;
   categoryName: string;
@@ -162,9 +156,19 @@ const Chart = () => {
 
   if (timeRecords.length === 0) {
     return (
+      <View style={styles.container}>
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>記録されたデータがありません</Text>
+          <Text style={styles.emptySubtext}>時間記録を開始すると、ここに表示されます</Text>
+        </View>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
       <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.emptyContainer}
+        contentContainerStyle={styles.contentContainer}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -174,35 +178,17 @@ const Chart = () => {
           />
         }
       >
-        <Text style={styles.emptyText}>記録されたデータがありません</Text>
-        <Text style={styles.emptySubtext}>時間記録を開始すると、ここに表示されます</Text>
+        <View style={styles.summaryCard}>
+          <Text style={styles.summaryTitle}>総作業時間</Text>
+          <Text style={styles.summaryDuration}>{formatDuration(getTotalDuration())}</Text>
+        </View>
+
+        <View style={styles.chartContainer}>
+          <Text style={styles.chartTitle}>カテゴリ別作業時間</Text>
+          {categoryData.map((category, index) => renderCategoryBar(category, index))}
+        </View>
       </ScrollView>
-    );
-  }
-
-  return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          colors={['#2563eb']}
-          tintColor="#2563eb"
-        />
-      }
-    >
-      <View style={styles.summaryCard}>
-        <Text style={styles.summaryTitle}>総作業時間</Text>
-        <Text style={styles.summaryDuration}>{formatDuration(getTotalDuration())}</Text>
-      </View>
-
-      <View style={styles.chartContainer}>
-        <Text style={styles.chartTitle}>カテゴリ別作業時間</Text>
-        {categoryData.map((category, index) => renderCategoryBar(category, index))}
-      </View>
-    </ScrollView>
+    </View>
   );
 };
 

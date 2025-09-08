@@ -92,7 +92,7 @@ const Report = () => {
         </TouchableOpacity>
       </View>
       
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <View style={styles.content}>
         <View style={styles.tabContent}>
           {activeTab === 'list' ? (
             <ReportList timeRecords={timeRecords} categoryManager={categoryManager} onRefresh={onRefresh} />
@@ -100,7 +100,7 @@ const Report = () => {
             <Chart />
           )}
         </View>
-      </ScrollView>
+      </View>
     </View>
   );
 };
