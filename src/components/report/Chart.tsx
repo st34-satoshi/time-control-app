@@ -4,6 +4,7 @@ import { TimeRecordDataForGet } from '../../types/TimeRecord';
 import { styles } from '@components/report/Chart.styles';
 import { CategoryManager } from '@domain/Category';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import ClockChart from '@components/report/ClockChart';
 
 type CategoryData = {
   categoryId: string;
@@ -220,6 +221,11 @@ const Chart = (props: ChartProps) => {
           <Text style={styles.summaryTitle}>{formatDateForDisplay(selectedDate)}</Text>
           <Text style={styles.summaryDuration}>{formatDuration(getTotalDuration())}</Text>
         </View>
+
+        <ClockChart 
+          timeRecords={filteredRecords} 
+          categoryManager={categoryManager} 
+        />
 
         <View style={styles.chartContainer}>
           <Text style={styles.chartTitle}>カテゴリ別作業時間</Text>
