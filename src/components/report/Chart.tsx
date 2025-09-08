@@ -1,12 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, ScrollView, RefreshControl } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
-import { useAuth } from '@contexts/AuthContext';
-import { timeRecordService } from '@root/src/services/firestore/timeRecordService';
+import { View, Text, ScrollView, RefreshControl, TouchableOpacity } from 'react-native';
 import { TimeRecordDataForGet } from '../../types/TimeRecord';
 import { styles } from '@components/report/Chart.styles';
 import { CategoryManager } from '@domain/Category';
-import { Alert } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 type CategoryData = {
   categoryId: string;
@@ -26,6 +23,9 @@ const Chart = (props: ChartProps) => {
   const { timeRecords, categoryManager, onRefresh } = props;
   const [refreshing, setRefreshing] = useState(false);
   const [categoryData, setCategoryData] = useState<CategoryData[]>([]);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [filteredRecords, setFilteredRecords] = useState<TimeRecordDataForGet[]>([]);
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -38,12 +38,53 @@ const Chart = (props: ChartProps) => {
     }
   };
 
+  // 選択した日付でレコードをフィルタリング
+  const filterRecordsByDate = (records: TimeRecordDataForGet[], date: Date) => {
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+    
+    return records.filter(record => {
+      const recordDate = new Date(record.startTime.seconds * 1000);
+      return recordDate >= startOfDay && recordDate <= endOfDay;
+    });
+  };
+
+  // 日付が変更されたときにレコードをフィルタリング
+  useEffect(() => {
+    const filtered = filterRecordsByDate(timeRecords, selectedDate);
+    setFilteredRecords(filtered);
+  }, [timeRecords, selectedDate]);
+
+  const onDateChange = (event: any, selectedDate?: Date) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      setSelectedDate(selectedDate);
+    }
+  };
+
+  const isToday = (date: Date) => {
+    const today = new Date();
+    return date.toDateString() === today.toDateString();
+  };
+
+  const formatDateForDisplay = (date: Date) => {
+    if (isToday(date)) {
+      return '今日の総作業時間';
+    }
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    return `${month}月${day}日の総作業時間`;
+  };
+
   // カテゴリ別の集計データを計算
   useEffect(() => {
-    if (timeRecords.length > 0 && categoryManager) {
+    if (filteredRecords.length > 0 && categoryManager) {
       const categoryMap = new Map<string, { totalDuration: number; categoryName: string; icon: string }>();
       
-      timeRecords.forEach(record => {
+      filteredRecords.forEach(record => {
         const category = categoryManager.getAllCategories().find(cat => cat.id === record.categoryId);
         const categoryName = category?.label || 'Unknown';
         const icon = category?.icon || '📋';
@@ -73,8 +114,10 @@ const Chart = (props: ChartProps) => {
       // 時間の長い順にソート
       data.sort((a, b) => b.totalDuration - a.totalDuration);
       setCategoryData(data);
+    } else {
+      setCategoryData([]);
     }
-  }, [timeRecords, categoryManager]);
+  }, [filteredRecords, categoryManager]);
 
   const formatDuration = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
@@ -120,19 +163,47 @@ const Chart = (props: ChartProps) => {
     );
   };
 
-  if (timeRecords.length === 0) {
+  if (filteredRecords.length === 0) {
     return (
       <View style={styles.container}>
+        <View style={styles.dateSelectorContainer}>
+          <TouchableOpacity
+            style={styles.dateSelector}
+            onPress={() => setShowDatePicker(true)}
+          >
+            <Text style={styles.dateSelectorText}>
+              📅 {selectedDate.toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' })}
+            </Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>記録されたデータがありません</Text>
           <Text style={styles.emptySubtext}>時間記録を開始すると、ここに表示されます</Text>
         </View>
+        {showDatePicker && (
+          <DateTimePicker
+            value={selectedDate}
+            mode="date"
+            display="default"
+            onChange={onDateChange}
+          />
+        )}
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
+      <View style={styles.dateSelectorContainer}>
+        <TouchableOpacity
+          style={styles.dateSelector}
+          onPress={() => setShowDatePicker(true)}
+        >
+          <Text style={styles.dateSelectorText}>
+            📅 {selectedDate.toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' })}
+          </Text>
+        </TouchableOpacity>
+      </View>
       <ScrollView
         contentContainerStyle={styles.contentContainer}
         refreshControl={
@@ -145,7 +216,7 @@ const Chart = (props: ChartProps) => {
         }
       >
         <View style={styles.summaryCard}>
-          <Text style={styles.summaryTitle}>総作業時間</Text>
+          <Text style={styles.summaryTitle}>{formatDateForDisplay(selectedDate)}</Text>
           <Text style={styles.summaryDuration}>{formatDuration(getTotalDuration())}</Text>
         </View>
 
@@ -154,6 +225,14 @@ const Chart = (props: ChartProps) => {
           {categoryData.map((category, index) => renderCategoryBar(category, index))}
         </View>
       </ScrollView>
+      {showDatePicker && (
+        <DateTimePicker
+          value={selectedDate}
+          mode="date"
+          display="default"
+          onChange={onDateChange}
+        />
+      )}
     </View>
   );
 };

@@ -5,6 +5,25 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f8fafc',
   },
+  dateSelectorContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: 'white',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+  },
+  dateSelector: {
+    backgroundColor: '#f3f4f6',
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+  },
+  dateSelectorText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#374151',
+  },
   contentContainer: {
     padding: 16,
     paddingBottom: 20,
