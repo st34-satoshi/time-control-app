@@ -5,6 +5,7 @@ import { styles } from '@components/report/Chart.styles';
 import { CategoryManager } from '@domain/Category';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ClockChart from '@components/report/ClockChart';
+import { CategoryBar } from '@components/report/CategoryBar';
 
 type CategoryData = {
   categoryId: string;
@@ -134,41 +135,6 @@ const Chart = (props: ChartProps) => {
     return categoryData.reduce((total, category) => total + category.totalDuration, 0);
   };
 
-  const renderCategoryBar = (category: CategoryData, index: number) => {
-    const totalDayTime = 24 * 3600; // 24時間を秒で表現
-    const totalRecordedTime = getTotalDuration();
-    const unrecordedTime = Math.max(0, totalDayTime - totalRecordedTime);
-    
-    // 記録された時間の割合（24時間全体に対する）
-    const recordedPercentage = totalDayTime > 0 ? (category.totalDuration / totalDayTime) * 100 : 0;
-    
-    return (
-      <View key={`category-${category.categoryId}-${index}`} style={styles.categoryItem}>
-        <View style={styles.categoryHeader}>
-          <View style={styles.categoryInfo}>
-            <Text style={styles.categoryIcon}>{category.icon}</Text>
-            <Text style={styles.categoryName}>{category.categoryName}</Text>
-          </View>
-          <Text style={styles.categoryDuration}>{formatDuration(category.totalDuration)}</Text>
-        </View>
-        
-        <View style={styles.barContainer}>
-          <View 
-            style={[
-              styles.bar, 
-              { 
-                width: `${recordedPercentage}%`,
-                backgroundColor: category.color
-              }
-            ]} 
-          />
-        </View>
-        
-        <Text style={styles.percentageText}>{recordedPercentage.toFixed(1)}%</Text>
-      </View>
-    );
-  };
-
   if (filteredRecords.length === 0) {
     return (
       <View style={styles.container}>
@@ -233,7 +199,9 @@ const Chart = (props: ChartProps) => {
 
         <View style={styles.chartContainer}>
           <Text style={styles.chartTitle}>カテゴリ別作業時間</Text>
-          {categoryData.map((category, index) => renderCategoryBar(category, index))}
+          <CategoryBar 
+            categoryData={categoryData} 
+          />
         </View>
       </ScrollView>
       {showDatePicker && (
