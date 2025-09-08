@@ -135,11 +135,15 @@ const Chart = (props: ChartProps) => {
   };
 
   const renderCategoryBar = (category: CategoryData, index: number) => {
-    const totalDuration = getTotalDuration();
-    const percentage = totalDuration > 0 ? (category.totalDuration / totalDuration) * 100 : 0;
+    const totalDayTime = 24 * 3600; // 24時間を秒で表現
+    const totalRecordedTime = getTotalDuration();
+    const unrecordedTime = Math.max(0, totalDayTime - totalRecordedTime);
+    
+    // 記録された時間の割合（24時間全体に対する）
+    const recordedPercentage = totalDayTime > 0 ? (category.totalDuration / totalDayTime) * 100 : 0;
     
     return (
-      <View key={category.categoryId} style={styles.categoryItem}>
+      <View key={`category-${category.categoryId}-${index}`} style={styles.categoryItem}>
         <View style={styles.categoryHeader}>
           <View style={styles.categoryInfo}>
             <Text style={styles.categoryIcon}>{category.icon}</Text>
@@ -153,14 +157,14 @@ const Chart = (props: ChartProps) => {
             style={[
               styles.bar, 
               { 
-                width: `${percentage}%`,
+                width: `${recordedPercentage}%`,
                 backgroundColor: category.color
               }
             ]} 
           />
         </View>
         
-        <Text style={styles.percentageText}>{percentage.toFixed(1)}%</Text>
+        <Text style={styles.percentageText}>{recordedPercentage.toFixed(1)}%</Text>
       </View>
     );
   };
