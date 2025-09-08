@@ -35,6 +35,8 @@ export const CategoryBar = ({ categoryData }: CategoryBarProps) => {
     return `${minutes}m`;
   };
 
+  // 記録なしの時間の割合
+  const unrecordedPercentage = (unrecordedTime / totalDayTime) * 100;
 
   return (
     <>
@@ -63,6 +65,33 @@ export const CategoryBar = ({ categoryData }: CategoryBarProps) => {
           <Text style={styles.percentageText}>{recordedPercentage(category).toFixed(1)}%</Text>
         </View>
       ))}
+      
+      {/* その他の時間（記録なし）を表示 */}
+      {unrecordedTime > 0 && (
+        <View key="unrecorded-time" style={styles.categoryItem}>
+          <View style={styles.categoryHeader}>
+            <View style={styles.categoryInfo}>
+              <Text style={styles.categoryIcon}>⏰</Text>
+              <Text style={styles.categoryName}>その他の時間</Text>
+            </View>
+            <Text style={styles.categoryDuration}>{formatDuration(unrecordedTime)}</Text>
+          </View>
+          
+          <View style={styles.barContainer}>
+            <View 
+              style={[
+                styles.bar, 
+                { 
+                  width: `${unrecordedPercentage}%`,
+                  backgroundColor: '#e5e7eb'
+                }
+              ]} 
+            />
+          </View>
+            
+          <Text style={styles.percentageText}>{unrecordedPercentage.toFixed(1)}%</Text>
+        </View>
+      )}
     </>
   );
 };
