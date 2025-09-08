@@ -165,14 +165,6 @@ const CurrentWorkRecord = () => {
 
   return (
     <View style={styles.container}>
-      {/* Timer Display */}
-      <View style={styles.timerContainer}>
-        <Text style={styles.timerText}>{formatTime(elapsedTime)}</Text>
-        {isRecording && (
-          <Text style={styles.recordingText}>⏺ 記録中...</Text>
-        )}
-      </View>
-      
       {/* Form */}
       <View style={styles.formContainer}>
         <View style={styles.inputGroup}>
@@ -217,12 +209,13 @@ const CurrentWorkRecord = () => {
         )}
       </View>
       
-      {isRecording && (
-        <View style={styles.recordingInfo}>
-          <Text style={styles.recordingInfoText}>{currentTask}</Text>
-          <Text style={styles.recordingInfoSubtext}>{currentCategory?.label}</Text>
-        </View>
-      )}
+      {/* Timer Display */}
+      <View style={styles.timerContainer}>
+        <Text style={styles.timerText}>{formatTime(elapsedTime)}</Text>
+        {isRecording && (
+          <Text style={styles.recordingText}>⏺ 記録中...</Text>
+        )}
+      </View>
     </View>
   );
 };
