@@ -1,11 +1,8 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { View, Text, FlatList, RefreshControl } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
-import { useAuth } from '@contexts/AuthContext';
 import { TimeRecordDataForGet } from '../../types/TimeRecord';
 import { styles } from '@root/src/components/report/List.styles';
 import { CategoryManager } from '@domain/Category';
-import { Alert } from 'react-native';
 
 type FirestoreTimestamp = {
   seconds: number;

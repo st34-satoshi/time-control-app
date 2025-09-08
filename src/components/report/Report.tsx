@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  ScrollView,
 } from 'react-native';
 import { styles } from '@root/src/components/common/HeaderTab.styles';
 import ReportList from '@components/report/List';
@@ -97,7 +96,7 @@ const Report = () => {
           {activeTab === 'list' ? (
             <ReportList timeRecords={timeRecords} categoryManager={categoryManager} onRefresh={onRefresh} />
           ) : (
-            <Chart />
+            <Chart timeRecords={timeRecords} categoryManager={categoryManager} onRefresh={onRefresh} />
           )}
         </View>
       </View>

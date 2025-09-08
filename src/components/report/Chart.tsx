@@ -16,56 +16,22 @@ type CategoryData = {
   color: string;
 };
 
-const Chart = () => {
-  const { user } = useAuth();
-  const [timeRecords, setTimeRecords] = useState<TimeRecordDataForGet[]>([]);
+interface ChartProps {
+  timeRecords: TimeRecordDataForGet[];
+  categoryManager: CategoryManager | null;
+  onRefresh: () => void;
+}
+
+const Chart = (props: ChartProps) => {
+  const { timeRecords, categoryManager, onRefresh } = props;
   const [refreshing, setRefreshing] = useState(false);
-  const [categoryManager, setCategoryManager] = useState<CategoryManager | null>(null);
   const [categoryData, setCategoryData] = useState<CategoryData[]>([]);
 
-  useEffect(() => {
-    if (user && !categoryManager) {
-      const createCategoryManager = async () => {
-        const manager = await CategoryManager.create(user!.uid);
-        setCategoryManager(manager);
-      }
-      createCategoryManager();
-    }
-  }, [user, categoryManager]);
-
-  useFocusEffect(
-    useCallback(() => {
-      if (user) {
-        const initializeData = async () => {
-          // カテゴリマネージャーを再取得
-          const manager = await CategoryManager.create(user!.uid);
-          setCategoryManager(manager);
-          // タイムレコードも取得
-          await fetchAndSortRecords();
-        }
-        initializeData();
-      }
-    }, [user])
-  );
-
-  const fetchAndSortRecords = async () => {
-    const records = await timeRecordService.getTimeRecords(user!.uid);
-    const sortedRecords = records.sort((a, b) => {
-      return b.startTime.seconds - a.startTime.seconds; // 降順（新しい順）
-    });
-    setTimeRecords(sortedRecords);
-  };
-
-  const onRefresh = async () => {
+  const handleRefresh = async () => {
     setRefreshing(true);
     try {
-      if (user) {
-        const manager = await CategoryManager.create(user.uid);
-        setCategoryManager(manager);
-      }
-      await fetchAndSortRecords();
+      onRefresh();
     } catch (err) {
-      Alert.alert('データの取得に失敗しました');
       console.error('Error refreshing time records:', err);
     } finally {
       setRefreshing(false);
@@ -172,7 +138,7 @@ const Chart = () => {
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
-            onRefresh={onRefresh}
+            onRefresh={handleRefresh}
             colors={['#2563eb']}
             tintColor="#2563eb"
           />
