@@ -11,6 +11,7 @@
 
 ### パッケージをインストール
 - `npx expo install package-name`
+- `npx expo run:ios`: ビルドを行う.
 
 ### 環境変数
 環境変数はgitignoreされている

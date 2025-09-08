@@ -3,7 +3,7 @@ import { View, Text, ScrollView } from 'react-native';
 import { styles } from '@root/src/components/report/ClockChart.styles';
 import { TimeRecordDataForGet } from '../../types/TimeRecord';
 import { CategoryManager } from '@domain/Category';
-// import { DailyTimePie } from '@components/report/DailyTimePie';
+import { DailyTimePie } from '@components/report/DailyTimePie';
 
 type TimeSlot = {
   hour: number;
@@ -129,19 +129,28 @@ const ClockChart = ({ timeRecords, categoryManager }: ClockChartProps) => {
   const recordedSlots = timeSlots.filter(slot => slot.hasRecord);
   const totalRecordedTime = recordedSlots.reduce((total, slot) => total + slot.duration, 0);
 
+  // const segments = [
+  //   { label: '就寝', start: '23:30', end: '08:00', color: '#1f5d8f' },
+  //   { label: '朝食', start: '08:00', end: '09:00', color: '#6aa6df' },
+  //   { label: '仕事', start: '09:00', end: '12:30', color: '#e6813a' },
+  //   { label: '休憩', start: '12:30', end: '13:30', color: '#9e9e9e' },
+  //   { label: '仕事', start: '13:30', end: '18:30', color: '#f0b21a' },
+  //   { label: '夕食', start: '18:30', end: '19:30', color: '#5fa6e0' },
+  //   { label: '自由', start: '19:30', end: '23:30', color: '#6ab04c' },
+  // ];
+
   return (
     <View style={styles.clockContainer}>
       <Text style={styles.clockTitle}>24時間の生活時間</Text>
       
       {/* SVG円グラフ */}
-      {/* <View style={styles.pieChartContainer}>
+      <View style={styles.pieChartContainer}>
         <DailyTimePie
           size={240}
-          thickness={36}
+          startAt="00:00"
           segments={segments}
-          showHourTicks={true}
         />
-      </View> */}
+      </View>
 
       {/* 時間別詳細リスト */}
       <ScrollView style={styles.timeList} showsVerticalScrollIndicator={false}>
