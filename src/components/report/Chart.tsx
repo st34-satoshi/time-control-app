@@ -47,8 +47,9 @@ const Chart = (props: ChartProps) => {
     endOfDay.setHours(23, 59, 59, 999);
     
     return records.filter(record => {
-      const recordDate = new Date(record.startTime.seconds * 1000);
-      return recordDate >= startOfDay && recordDate <= endOfDay;
+      const recordStartDate = new Date(record.startTime.seconds * 1000);
+      const recordEndDate = new Date(record.endTime.seconds * 1000);
+      return recordStartDate <= endOfDay && recordEndDate >= startOfDay;
     });
   };
 
