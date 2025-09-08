@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import { styles } from '@components/record/TimeRecord.styles';
+import { styles } from '@root/src/components/common/HeaderTab.styles';
 import CurrentWorkRecord from '@components/record/CurrentWorkRecord';
 import PastWorkRecord from '@components/record/PastWorkRecord';
 
