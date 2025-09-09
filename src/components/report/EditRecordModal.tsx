@@ -171,6 +171,7 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({
               onCategorySelect={(category) => {
                 setCurrentCategory(category);
               }}
+              editable={false}
             />
           </View>
 

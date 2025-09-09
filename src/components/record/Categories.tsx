@@ -9,12 +9,14 @@ interface CategoriesProps {
   userId?: string;
   onCategorySelect: (category: Category) => void;
   currentCategory: string;
+  editable?: boolean;
 }
 
 const Categories: React.FC<CategoriesProps> = ({
   userId,
   onCategorySelect,
   currentCategory,
+  editable = true,
 }) => {
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -245,24 +247,26 @@ const Categories: React.FC<CategoriesProps> = ({
                   </TouchableOpacity>
                   
                   {/* Edit button */}
-                  <TouchableOpacity
-                    style={{
-                      position: 'absolute',
-                      top: -5,
-                      right: -5,
-                      width: 20,
-                      height: 20,
-                      borderRadius: 10,
-                      backgroundColor: '#F5F5F5',
-                      borderWidth: 1,
-                      borderColor: '#E0E0E0',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                    onPress={() => handleCategoryEdit(category)}
-                  >
-                    <Text style={{ color: '#666666', fontSize: 8, fontWeight: 'bold' }}>✏️</Text>
-                  </TouchableOpacity>
+                  {editable && (
+                    <TouchableOpacity
+                      style={{
+                        position: 'absolute',
+                        top: -5,
+                        right: -5,
+                        width: 20,
+                        height: 20,
+                        borderRadius: 10,
+                        backgroundColor: '#F5F5F5',
+                        borderWidth: 1,
+                        borderColor: '#E0E0E0',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                      onPress={() => handleCategoryEdit(category)}
+                    >
+                      <Text style={{ color: '#666666', fontSize: 8, fontWeight: 'bold' }}>✏️</Text>
+                    </TouchableOpacity>
+                  )}
                 </View>
               );
             })}
@@ -273,30 +277,32 @@ const Categories: React.FC<CategoriesProps> = ({
           </View>
         ))}
       </View>
-
+      
       {/* Edit/Add Button */}
-      <TouchableOpacity
-        style={{
-          marginTop: 12,
-          paddingVertical: 6,
-          paddingHorizontal: 12,
-          borderRadius: 12,
-          backgroundColor: '#F5F5F5',
-          borderWidth: 1,
-          borderColor: '#E0E0E0',
-          alignItems: 'center',
-          alignSelf: 'center',
-        }}
-        onPress={handleEditButtonPress}
-      >
-        <Text style={{
-          color: '#666666',
-          fontSize: 11,
-          fontWeight: '400',
-        }}>
-          ➕ カテゴリを追加
-        </Text>
-      </TouchableOpacity>
+      {editable && (
+        <TouchableOpacity
+          style={{
+            marginTop: 12,
+            paddingVertical: 6,
+            paddingHorizontal: 12,
+            borderRadius: 12,
+            backgroundColor: '#F5F5F5',
+            borderWidth: 1,
+            borderColor: '#E0E0E0',
+            alignItems: 'center',
+            alignSelf: 'center',
+          }}
+          onPress={handleEditButtonPress}
+        >
+          <Text style={{
+            color: '#666666',
+            fontSize: 11,
+            fontWeight: '400',
+          }}>
+            ➕ カテゴリを追加
+          </Text>
+        </TouchableOpacity>
+      )}
 
       {/* Edit Modal */}
       <EditCategory
