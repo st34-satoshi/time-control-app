@@ -14,6 +14,8 @@ import { TimeRecordDataForGet, TimeRecordFormData } from '../../types/TimeRecord
 import { Category } from '../../types/Category';
 import { CategoryManager } from '@domain/Category';
 import { timeRecordService } from '../../services/firestore/timeRecordService';
+import { useAuth } from '../../contexts/AuthContext';
+import Categories from '../record/Categories';
 import { styles } from './EditRecordModal.styles';
 
 interface EditRecordModalProps {
@@ -33,12 +35,14 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({
   onClose,
   onSave,
 }) => {
+  const { user } = useAuth();
   const [formData, setFormData] = useState<TimeRecordFormData>({
     task: '',
     categoryId: '',
     startTime: new Date(),
     endTime: new Date(),
   });
+  const [currentCategory, setCurrentCategory] = useState<Category | null>(null);
   const [showStartTimePicker, setShowStartTimePicker] = useState(false);
   const [showEndTimePicker, setShowEndTimePicker] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -51,8 +55,27 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({
         startTime: new Date(record.startTime.seconds * 1000),
         endTime: new Date(record.endTime.seconds * 1000),
       });
+      
+      // Find and set the current category based on the record's categoryId
+      if (categoryManager) {
+        const categories = categoryManager.getAllCategories();
+        const category = categories.find(cat => cat.id === record.categoryId);
+        if (category) {
+          setCurrentCategory(category);
+        }
+      }
     }
-  }, [record]);
+  }, [record, categoryManager]);
+
+  // Update formData when currentCategory changes
+  useEffect(() => {
+    if (currentCategory) {
+      setFormData(prev => ({
+        ...prev,
+        categoryId: currentCategory.id!,
+      }));
+    }
+  }, [currentCategory]);
 
   const handleSave = async () => {
     if (!record ) {
@@ -119,10 +142,6 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({
     return `${year}/${month}/${day} ${hours}:${minutes}`;
   };
 
-  const getCategories = (): Category[] => {
-    return categoryManager?.getAllCategories() || [];
-  };
-
   if (!record) return null;
 
   return (
@@ -145,29 +164,14 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({
         <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
           {/* カテゴリ選択 */}
           <View style={styles.section}>
-            <Text style={styles.label}>カテゴリ</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryScroll}>
-              {getCategories().map((category) => (
-                <TouchableOpacity
-                  key={category.id}
-                  style={[
-                    styles.categoryItem,
-                    formData.categoryId === category.id && styles.selectedCategoryItem,
-                  ]}
-                  onPress={() => setFormData({ ...formData, categoryId: category.id! })}
-                >
-                  <Text style={styles.categoryIcon}>{category.icon}</Text>
-                  <Text
-                    style={[
-                      styles.categoryLabel,
-                      formData.categoryId === category.id && styles.selectedCategoryLabel,
-                    ]}
-                  >
-                    {category.label}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+            <Text style={styles.label}>🏷️ カテゴリ</Text>
+            <Categories
+              userId={user?.uid}
+              currentCategory={currentCategory?.value || ''}
+              onCategorySelect={(category) => {
+                setCurrentCategory(category);
+              }}
+            />
           </View>
 
           {/* タスク内容 */}
