@@ -6,7 +6,8 @@ import {
   orderBy,
   Timestamp,
   doc,
-  deleteDoc
+  deleteDoc,
+  updateDoc
 } from 'firebase/firestore';
 import { db } from '@root/firebase';
 import { TimeRecordDataForSave, TimeRecordFormData, TimeRecordDataForGet } from '../../types/TimeRecord';
@@ -57,6 +58,28 @@ export class timeRecordService {
     } catch (error) {
       console.error('Error getting time records:', error);
       throw new Error('時間記録の取得に失敗しました');
+    }
+  }
+
+  // 時間記録を更新
+  static async updateTimeRecord(id: string, data: TimeRecordFormData, userId: string): Promise<void> {
+    try {
+      const duration = Math.floor((data.endTime.getTime() - data.startTime.getTime()) / 1000);
+      
+      const userCollection = collection(db, this.collection, userId, 'records');
+      const docRef = doc(userCollection, id);
+      
+      await updateDoc(docRef, {
+        task: data.task,
+        categoryId: data.categoryId,
+        startTime: data.startTime,
+        endTime: data.endTime,
+        duration,
+        updatedAt: new Date(),
+      });
+    } catch (error) {
+      console.error('Error updating time record:', error);
+      throw new Error('時間記録の更新に失敗しました');
     }
   }
 

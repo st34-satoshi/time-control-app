@@ -94,7 +94,12 @@ const Report = () => {
       <View style={styles.content}>
         <View style={styles.tabContent}>
           {activeTab === 'list' ? (
-            <ReportList timeRecords={timeRecords} categoryManager={categoryManager} onRefresh={onRefresh} />
+            <ReportList 
+              timeRecords={timeRecords} 
+              categoryManager={categoryManager} 
+              onRefresh={onRefresh} 
+              userId={user?.uid || ''} 
+            />
           ) : (
             <Chart timeRecords={timeRecords} categoryManager={categoryManager} onRefresh={onRefresh} />
           )}

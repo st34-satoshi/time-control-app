@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, RefreshControl } from 'react-native';
+import { View, Text, FlatList, RefreshControl, TouchableOpacity } from 'react-native';
 import { TimeRecordDataForGet } from '../../types/TimeRecord';
 import { styles } from '@root/src/components/report/List.styles';
 import { CategoryManager } from '@domain/Category';
+import EditRecordModal from './EditRecordModal';
 
 type FirestoreTimestamp = {
   seconds: number;
@@ -14,11 +15,14 @@ interface ListProps {
   timeRecords: TimeRecordDataForGet[];
   categoryManager: CategoryManager | null;
   onRefresh: () => void;
+  userId: string;
 }
 
 const ReportList = (props: ListProps) => {
-  const { timeRecords, categoryManager, onRefresh } = props;
+  const { timeRecords, categoryManager, onRefresh, userId } = props;
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState<TimeRecordDataForGet | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -61,8 +65,26 @@ const ReportList = (props: ListProps) => {
     return category?.label || 'Unknown';
   };
 
+  const handleRecordPress = (record: TimeRecordDataForGet) => {
+    setSelectedRecord(record);
+    setModalVisible(true);
+  };
+
+  const handleModalClose = () => {
+    setModalVisible(false);
+    setSelectedRecord(null);
+  };
+
+  const handleModalSave = () => {
+    onRefresh();
+  };
+
   const renderTimeRecord = ({ item }: { item: TimeRecordDataForGet }) => (
-    <View style={styles.recordItem}>
+    <TouchableOpacity 
+      style={styles.recordItem} 
+      onPress={() => handleRecordPress(item)}
+      activeOpacity={0.7}
+    >
       <View style={styles.dateTimeContainer}>
         <Text style={styles.dateTimeText}>{formatDateTime(item.startTime)}</Text>
         <Text style={styles.durationText}>{formatDuration(item.duration)}</Text>
@@ -78,7 +100,7 @@ const ReportList = (props: ListProps) => {
         <Text style={styles.projectName}>{getCategoryLabel(item.categoryId)}</Text>
         <Text style={styles.taskText} numberOfLines={2}>{item.task}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   if (timeRecords.length === 0) {
@@ -108,21 +130,32 @@ const ReportList = (props: ListProps) => {
   }
 
   return (
-    <FlatList
-      data={timeRecords}
-      renderItem={renderTimeRecord}
-      keyExtractor={(item) => item.id || item.startTime.toString()}
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={styles.listContainer}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          colors={['#2563eb']}
-          tintColor="#2563eb"
-        />
-      }
-    />
+    <>
+      <FlatList
+        data={timeRecords}
+        renderItem={renderTimeRecord}
+        keyExtractor={(item) => item.id || item.startTime.toString()}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.listContainer}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={['#2563eb']}
+            tintColor="#2563eb"
+          />
+        }
+      />
+      
+      <EditRecordModal
+        visible={modalVisible}
+        record={selectedRecord}
+        categoryManager={categoryManager}
+        userId={userId}
+        onClose={handleModalClose}
+        onSave={handleModalSave}
+      />
+    </>
   );
 };
 
