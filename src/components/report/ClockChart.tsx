@@ -3,7 +3,7 @@ import { View, Text, ScrollView } from 'react-native';
 import { styles } from '@root/src/components/report/ClockChart.styles';
 import { TimeRecordDataForGet } from '../../types/TimeRecord';
 import { CategoryManager } from '@domain/Category';
-// import { DailyTimePie } from '@components/report/DailyTimePie';
+import { DailyTimePie } from '@components/report/DailyTimePie';
 
 type TimeSlot = {
   hour: number;
@@ -134,14 +134,13 @@ const ClockChart = ({ timeRecords, categoryManager }: ClockChartProps) => {
       <Text style={styles.clockTitle}>24時間の生活時間</Text>
       
       {/* SVG円グラフ */}
-      {/* <View style={styles.pieChartContainer}>
+      <View style={styles.pieChartContainer}>
         <DailyTimePie
           size={240}
-          thickness={36}
+          startAt="00:00"
           segments={segments}
-          showHourTicks={true}
         />
-      </View> */}
+      </View>
 
       {/* 時間別詳細リスト */}
       <ScrollView style={styles.timeList} showsVerticalScrollIndicator={false}>

@@ -21,7 +21,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
 
   return {
     ...config,
-    name: "time-control-app-24",
+    name: "時間管理24",
     slug: "time-control-app-24",
     version: packageJson.version,
     orientation: "portrait",
