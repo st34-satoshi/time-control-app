@@ -165,6 +165,14 @@ const CurrentWorkRecord = () => {
 
   return (
     <View style={styles.container}>
+      {/* Timer Display */}
+      <View style={styles.timerContainer}>
+        <Text style={styles.timerText}>{formatTime(elapsedTime)}</Text>
+        {isRecording && (
+          <Text style={styles.recordingText}>⏺ 記録中...</Text>
+        )}
+      </View>
+
       {/* Form */}
       <View style={styles.formContainer}>
         <View style={styles.inputGroup}>
@@ -206,14 +214,6 @@ const CurrentWorkRecord = () => {
           >
             <Text style={styles.buttonText}>STOP</Text>
           </TouchableOpacity>
-        )}
-      </View>
-      
-      {/* Timer Display */}
-      <View style={styles.timerContainer}>
-        <Text style={styles.timerText}>{formatTime(elapsedTime)}</Text>
-        {isRecording && (
-          <Text style={styles.recordingText}>⏺ 記録中...</Text>
         )}
       </View>
     </View>
