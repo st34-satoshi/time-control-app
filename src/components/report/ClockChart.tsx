@@ -133,22 +133,21 @@ const ClockChart = ({ timeRecords, categoryManager, date }: ClockChartProps) => 
         ))}
         
         {/* 記録なしの時間（まとめて表示） */}
-        {/* {timeSlots.filter(slot => !slot.hasRecord).length > 0 && (
+        {formattedTimeRecords.length > 0 && (
           <View style={styles.timeItem}>
             <View style={styles.timeItemLeft}>
               <View style={[styles.timeColor, { backgroundColor: '#e5e7eb' }]} />
               <View style={styles.timeInfo}>
-                <Text style={styles.timeHour}>記録なし</Text>
                 <Text style={styles.timeCategory}>
-                  ⏰ その他の時間
+                  ⏰ 記録のない時間
                 </Text>
               </View>
             </View>
             <Text style={styles.timeDuration}>
-              {formatDuration(24 * 3600 - totalRecordedTime)}
+              {formatDurationMinutes(24 * 60 - totalRecordedMinutes)}
             </Text>
           </View>
-        )} */}
+        )}
       </ScrollView>
     </View>
   );
