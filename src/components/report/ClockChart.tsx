@@ -5,9 +5,10 @@ import { TimeRecordDataForGet } from '../../types/TimeRecord';
 import { CategoryManager } from '@domain/Category';
 import { DailyTimePie } from '@components/report/DailyTimePie';
 import { useState, useEffect } from 'react';
+import { Category } from '@app-types/Category';
 
 type TimeSlot = {
-  categoryId: string | null;
+  category: Category;
   categoryColor: string;
   startTime: Date;
   endTime: Date;
@@ -42,8 +43,9 @@ const ClockChart = ({ timeRecords, categoryManager, date }: ClockChartProps) => 
       if (startTime < lastTime) {
         startTime = lastTime;
       }
+      const category = categoryManager?.getAllCategories().find(cat => cat.id === record.categoryId) || { id: '', value: 'Unknown', label: 'Unknown', icon: '📋' };
       formattedRecords.push({
-        categoryId: record.categoryId,
+        category,
         categoryColor: COLORS[i % COLORS.length],
         startTime,
         endTime,
@@ -54,17 +56,13 @@ const ClockChart = ({ timeRecords, categoryManager, date }: ClockChartProps) => 
     setFormattedTimeRecords(formattedRecords);
   }, [timeRecords]);
 
-  const formatDuration = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
+  const formatDurationMinutes = (minutes: number) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = Math.floor(minutes % 60);
     if (hours > 0) {
-      return `${hours}h ${minutes}m`;
+      return `${hours}h ${mins}m`;
     }
-    return `${minutes}m`;
-  };
-
-  const formatTime = (hour: number) => {
-    return `${hour.toString().padStart(2, '0')}:00`;
+    return `${mins}m`;
   };
 
   // 時間レコードをSegment形式に変換
@@ -78,9 +76,8 @@ const ClockChart = ({ timeRecords, categoryManager, date }: ClockChartProps) => 
       const endHour = endTime.getHours();
       const endMinute = endTime.getMinutes();
       
-      const category = categoryManager?.getAllCategories().find(cat => cat.id === slot.categoryId);
-      const categoryName = category?.label || 'Unknown';
-      const categoryIcon = category?.icon || '📋';
+      const categoryName = slot.category?.label || 'Unknown';
+      const categoryIcon = slot.category?.icon || '📋';
       
       return {
         label: `${categoryIcon} ${categoryName}`,
@@ -114,14 +111,13 @@ const ClockChart = ({ timeRecords, categoryManager, date }: ClockChartProps) => 
         <Text style={styles.timeListTitle}>時間別詳細</Text>
         
         {/* 記録ありの時間 */}
-        {/* {recordedSlots.map((slot, index) => (
+        {formattedTimeRecords.map((slot, index) => (
           <View key={index} style={styles.timeItem}>
             <View style={styles.timeItemLeft}>
               <View style={[styles.timeColor, { backgroundColor: slot.categoryColor }]} />
               <View style={styles.timeInfo}>
-                <Text style={styles.timeHour}>{formatTime(slot.hour)}</Text>
                 <Text style={styles.timeCategory}>
-                  {slot.categoryIcon} {slot.categoryName}
+                  {slot.category.icon} {slot.category.label}
                 </Text>
                 {slot.task && (
                   <Text style={styles.timeTask} numberOfLines={1}>
@@ -131,10 +127,10 @@ const ClockChart = ({ timeRecords, categoryManager, date }: ClockChartProps) => 
               </View>
             </View>
             <Text style={styles.timeDuration}>
-              {formatDuration(slot.duration)}
+              {formatDurationMinutes(slot.durationMinutes)}
             </Text>
           </View>
-        ))} */}
+        ))}
         
         {/* 記録なしの時間（まとめて表示） */}
         {/* {timeSlots.filter(slot => !slot.hasRecord).length > 0 && (
