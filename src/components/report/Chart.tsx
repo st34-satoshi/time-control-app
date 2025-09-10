@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { View, Text, ScrollView, RefreshControl, TouchableOpacity } from 'react-native';
 import { TimeRecordDataForGet } from '../../types/TimeRecord';
 import { styles } from '@components/report/Chart.styles';
@@ -25,9 +25,37 @@ const Chart = (props: ChartProps) => {
   const { timeRecords, categoryManager, onRefresh } = props;
   const [refreshing, setRefreshing] = useState(false);
   const [categoryData, setCategoryData] = useState<CategoryData[]>([]);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(() => new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [filteredRecords, setFilteredRecords] = useState<TimeRecordDataForGet[]>([]);
+
+  // timeRecordsから日付の範囲を計算（メモ化）
+  const dateRange = useMemo(() => {
+    if (timeRecords.length === 0) {
+      // データがない場合は今日を基準にした範囲を返す
+      const today = new Date();
+      return {
+        minDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
+        maxDate: new Date(today.getFullYear() + 1, today.getMonth(), today.getDate())
+      };
+    }
+
+    let minTime = Number.MAX_SAFE_INTEGER;
+    let maxTime = Number.MIN_SAFE_INTEGER;
+
+    timeRecords.forEach(record => {
+      const startTime = record.startTime.seconds * 1000;
+      const endTime = record.endTime.seconds * 1000;
+      
+      minTime = Math.min(minTime, startTime);
+      maxTime = Math.max(maxTime, endTime);
+    });
+
+    return {
+      minDate: new Date(minTime),
+      maxDate: new Date(maxTime)
+    };
+  }, [timeRecords]);
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -64,7 +92,11 @@ const Chart = (props: ChartProps) => {
   const onDateChange = (event: any, selectedDate?: Date) => {
     setShowDatePicker(false);
     if (selectedDate) {
-      setSelectedDate(selectedDate);
+      // 日付が有効な範囲内かチェック
+      const { minDate, maxDate } = dateRange;
+      if (selectedDate >= minDate && selectedDate <= maxDate) {
+        setSelectedDate(selectedDate);
+      }
     }
   };
 
@@ -158,6 +190,8 @@ const Chart = (props: ChartProps) => {
             mode="date"
             display="default"
             onChange={onDateChange}
+            minimumDate={dateRange.minDate}
+            maximumDate={dateRange.maxDate}
           />
         )}
       </View>
@@ -211,6 +245,8 @@ const Chart = (props: ChartProps) => {
           mode="date"
           display="default"
           onChange={onDateChange}
+          minimumDate={dateRange.minDate}
+          maximumDate={dateRange.maxDate}
         />
       )}
     </View>
