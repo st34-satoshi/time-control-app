@@ -4,85 +4,55 @@ import { styles } from '@root/src/components/report/ClockChart.styles';
 import { TimeRecordDataForGet } from '../../types/TimeRecord';
 import { CategoryManager } from '@domain/Category';
 import { DailyTimePie } from '@components/report/DailyTimePie';
+import { useState, useEffect } from 'react';
 
 type TimeSlot = {
-  hour: number;
   categoryId: string | null;
-  categoryName: string;
-  categoryIcon: string;
   categoryColor: string;
+  startTime: Date;
+  endTime: Date;
   task: string;
-  hasRecord: boolean;
-  duration: number;
+  durationMinutes: number;
 };
 
 interface ClockChartProps {
-  timeRecords: TimeRecordDataForGet[];
+  timeRecords: TimeRecordDataForGet[]; // その日の時間が含まれるレコード
   categoryManager: CategoryManager | null;
+  date: Date;
 }
 
-const ClockChart = ({ timeRecords, categoryManager }: ClockChartProps) => {
-  // 24時間の時間スロットを初期化
-  const initializeTimeSlots = (): TimeSlot[] => {
-    return Array.from({ length: 24 }, (_, index) => ({
-      hour: index,
-      categoryId: null,
-      categoryName: '記録なし',
-      categoryIcon: '⏰',
-      categoryColor: '#e5e7eb',
-      task: '',
-      hasRecord: false,
-      duration: 0,
-    }));
-  };
+const COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4', '#84cc16', '#f97316'];
 
-  // 時間スロットに記録データをマッピング
-  const mapRecordsToTimeSlots = (records: TimeRecordDataForGet[]): TimeSlot[] => {
-    const timeSlots = initializeTimeSlots();
-    const colors = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4', '#84cc16', '#f97316'];
+const ClockChart = ({ timeRecords, categoryManager, date }: ClockChartProps) => {
+  const [formattedTimeRecords, setFormattedTimeRecords] = useState<TimeSlot[]>([]); // 時間の重複などをなくして0~24時までのデータにしたレコード
 
-    records.forEach((record, recordIndex) => {
-      const startTime = new Date(record.startTime.seconds * 1000);
+  useEffect(() => {
+    // 時間順にソート
+    const sortedRecords = [...timeRecords].sort((a, b) => a.startTime.seconds - b.startTime.seconds);
+    
+    const formattedRecords: TimeSlot[] = [];
+    const lastTime = new Date(date.setHours(0, 0, 0, 0));
+    for (let i = 0; i < sortedRecords.length; i++) {
+      const record = sortedRecords[i];
+      let startTime = new Date(record.startTime.seconds * 1000);
       const endTime = new Date(record.endTime.seconds * 1000);
-      const startHour = startTime.getHours();
-      const endHour = endTime.getHours();
-
-      const category = categoryManager?.getAllCategories().find(cat => cat.id === record.categoryId);
-      const categoryName = category?.label || 'Unknown';
-      const categoryIcon = category?.icon || '📋';
-      const categoryColor = colors[recordIndex % colors.length];
-
-      // 記録が複数時間にまたがる場合の処理
-      for (let hour = startHour; hour <= endHour; hour++) {
-        if (hour >= 0 && hour < 24) {
-          // その時間内での作業時間を計算
-          const hourStart = new Date(startTime);
-          hourStart.setHours(hour, 0, 0, 0);
-          const hourEnd = new Date(startTime);
-          hourEnd.setHours(hour + 1, 0, 0, 0);
-          
-          const actualStart = startTime > hourStart ? startTime : hourStart;
-          const actualEnd = endTime < hourEnd ? endTime : hourEnd;
-          const duration = Math.max(0, (actualEnd.getTime() - actualStart.getTime()) / 1000);
-
-          timeSlots[hour] = {
-            hour,
-            categoryId: record.categoryId,
-            categoryName,
-            categoryIcon,
-            categoryColor,
-            task: record.task,
-            hasRecord: true,
-            duration,
-          };
-        }
+      if (endTime < lastTime) {
+        continue;
       }
-    });
-
-    return timeSlots;
-  };
-
-  const timeSlots = mapRecordsToTimeSlots(timeRecords);
+      if (startTime < lastTime) {
+        startTime = lastTime;
+      }
+      formattedRecords.push({
+        categoryId: record.categoryId,
+        categoryColor: COLORS[i % COLORS.length],
+        startTime,
+        endTime,
+        task: record.task,
+        durationMinutes: (endTime.getTime() - startTime.getTime()) / 1000 / 60
+      });
+    }
+    setFormattedTimeRecords(formattedRecords);
+  }, [timeRecords]);
 
   const formatDuration = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
@@ -98,19 +68,17 @@ const ClockChart = ({ timeRecords, categoryManager }: ClockChartProps) => {
   };
 
   // 時間レコードをSegment形式に変換
-  const convertToSegments = (records: TimeRecordDataForGet[]) => {
-    const colors = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4', '#84cc16', '#f97316'];
-    
-    return records.map((record, index) => {
-      const startTime = new Date(record.startTime.seconds * 1000);
-      const endTime = new Date(record.endTime.seconds * 1000);
+  const convertToSegments = (timeSlots: TimeSlot[]) => {
+    return timeSlots.map((slot, index) => {
+      const startTime = slot.startTime;
+      const endTime = slot.endTime;
       
       const startHour = startTime.getHours();
       const startMinute = startTime.getMinutes();
       const endHour = endTime.getHours();
       const endMinute = endTime.getMinutes();
       
-      const category = categoryManager?.getAllCategories().find(cat => cat.id === record.categoryId);
+      const category = categoryManager?.getAllCategories().find(cat => cat.id === slot.categoryId);
       const categoryName = category?.label || 'Unknown';
       const categoryIcon = category?.icon || '📋';
       
@@ -118,16 +86,15 @@ const ClockChart = ({ timeRecords, categoryManager }: ClockChartProps) => {
         label: `${categoryIcon} ${categoryName}`,
         start: `${startHour.toString().padStart(2, '0')}:${startMinute.toString().padStart(2, '0')}`,
         end: `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`,
-        color: colors[index % colors.length],
+        color: slot.categoryColor,
       };
     });
   };
 
-  const segments = convertToSegments(timeRecords);
+  const segments = convertToSegments(formattedTimeRecords);
 
   // 記録された時間スロットを取得
-  const recordedSlots = timeSlots.filter(slot => slot.hasRecord);
-  const totalRecordedTime = recordedSlots.reduce((total, slot) => total + slot.duration, 0);
+  const totalRecordedMinutes = formattedTimeRecords.reduce((total, slot) => total + slot.durationMinutes, 0);
 
   return (
     <View style={styles.clockContainer}>
@@ -147,7 +114,7 @@ const ClockChart = ({ timeRecords, categoryManager }: ClockChartProps) => {
         <Text style={styles.timeListTitle}>時間別詳細</Text>
         
         {/* 記録ありの時間 */}
-        {recordedSlots.map((slot, index) => (
+        {/* {recordedSlots.map((slot, index) => (
           <View key={index} style={styles.timeItem}>
             <View style={styles.timeItemLeft}>
               <View style={[styles.timeColor, { backgroundColor: slot.categoryColor }]} />
@@ -167,10 +134,10 @@ const ClockChart = ({ timeRecords, categoryManager }: ClockChartProps) => {
               {formatDuration(slot.duration)}
             </Text>
           </View>
-        ))}
+        ))} */}
         
         {/* 記録なしの時間（まとめて表示） */}
-        {timeSlots.filter(slot => !slot.hasRecord).length > 0 && (
+        {/* {timeSlots.filter(slot => !slot.hasRecord).length > 0 && (
           <View style={styles.timeItem}>
             <View style={styles.timeItemLeft}>
               <View style={[styles.timeColor, { backgroundColor: '#e5e7eb' }]} />
@@ -185,7 +152,7 @@ const ClockChart = ({ timeRecords, categoryManager }: ClockChartProps) => {
               {formatDuration(24 * 3600 - totalRecordedTime)}
             </Text>
           </View>
-        )}
+        )} */}
       </ScrollView>
     </View>
   );

@@ -195,6 +195,7 @@ const Chart = (props: ChartProps) => {
         <ClockChart 
           timeRecords={filteredRecords} 
           categoryManager={categoryManager} 
+          date={selectedDate}
         />
 
         <View style={styles.chartContainer}>
