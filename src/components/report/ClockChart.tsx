@@ -32,11 +32,15 @@ const ClockChart = ({ timeRecords, categoryManager, date }: ClockChartProps) => 
     const sortedRecords = [...timeRecords].sort((a, b) => a.startTime.seconds - b.startTime.seconds);
     
     const formattedRecords: TimeSlot[] = [];
-    const lastTime = new Date(date.setHours(0, 0, 0, 0));
+    let lastTime = new Date(date.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(date.setHours(23, 59, 59, 999));
     for (let i = 0; i < sortedRecords.length; i++) {
       const record = sortedRecords[i];
       let startTime = new Date(record.startTime.seconds * 1000);
-      const endTime = new Date(record.endTime.seconds * 1000);
+      let endTime = new Date(record.endTime.seconds * 1000);
+      if (endTime > endOfDay) {
+        endTime = endOfDay;
+      }
       if (endTime < lastTime) {
         continue;
       }
@@ -52,6 +56,7 @@ const ClockChart = ({ timeRecords, categoryManager, date }: ClockChartProps) => 
         task: record.task,
         durationMinutes: (endTime.getTime() - startTime.getTime()) / 1000 / 60
       });
+      lastTime = endTime;
     }
     setFormattedTimeRecords(formattedRecords);
   }, [timeRecords]);
