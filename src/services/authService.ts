@@ -5,15 +5,11 @@ import {
   User, 
   signInWithCredential, 
   GoogleAuthProvider,
-  sendSignInLinkToEmail,
-  isSignInWithEmailLink,
-  signInWithEmailLink,
-  ActionCodeSettings
+  linkWithCredential,
+  EmailAuthProvider
 } from 'firebase/auth';
 import { auth } from '@root/firebase';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import Constants from 'expo-constants';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const authService = {
   // Googleログイン初期化
@@ -87,55 +83,29 @@ export const authService = {
     return onAuthStateChanged(auth, callback);
   },
 
-  // Email link認証の設定
-  getActionCodeSettings(): ActionCodeSettings {
-    return {
-      url: `https://${Constants.expoConfig?.extra?.firebase?.authDomain || 'time-control-app.web.app'}`,
-      handleCodeInApp: true,
-      iOS: {
-        bundleId: Constants.expoConfig?.ios?.bundleIdentifier || 'com.stu345.time-control-app-24'
-      },
-      android: {
-        packageName: Constants.expoConfig?.android?.package || 'com.stu345.time-control-app-24',
-        installApp: true,
-        minimumVersion: '12'
-      }
-    };
-  },
-
-  // Email link認証のメール送信
-  async sendSignInLinkToEmail(email: string): Promise<void> {
+  // 匿名ユーザーをメール/パスワードアカウントに昇格
+  async upgradeAnonymousUser(email: string, password: string): Promise<void> {
     try {
-      const actionCodeSettings = this.getActionCodeSettings();
-      await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+      const currentUser = auth.currentUser;
       
-      // メールアドレスをローカルストレージに保存（リンククリック時に使用）
-      await AsyncStorage.setItem('emailForSignIn', email);
+      if (!currentUser) {
+        throw new Error('ユーザーがログインしていません');
+      }
+
+      if (!currentUser.isAnonymous) {
+        throw new Error('現在のユーザーは匿名ユーザーではありません');
+      }
+
+      // メール/パスワード認証情報を作成
+      const credential = EmailAuthProvider.credential(email, password);
+      
+      // 匿名アカウントにメール/パスワード認証をリンク
+      await linkWithCredential(currentUser, credential);
+      
+      console.log('匿名ユーザーがメール/パスワードアカウントに昇格しました');
     } catch (error) {
-      console.error('Email link送信エラー:', error);
+      console.error('アカウント昇格エラー:', error);
       throw error;
     }
-  },
-
-  // Email link認証の確認
-  async isSignInWithEmailLink(link: string): Promise<boolean> {
-    return isSignInWithEmailLink(auth, link);
-  },
-
-  // Email link認証でサインイン
-  async signInWithEmailLink(email: string, link: string): Promise<void> {
-    try {
-      await signInWithEmailLink(auth, email, link);
-      // 成功したらローカルストレージからメールアドレスを削除
-      await AsyncStorage.removeItem('emailForSignIn');
-    } catch (error) {
-      console.error('Email link認証エラー:', error);
-      throw error;
-    }
-  },
-
-  // 保存されたメールアドレスを取得
-  async getEmailForSignIn(): Promise<string | null> {
-    return await AsyncStorage.getItem('emailForSignIn');
   }
 }; 

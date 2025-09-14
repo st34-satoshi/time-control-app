@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, TouchableOpacity, Modal, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from './Sidebar.styles';
 import { useAuth } from '@contexts/AuthContext';
+import { EmailSetupModal } from './EmailSetupModal';
 
 interface SidebarProps {
   visible: boolean;
@@ -12,6 +13,7 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ visible, onClose }) => {
   const { user } = useAuth();
   const slideAnim = useRef(new Animated.Value(-300)).current;
+  const [emailModalVisible, setEmailModalVisible] = useState(false);
 
   useEffect(() => {
     if (visible) {
@@ -28,6 +30,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ visible, onClose }) => {
       }).start();
     }
   }, [visible, slideAnim]);
+
+  const handleEmailSetup = () => {
+    setEmailModalVisible(true);
+  };
+
+  const handleEmailSetupSuccess = () => {
+    // メール送信成功時の処理
+    console.log('メールアドレス設定モーダルが開かれました');
+  };
 
   return (
     <Modal
@@ -60,15 +71,28 @@ export const Sidebar: React.FC<SidebarProps> = ({ visible, onClose }) => {
               </Text>
             </View>
 
-            {/* <View style={styles.menuItems}>
+            <View style={styles.menuItems}>
               <TouchableOpacity style={styles.menuItem}>
                 <Ionicons name="person-outline" size={20} color="#495057" />
                 <Text style={styles.menuText}>プロフィール</Text>
               </TouchableOpacity>
-            </View> */}
+
+              {(!user || !user.email) && (
+                <TouchableOpacity style={styles.menuItem} onPress={handleEmailSetup}>
+                  <Ionicons name="mail-outline" size={20} color="#495057" />
+                  <Text style={styles.menuText}>メールアドレスを設定する</Text>
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
         </Animated.View>
       </TouchableOpacity>
+      
+      <EmailSetupModal
+        visible={emailModalVisible}
+        onClose={() => setEmailModalVisible(false)}
+        onSuccess={handleEmailSetupSuccess}
+      />
     </Modal>
   );
 };
