@@ -75,4 +75,46 @@ export const styles = StyleSheet.create({
     color: '#6b7280',
     fontSize: 14,
   },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    marginBottom: 16,
+    backgroundColor: '#f9fafb',
+  },
+  inputIcon: {
+    marginRight: 8,
+  },
+  textInput: {
+    flex: 1,
+    paddingVertical: 12,
+    fontSize: 16,
+    color: '#111827',
+  },
+  emailButton: {
+    backgroundColor: '#10b981',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 8,
+    minWidth: 200,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  emailButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  switchModeButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+  switchModeText: {
+    color: '#2563eb',
+    fontSize: 14,
+    textAlign: 'center',
+  },
 });

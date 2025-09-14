@@ -6,7 +6,9 @@ import {
   signInWithCredential, 
   GoogleAuthProvider,
   linkWithCredential,
-  EmailAuthProvider
+  EmailAuthProvider,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword
 } from 'firebase/auth';
 import { auth } from '@root/firebase';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
@@ -105,6 +107,26 @@ export const authService = {
       console.log('匿名ユーザーがメール/パスワードアカウントに昇格しました');
     } catch (error) {
       console.error('アカウント昇格エラー:', error);
+      throw error;
+    }
+  },
+
+  // メール/パスワードでログイン
+  async signInWithEmailAndPassword(email: string, password: string): Promise<void> {
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      console.error('メール/パスワードログインエラー:', error);
+      throw error;
+    }
+  },
+
+  // メール/パスワードでアカウント作成
+  async createUserWithEmailAndPassword(email: string, password: string): Promise<void> {
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      console.error('アカウント作成エラー:', error);
       throw error;
     }
   }
