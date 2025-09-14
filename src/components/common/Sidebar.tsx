@@ -11,7 +11,7 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ visible, onClose }) => {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const slideAnim = useRef(new Animated.Value(-300)).current;
   const [emailModalVisible, setEmailModalVisible] = useState(false);
 
@@ -38,6 +38,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ visible, onClose }) => {
   const handleEmailSetupSuccess = () => {
     // メール送信成功時の処理
     console.log('メールアドレス設定モーダルが開かれました');
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      onClose();
+    } catch (error) {
+      console.error('ログアウトエラー:', error);
+    }
   };
 
   return (
@@ -84,6 +93,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ visible, onClose }) => {
                 </TouchableOpacity>
               )}
             </View>
+
+            {user && user.email && (
+              <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
+                <Ionicons name="log-out-outline" size={20} color="#dc3545" />
+                <Text style={styles.signOutText}>ログアウト</Text>
+              </TouchableOpacity>
+            )}
           </View>
         </Animated.View>
       </TouchableOpacity>
