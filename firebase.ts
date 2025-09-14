@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
-import { getAuth, GoogleAuthProvider, Auth } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, Auth, EmailAuthProvider } from 'firebase/auth';
 import {
   initializeAuth,
   getReactNativePersistence,
@@ -38,7 +38,7 @@ try {
 
 export { auth };
 
-// Google認証プロバイダー
-export const googleProvider = new GoogleAuthProvider();
+// Email認証プロバイダー
+export const emailProvider = EmailAuthProvider;
 
 export default app;

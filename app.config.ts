@@ -40,14 +40,27 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         ITSAppUsesNonExemptEncryption: false,
         CFBundleShortVersionString: packageJson.version,
         CFBundleVersion: "1"
-      }
+      },
+      associatedDomains: ["applinks:time-control-app.web.app"]
     },
     android: {
       adaptiveIcon: {
         foregroundImage: "./assets/adaptive-icon.png",
         backgroundColor: "#ffffff"
       },
-      edgeToEdgeEnabled: true
+      edgeToEdgeEnabled: true,
+      intentFilters: [
+        {
+          action: "VIEW",
+          data: [
+            {
+              scheme: "https",
+              host: "time-control-app.web.app"
+            }
+          ],
+          category: ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     web: {
       favicon: "./assets/favicon.png"
@@ -55,6 +68,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     extra: {
       eas: {
         projectId: "3078a34c-06ec-4f84-8d12-726fbce40165"
+      },
+      firebase: {
+        authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN
       }
     },
     owner: "st34",
