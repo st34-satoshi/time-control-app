@@ -6,6 +6,7 @@ import { CategoryManager } from '@domain/Category';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ClockChart from '@components/report/ClockChart';
 import { CategoryBar } from '@components/report/CategoryBar';
+import { PRESET_COLORS } from '@app-types/Category';
 
 type CategoryData = {
   categoryId: string;
@@ -139,7 +140,7 @@ const Chart = (props: ChartProps) => {
       });
 
       // フォールバック用の色配列（カテゴリに色が設定されていない場合）
-      const fallbackColors = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4', '#84cc16', '#f97316'];
+      const fallbackColors = PRESET_COLORS;
       
       const data: CategoryData[] = Array.from(categoryMap.entries()).map(([categoryId, data], index) => ({
         categoryId,
