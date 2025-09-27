@@ -7,7 +7,7 @@ initializeApp();
 
 export const createDefaultCategories = auth.user().onCreate(async (user) => {
   console.log(`Creating defaults for user: ${user.uid}`);
-  
+
   const db = getFirestore();
 
   try {
@@ -18,7 +18,10 @@ export const createDefaultCategories = auth.user().onCreate(async (user) => {
       .get();
 
     if (!categoriesSnapshot.empty) {
-      console.log(`Categories already exist for user: ${user.uid}, skipping default creation`);
+      console.log(
+        `Categories already exist for user: ${user.uid}, ` +
+        "skipping default creation"
+      );
       return;
     }
 
