@@ -1,7 +1,7 @@
 // scripts/migrate-categoryId.ts
 // categoryのvalueからidを取得して、recordsのcategoryIdに設定する
-import { initializeApp, applicationDefault } from 'firebase-admin/app';
-import { getFirestore, FieldValue } from 'firebase-admin/firestore';
+import {initializeApp, applicationDefault} from "firebase-admin/app";
+import {getFirestore, FieldValue} from "firebase-admin/firestore";
 
 // Firebase Admin SDKを初期化
 initializeApp({
@@ -19,10 +19,14 @@ interface MigrationStats {
   duplicateCategories: number;
 }
 
+/**
+ * Migrates category values to category IDs in records
+ * @return {Promise<MigrationStats>} Migration statistics
+ */
 async function migrateCategoryId(): Promise<MigrationStats> {
-  console.log('🚀 Starting categoryId migration...');
-  
-  const userRefs = await db.collection('timeRecords').listDocuments();
+  console.log("🚀 Starting categoryId migration...");
+
+  const userRefs = await db.collection("timeRecords").listDocuments();
   console.log(`Found ${userRefs.length} users`);
 
   const stats: MigrationStats = {
@@ -35,8 +39,11 @@ async function migrateCategoryId(): Promise<MigrationStats> {
   };
 
   const writer = db.bulkWriter();
-  writer.onWriteError((err: any) => {
-    console.error('❌ Write error:', err.documentRef.path, err.message);
+  writer.onWriteError((err: Error & {
+    documentRef: { path: string };
+    failedAttempts: number;
+  }) => {
+    console.error("❌ Write error:", err.documentRef.path, err.message);
     // リトライ可能なら再試行
     return err.failedAttempts < 3;
   });
@@ -46,13 +53,13 @@ async function migrateCategoryId(): Promise<MigrationStats> {
     console.log(`\n📁 Processing user: ${userId}`);
 
     // 1) Categoryの value -> id マップを作成
-    const catSnap = await userRef.collection('categories').get();
+    const catSnap = await userRef.collection("categories").get();
     const valueToId = new Map<string, string>();
     const dupValues = new Set<string>();
 
     catSnap.forEach((doc) => {
       const d = doc.data() as { value?: string };
-      const v = (d.value ?? '').trim();
+      const v = (d.value ?? "").trim();
       if (!v) return;
       if (valueToId.has(v)) {
         dupValues.add(v);
@@ -63,29 +70,37 @@ async function migrateCategoryId(): Promise<MigrationStats> {
     });
 
     if (dupValues.size > 0) {
-      console.warn(`⚠️  Duplicate category values detected for user=${userId}:`, [...dupValues]);
+      console.warn(
+        `⚠️  Duplicate category values detected for user=${userId}:`,
+        [...dupValues]
+      );
     }
 
     // 2) records を走査して、categoryId が無い／空のものだけ更新
-    const recSnap = await userRef.collection('records').get();
-    let userUpdated = 0, userSkipped = 0, userMissing = 0;
+    const recSnap = await userRef.collection("records").get();
+    let userUpdated = 0;
+    let userSkipped = 0;
+    let userMissing = 0;
 
     recSnap.forEach((doc) => {
-      const rec = doc.data() as { category?: string; categoryId?: string | null };
+      const rec = doc.data() as {
+        category?: string;
+        categoryId?: string | null;
+      };
       stats.totalRecords++;
 
       // すでに categoryId が入っているならスキップ
-      if (rec.categoryId) { 
-        userSkipped++; 
+      if (rec.categoryId) {
+        userSkipped++;
         stats.skippedRecords++;
-        return; 
+        return;
       }
 
-      const key = typeof rec.category === 'string' ? rec.category.trim() : '';
-      if (!key) { 
-        userMissing++; 
+      const key = typeof rec.category === "string" ? rec.category.trim() : "";
+      if (!key) {
+        userMissing++;
         stats.missingCategories++;
-        return; 
+        return;
       }
 
       // value -> id マップで検索（重複の value はスキップ）
@@ -109,22 +124,28 @@ async function migrateCategoryId(): Promise<MigrationStats> {
       stats.updatedRecords++;
     });
 
-    console.log(`✅ User ${userId}: updated=${userUpdated}, skipped=${userSkipped}, missing=${userMissing}`);
+    console.log(
+      `✅ User ${userId}: updated=${userUpdated}, ` +
+      `skipped=${userSkipped}, missing=${userMissing}`
+    );
   }
 
   await writer.close();
   return stats;
 }
 
+/**
+ * Main function to run the migration
+ */
 async function main() {
   const startTime = Date.now();
-  
+
   try {
     const stats = await migrateCategoryId();
     const duration = Date.now() - startTime;
-    
-    console.log('\n🎉 Migration completed successfully!');
-    console.log('📊 Statistics:');
+
+    console.log("\n🎉 Migration completed successfully!");
+    console.log("📊 Statistics:");
     console.log(`   Total users: ${stats.totalUsers}`);
     console.log(`   Total records: ${stats.totalRecords}`);
     console.log(`   Updated records: ${stats.updatedRecords}`);
@@ -132,9 +153,8 @@ async function main() {
     console.log(`   Missing categories: ${stats.missingCategories}`);
     console.log(`   Duplicate categories: ${stats.duplicateCategories}`);
     console.log(`   Duration: ${(duration / 1000).toFixed(2)}s`);
-    
   } catch (error) {
-    console.error('❌ Migration failed:', error);
+    console.error("❌ Migration failed:", error);
     process.exit(1);
   }
 }

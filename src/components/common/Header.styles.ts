@@ -12,17 +12,23 @@ export const styles = StyleSheet.create({
   headerContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     position: 'relative',
+    minHeight: 40,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#212529',
+    flex: 1,
+    textAlign: 'center',
   },
   settingsButton: {
-    padding: 8,
-    position: 'absolute',
-    right: 0,
+    padding: 12,
+    zIndex: 10,
+    minWidth: 48,
+    minHeight: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 }); 
