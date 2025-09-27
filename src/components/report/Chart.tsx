@@ -7,6 +7,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import ClockChart from '@components/report/ClockChart';
 import { CategoryBar } from '@components/report/CategoryBar';
 import { PRESET_COLORS } from '@app-types/Category';
+import { TimeSlot } from '@app-types/TimeRecord';
 
 type CategoryData = {
   categoryId: string;
@@ -28,7 +29,8 @@ const Chart = (props: ChartProps) => {
   const [categoryData, setCategoryData] = useState<CategoryData[]>([]);
   const [selectedDate, setSelectedDate] = useState(() => new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [filteredRecords, setFilteredRecords] = useState<TimeRecordDataForGet[]>([]);
+  const [filteredRecords, setFilteredRecords] = useState<TimeRecordDataForGet[]>([]); // 日付てフィルタリングされたデータ
+  const [formattedTimeRecords, setFormattedTimeRecords] = useState<TimeSlot[]>([]); // 時間の重複などをなくして0~24時までのデータにしたレコード
 
   // timeRecordsから日付の範囲を計算（メモ化）
   const dateRange = useMemo(() => {
@@ -158,6 +160,41 @@ const Chart = (props: ChartProps) => {
     }
   }, [filteredRecords, categoryManager]);
 
+  // formattedTimeRecordsを作成
+  useEffect(() => {
+    // 時間順にソート
+    const sortedRecords = [...timeRecords].sort((a, b) => a.startTime.seconds - b.startTime.seconds);
+    
+    const formattedRecords: TimeSlot[] = [];
+    let lastTime = new Date(selectedDate.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(selectedDate.setHours(23, 59, 59, 999));
+    for (let i = 0; i < sortedRecords.length; i++) {
+      const record = sortedRecords[i];
+      let startTime = new Date(record.startTime.seconds * 1000);
+      let endTime = new Date(record.endTime.seconds * 1000);
+      if (endTime > endOfDay) {
+        endTime = endOfDay;
+      }
+      if (endTime < lastTime) {
+        continue;
+      }
+      if (startTime < lastTime) {
+        startTime = lastTime;
+      }
+      const category = categoryManager?.getAllCategories().find(cat => cat.id === record.categoryId) || { id: '', value: 'Unknown', label: 'Unknown', icon: '📋', color: '#3b82f6' };
+      formattedRecords.push({
+        category,
+        categoryColor: category.color || PRESET_COLORS[i % PRESET_COLORS.length],
+        startTime,
+        endTime,
+        task: record.task,
+        durationMinutes: (endTime.getTime() - startTime.getTime()) / 1000 / 60
+      });
+      lastTime = endTime;
+    }
+    setFormattedTimeRecords(formattedRecords);
+  }, [timeRecords]);
+
   const formatDuration = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -231,9 +268,7 @@ const Chart = (props: ChartProps) => {
         </View>
 
         <ClockChart 
-          timeRecords={filteredRecords} 
-          categoryManager={categoryManager} 
-          date={selectedDate}
+          formattedTimeRecords={formattedTimeRecords}
         />
 
         <View style={styles.chartContainer}>

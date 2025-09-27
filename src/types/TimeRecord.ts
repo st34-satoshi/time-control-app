@@ -1,4 +1,4 @@
-
+import { Category } from '@app-types/Category';
 export interface FirestoreTimestamp {
   seconds: number;
   nanoseconds: number;
@@ -35,3 +35,13 @@ export interface TimeRecordFormData {
   startTime: Date;
   endTime: Date;
 } 
+
+// チャート表示用
+export type TimeSlot = {
+  category: Category;
+  categoryColor: string;
+  startTime: Date;
+  endTime: Date;
+  task: string;
+  durationMinutes: number;
+};
