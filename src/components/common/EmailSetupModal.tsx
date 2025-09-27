@@ -25,7 +25,6 @@ export const EmailSetupModal: React.FC<EmailSetupModalProps> = ({
 }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleUpgradeAccount = async () => {
@@ -36,11 +35,6 @@ export const EmailSetupModal: React.FC<EmailSetupModalProps> = ({
 
     if (!password.trim()) {
       Alert.alert('エラー', 'パスワードを入力してください');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      Alert.alert('エラー', 'パスワードが一致しません');
       return;
     }
 
@@ -84,7 +78,6 @@ export const EmailSetupModal: React.FC<EmailSetupModalProps> = ({
   const handleClose = () => {
     setEmail('');
     setPassword('');
-    setConfirmPassword('');
     onClose();
   };
 
@@ -130,20 +123,6 @@ export const EmailSetupModal: React.FC<EmailSetupModalProps> = ({
                 placeholder="パスワードを入力（6文字以上）"
                 value={password}
                 onChangeText={setPassword}
-                secureTextEntry
-                autoCapitalize="none"
-                autoCorrect={false}
-                editable={!loading}
-              />
-            </View>
-
-            <View style={styles.inputContainer}>
-              <Ionicons name="lock-closed-outline" size={20} color="#6c757d" style={styles.inputIcon} />
-              <TextInput
-                style={styles.textInput}
-                placeholder="パスワードを再入力"
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
                 secureTextEntry
                 autoCapitalize="none"
                 autoCorrect={false}
