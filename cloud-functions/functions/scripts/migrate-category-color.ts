@@ -12,16 +12,16 @@ initializeApp({
 const db = getFirestore();
 
 export const PRESET_COLORS = [
-  '#3b82f6', // 青
-  '#ef4444', // 赤
-  '#10b981', // 緑
-  '#f59e0b', // オレンジ
-  '#8b5cf6', // 紫
-  '#06b6d4', // シアン
-  '#84cc16', // ライム
-  '#f97316', // オレンジ
-  '#ec4899', // ピンク
-  '#6b7280', // グレー
+  "#3b82f6", // 青
+  "#ef4444", // 赤
+  "#10b981", // 緑
+  "#f59e0b", // オレンジ
+  "#8b5cf6", // 紫
+  "#06b6d4", // シアン
+  "#84cc16", // ライム
+  "#f97316", // オレンジ
+  "#ec4899", // ピンク
+  "#6b7280", // グレー
 ];
 
 interface MigrationStats {
@@ -72,10 +72,10 @@ async function migrateCategoryColors(): Promise<MigrationStats> {
         .orderBy("order", "asc")
         .get();
 
-      const categories = categoriesSnapshot.docs.map(doc => ({
+      const categories = categoriesSnapshot.docs.map((doc) => ({
         id: doc.id,
         ref: doc.ref,
-        data: doc.data()
+        data: doc.data(),
       }));
 
       console.log(`Found ${categories.length} categories for user ${userId}`);
@@ -91,20 +91,26 @@ async function migrateCategoryColors(): Promise<MigrationStats> {
         if (category.data.color) {
           userSkipped++;
           stats.skippedCategories++;
-          console.log(`⏭️  Skipping category ${category.id} (already has color: ${category.data.color})`);
+          console.log(
+            `⏭️  Skipping category ${category.id} ` +
+            `(already has color: ${category.data.color})`
+          );
           continue;
         }
 
         // PRESET_COLORSから順番に色を割り当て
         const color = PRESET_COLORS[colorIndex % PRESET_COLORS.length];
-        
+
         writer.update(category.ref, {
           color: color,
           updatedAt: FieldValue.serverTimestamp(),
         });
 
-        console.log(`🎨 Setting color ${color} for category ${category.id} (${category.data.label || category.data.value})`);
-        
+        console.log(
+          `🎨 Setting color ${color} for category ${category.id} ` +
+          `(${category.data.label || category.data.value})`
+        );
+
         userUpdated++;
         stats.updatedCategories++;
         colorIndex++;
@@ -114,7 +120,6 @@ async function migrateCategoryColors(): Promise<MigrationStats> {
         `✅ User ${userId}: updated=${userUpdated}, ` +
         `skipped=${userSkipped}`
       );
-
     } catch (error) {
       console.error(`❌ Error processing user ${userId}:`, error);
       stats.errors++;
