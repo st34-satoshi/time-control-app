@@ -12,7 +12,7 @@ import { TimeSlot } from '@app-types/TimeRecord';
 type CategoryData = {
   categoryId: string;
   categoryName: string;
-  totalDuration: number;
+  totalDurationSeconds: number;
   icon: string;
   color: string;
 };
@@ -26,7 +26,7 @@ interface ChartProps {
 const Chart = (props: ChartProps) => {
   const { timeRecords, categoryManager, onRefresh } = props;
   const [refreshing, setRefreshing] = useState(false);
-  const [categoryData, setCategoryData] = useState<CategoryData[]>([]);
+  const [categoryData, setCategoryData] = useState<CategoryData[]>([]); // formattedTimeRecordsからカテゴリ別のデータを作成
   const [selectedDate, setSelectedDate] = useState(() => new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [filteredRecords, setFilteredRecords] = useState<TimeRecordDataForGet[]>([]); // 日付てフィルタリングされたデータ
@@ -120,21 +120,21 @@ const Chart = (props: ChartProps) => {
 
   // カテゴリ別の集計データを計算
   useEffect(() => {
-    if (filteredRecords.length > 0 && categoryManager) {
-      const categoryMap = new Map<string, { totalDuration: number; categoryName: string; icon: string; color: string }>();
+    if (formattedTimeRecords.length > 0 && categoryManager) {
+      const categoryMap = new Map<string, { totalDurationSeconds: number; categoryName: string; icon: string; color: string }>();
       
-      filteredRecords.forEach(record => {
-        const category = categoryManager.getAllCategories().find(cat => cat.id === record.categoryId);
+      formattedTimeRecords.forEach(record => {
+        const category = record.category;
         const categoryName = category?.label || 'Unknown';
         const icon = category?.icon || '📋';
         const color = category?.color || '#3b82f6'; // デフォルトカラー
         
-        if (categoryMap.has(record.categoryId)) {
-          const existing = categoryMap.get(record.categoryId)!;
-          existing.totalDuration += record.duration;
+        if (categoryMap.has(record.category.id!)) {
+          const existing = categoryMap.get(record.category.id!)!;
+          existing.totalDurationSeconds += record.durationMinutes * 60;
         } else {
-          categoryMap.set(record.categoryId, {
-            totalDuration: record.duration,
+          categoryMap.set(record.category.id!, {
+            totalDurationSeconds: record.durationMinutes * 60,
             categoryName,
             icon,
             color
@@ -148,18 +148,18 @@ const Chart = (props: ChartProps) => {
       const data: CategoryData[] = Array.from(categoryMap.entries()).map(([categoryId, data], index) => ({
         categoryId,
         categoryName: data.categoryName,
-        totalDuration: data.totalDuration,
+        totalDurationSeconds: data.totalDurationSeconds,
         icon: data.icon,
         color: data.color || fallbackColors[index % fallbackColors.length]
       }));
 
       // 時間の長い順にソート
-      data.sort((a, b) => b.totalDuration - a.totalDuration);
+      data.sort((a, b) => b.totalDurationSeconds - a.totalDurationSeconds);
       setCategoryData(data);
     } else {
       setCategoryData([]);
     }
-  }, [filteredRecords, categoryManager]);
+  }, [formattedTimeRecords, categoryManager]);
 
   // formattedTimeRecordsを作成
   useEffect(() => {
