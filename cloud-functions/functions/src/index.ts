@@ -6,7 +6,7 @@ import {v4 as uuidv4} from "uuid";
 initializeApp();
 
 export const createDefaultCategories = auth.user().onCreate(async (user) => {
-  console.log(`27 Creating defaults for user: ${user.uid}`);
+  console.log(`27 Creating defaults for user start: ${user.uid}`);
 
   const db = getFirestore();
 
