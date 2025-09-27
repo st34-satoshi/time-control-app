@@ -6,6 +6,7 @@ import { CategoryManager } from '@domain/Category';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ClockChart from '@components/report/ClockChart';
 import { CategoryBar } from '@components/report/CategoryBar';
+import { PRESET_COLORS } from '@app-types/Category';
 
 type CategoryData = {
   categoryId: string;
@@ -117,12 +118,13 @@ const Chart = (props: ChartProps) => {
   // カテゴリ別の集計データを計算
   useEffect(() => {
     if (filteredRecords.length > 0 && categoryManager) {
-      const categoryMap = new Map<string, { totalDuration: number; categoryName: string; icon: string }>();
+      const categoryMap = new Map<string, { totalDuration: number; categoryName: string; icon: string; color: string }>();
       
       filteredRecords.forEach(record => {
         const category = categoryManager.getAllCategories().find(cat => cat.id === record.categoryId);
         const categoryName = category?.label || 'Unknown';
         const icon = category?.icon || '📋';
+        const color = category?.color || '#3b82f6'; // デフォルトカラー
         
         if (categoryMap.has(record.categoryId)) {
           const existing = categoryMap.get(record.categoryId)!;
@@ -131,19 +133,21 @@ const Chart = (props: ChartProps) => {
           categoryMap.set(record.categoryId, {
             totalDuration: record.duration,
             categoryName,
-            icon
+            icon,
+            color
           });
         }
       });
 
-      const colors = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4', '#84cc16', '#f97316'];
+      // フォールバック用の色配列（カテゴリに色が設定されていない場合）
+      const fallbackColors = PRESET_COLORS;
       
       const data: CategoryData[] = Array.from(categoryMap.entries()).map(([categoryId, data], index) => ({
         categoryId,
         categoryName: data.categoryName,
         totalDuration: data.totalDuration,
         icon: data.icon,
-        color: colors[index % colors.length]
+        color: data.color || fallbackColors[index % fallbackColors.length]
       }));
 
       // 時間の長い順にソート

@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Modal, TextInput, ScrollView } from 'react-native';
-import { Category } from '@app-types/Category';
+import { Category, PRESET_COLORS } from '@app-types/Category';
 import { CategoryData } from '@services/firestore/categoryService';
+import { styles } from './EditCategory.styles';
 
 interface EditCategoryProps {
   visible: boolean;
@@ -13,6 +14,7 @@ interface EditCategoryProps {
   onFormChange: (form: CategoryData) => void;
 }
 
+
 const EditCategory: React.FC<EditCategoryProps> = ({
   visible,
   editingCategory,
@@ -22,12 +24,31 @@ const EditCategory: React.FC<EditCategoryProps> = ({
   onDelete,
   onFormChange,
 }) => {
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const [customColor, setCustomColor] = useState('');
+
   const handleIconChange = (text: string) => {
     onFormChange({ ...editForm, icon: text });
   };
 
   const handleLabelChange = (text: string) => {
     onFormChange({ ...editForm, label: text });
+  };
+
+  const handleColorChange = (color: string) => {
+    onFormChange({ ...editForm, color: color });
+    setShowColorPicker(false);
+  };
+
+  const handleCustomColorChange = (text: string) => {
+    setCustomColor(text);
+  };
+
+  const handleCustomColorSubmit = () => {
+    if (customColor && /^#[0-9A-Fa-f]{6}$/.test(customColor)) {
+      handleColorChange(customColor);
+      setCustomColor('');
+    }
   };
 
   const handleDelete = () => {
@@ -101,6 +122,83 @@ const EditCategory: React.FC<EditCategoryProps> = ({
                 onChangeText={handleLabelChange}
                 placeholder="睡眠"
               />
+            </View>
+
+            {/* Color Selection */}
+            <View style={{ marginBottom: 16 }}>
+              <Text style={{ fontSize: 14, fontWeight: '500', marginBottom: 8 }}>色</Text>
+              
+              {/* Current Color Display */}
+              <TouchableOpacity
+                style={[
+                  styles.colorButton,
+                  { backgroundColor: editForm.color || '#3b82f6' }
+                ]}
+                onPress={() => setShowColorPicker(true)}
+              >
+                <Text style={styles.colorButtonText}>
+                  {editForm.color || '#3b82f6'}
+                </Text>
+              </TouchableOpacity>
+
+              {/* Color Picker Modal */}
+              <Modal
+                visible={showColorPicker}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={() => setShowColorPicker(false)}
+              >
+                <View style={styles.colorPickerOverlay}>
+                  <View style={styles.colorPickerContainer}>
+                    <Text style={styles.colorPickerTitle}>色を選択</Text>
+                    
+                    {/* Preset Colors */}
+                    <View style={styles.presetColorsContainer}>
+                      <Text style={styles.sectionTitle}>デフォルトカラー</Text>
+                      <View style={styles.presetColorsGrid}>
+                        {PRESET_COLORS.map((color) => (
+                          <TouchableOpacity
+                            key={color}
+                            style={[
+                              styles.colorOption,
+                              { backgroundColor: color },
+                              editForm.color === color && styles.selectedColorOption
+                            ]}
+                            onPress={() => handleColorChange(color)}
+                          />
+                        ))}
+                      </View>
+                    </View>
+
+                    {/* Custom Color Input */}
+                    <View style={styles.customColorContainer}>
+                      <Text style={styles.sectionTitle}>カスタムカラー</Text>
+                      <View style={styles.customColorInputContainer}>
+                        <TextInput
+                          style={styles.customColorInput}
+                          value={customColor}
+                          onChangeText={handleCustomColorChange}
+                          placeholder="#000000"
+                          placeholderTextColor="#999"
+                        />
+                        <TouchableOpacity
+                          style={styles.customColorButton}
+                          onPress={handleCustomColorSubmit}
+                        >
+                          <Text style={styles.customColorButtonText}>適用</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+
+                    <TouchableOpacity
+                      style={styles.closeButton}
+                      onPress={() => setShowColorPicker(false)}
+                    >
+                      <Text style={styles.closeButtonText}>閉じる</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </Modal>
             </View>
           </ScrollView>
 

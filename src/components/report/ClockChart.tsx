@@ -5,7 +5,7 @@ import { TimeRecordDataForGet } from '../../types/TimeRecord';
 import { CategoryManager } from '@domain/Category';
 import { DailyTimePie } from '@components/report/DailyTimePie';
 import { useState, useEffect } from 'react';
-import { Category } from '@app-types/Category';
+import { Category, PRESET_COLORS } from '@app-types/Category';
 
 type TimeSlot = {
   category: Category;
@@ -22,7 +22,7 @@ interface ClockChartProps {
   date: Date;
 }
 
-const COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4', '#84cc16', '#f97316'];
+const COLORS = PRESET_COLORS;
 
 const ClockChart = ({ timeRecords, categoryManager, date }: ClockChartProps) => {
   const [formattedTimeRecords, setFormattedTimeRecords] = useState<TimeSlot[]>([]); // 時間の重複などをなくして0~24時までのデータにしたレコード
@@ -47,10 +47,10 @@ const ClockChart = ({ timeRecords, categoryManager, date }: ClockChartProps) => 
       if (startTime < lastTime) {
         startTime = lastTime;
       }
-      const category = categoryManager?.getAllCategories().find(cat => cat.id === record.categoryId) || { id: '', value: 'Unknown', label: 'Unknown', icon: '📋' };
+      const category = categoryManager?.getAllCategories().find(cat => cat.id === record.categoryId) || { id: '', value: 'Unknown', label: 'Unknown', icon: '📋', color: '#3b82f6' };
       formattedRecords.push({
         category,
-        categoryColor: COLORS[i % COLORS.length],
+        categoryColor: category.color || COLORS[i % COLORS.length],
         startTime,
         endTime,
         task: record.task,
