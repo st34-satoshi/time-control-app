@@ -172,6 +172,9 @@ const Chart = (props: ChartProps) => {
       const record = sortedRecords[i];
       let startTime = new Date(record.startTime.seconds * 1000);
       let endTime = new Date(record.endTime.seconds * 1000);
+      if (startTime > endOfDay) {
+        continue;
+      }
       if (endTime > endOfDay) {
         endTime = endOfDay;
       }
@@ -181,6 +184,7 @@ const Chart = (props: ChartProps) => {
       if (startTime < lastTime) {
         startTime = lastTime;
       }
+
       const category = categoryManager?.getAllCategories().find(cat => cat.id === record.categoryId) || { id: '', value: 'Unknown', label: 'Unknown', icon: '📋', color: '#3b82f6' };
       formattedRecords.push({
         category,
@@ -204,8 +208,8 @@ const Chart = (props: ChartProps) => {
     return `${minutes}m`;
   };
 
-  const getTotalDuration = () => {
-    return categoryData.reduce((total, category) => total + category.totalDuration, 0);
+  const getTotalDurationMinutes = () => {
+    return formattedTimeRecords.reduce((total, record) => total + record.durationMinutes, 0);
   };
 
   if (filteredRecords.length === 0) {
@@ -264,7 +268,7 @@ const Chart = (props: ChartProps) => {
       >
         <View style={styles.summaryCard}>
           <Text style={styles.summaryTitle}>{formatDateForDisplay(selectedDate)}</Text>
-          <Text style={styles.summaryDuration}>{formatDuration(getTotalDuration())}</Text>
+          <Text style={styles.summaryDuration}>{formatDuration(getTotalDurationMinutes() * 60)}</Text>
         </View>
 
         <ClockChart 
