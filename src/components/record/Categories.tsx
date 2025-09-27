@@ -26,7 +26,8 @@ const Categories: React.FC<CategoriesProps> = ({
   const [editForm, setEditForm] = useState<CategoryData>({
     value: '',
     label: '',
-    icon: '📋'
+    icon: '📋',
+    color: '#3b82f6'
   });
 
   // カテゴリの並び順を統一する関数
@@ -95,7 +96,8 @@ const Categories: React.FC<CategoriesProps> = ({
     setEditForm({
       value: newValue,
       label: '',
-      icon: '📋'
+      icon: '📋',
+      color: '#3b82f6'
     });
     setIsEditModalVisible(true);
   };
@@ -105,7 +107,8 @@ const Categories: React.FC<CategoriesProps> = ({
     setEditForm({
       value: category.value,
       label: category.label,
-      icon: category.icon
+      icon: category.icon,
+      color: category.color || '#3b82f6'
     });
     setIsEditModalVisible(true);
   };
@@ -134,7 +137,7 @@ const Categories: React.FC<CategoriesProps> = ({
       
       setIsEditModalVisible(false);
       setEditingCategory(null);
-      setEditForm({ value: '', label: '', icon: '📋' });
+      setEditForm({ value: '', label: '', icon: '📋', color: '#3b82f6' });
     } catch (error) {
       console.error('Error saving category:', error);
       Alert.alert('エラー', 'カテゴリの保存に失敗しました');
@@ -163,7 +166,7 @@ const Categories: React.FC<CategoriesProps> = ({
               // ポップアップを閉じる
               setIsEditModalVisible(false);
               setEditingCategory(null);
-              setEditForm({ value: '', label: '', icon: '📋' });
+              setEditForm({ value: '', label: '', icon: '📋', color: '#3b82f6' });
             } catch (error) {
               console.error('Error deleting category:', error);
               Alert.alert('エラー', 'カテゴリの削除に失敗しました');
