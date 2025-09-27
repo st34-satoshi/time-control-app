@@ -99,6 +99,7 @@ const Chart = (props: ChartProps) => {
       const { minDate, maxDate } = dateRange;
       if (selectedDate >= minDate && selectedDate <= maxDate) {
         setSelectedDate(selectedDate);
+        onRefresh();
       }
     }
   };
@@ -255,6 +256,16 @@ const Chart = (props: ChartProps) => {
           </Text>
         </TouchableOpacity>
       </View>
+      {showDatePicker && (
+        <DateTimePicker
+          value={selectedDate}
+          mode="date"
+          display="default"
+          onChange={onDateChange}
+          minimumDate={dateRange.minDate}
+          maximumDate={dateRange.maxDate}
+        />
+      )}
       <ScrollView
         contentContainerStyle={styles.contentContainer}
         refreshControl={
@@ -282,16 +293,6 @@ const Chart = (props: ChartProps) => {
           />
         </View>
       </ScrollView>
-      {showDatePicker && (
-        <DateTimePicker
-          value={selectedDate}
-          mode="date"
-          display="default"
-          onChange={onDateChange}
-          minimumDate={dateRange.minDate}
-          maximumDate={dateRange.maxDate}
-        />
-      )}
     </View>
   );
 };
