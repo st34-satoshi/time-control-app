@@ -47,10 +47,10 @@ const ClockChart = ({ timeRecords, categoryManager, date }: ClockChartProps) => 
       if (startTime < lastTime) {
         startTime = lastTime;
       }
-      const category = categoryManager?.getAllCategories().find(cat => cat.id === record.categoryId) || { id: '', value: 'Unknown', label: 'Unknown', icon: '📋' };
+      const category = categoryManager?.getAllCategories().find(cat => cat.id === record.categoryId) || { id: '', value: 'Unknown', label: 'Unknown', icon: '📋', color: '#3b82f6' };
       formattedRecords.push({
         category,
-        categoryColor: COLORS[i % COLORS.length],
+        categoryColor: category.color || COLORS[i % COLORS.length],
         startTime,
         endTime,
         task: record.task,

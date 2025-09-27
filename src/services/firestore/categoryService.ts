@@ -6,6 +6,7 @@ export interface CategoryData {
   value: string;
   label: string;
   icon: string;
+  color?: string;
   order?: number;
 }
 

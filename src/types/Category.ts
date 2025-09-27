@@ -3,6 +3,7 @@ export interface Category {
   value: string;
   label: string;
   icon: string;
+  color?: string;
   order?: number;
   hidden?: boolean;
   createdAt?: Date;
