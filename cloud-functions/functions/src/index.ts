@@ -6,7 +6,7 @@ import {v4 as uuidv4} from "uuid";
 initializeApp();
 
 export const createDefaultCategories = auth.user().onCreate(async (user) => {
-  console.log(`Creating defaults for user: ${user.uid}`);
+  console.log(`27 Creating defaults for user: ${user.uid}`);
 
   const db = getFirestore();
 
@@ -23,6 +23,11 @@ export const createDefaultCategories = auth.user().onCreate(async (user) => {
         "skipping default creation"
       );
       return;
+    } else {
+      console.log(
+        `Categories do not exist for user: ${user.uid}, ` +
+        "creating defaults"
+      );
     }
 
     // デフォルトカテゴリを作成
