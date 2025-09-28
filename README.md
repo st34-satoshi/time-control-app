@@ -1,5 +1,11 @@
 # time-control-app
-時間管理アプリ
+[時間管理アプリ24](https://apps.apple.com/jp/app/%E6%99%82%E9%96%93%E7%AE%A1%E7%90%86%E3%82%A2%E3%83%97%E3%83%AA24/id6751039070)
+
+## アプリのスクリーンショット(iPhone版)
+<img src="docs/iPhone/1.png" width="200" alt="iPhone Screenshot 1">
+<img src="docs/iPhone/2.png" width="200" alt="iPhone Screenshot 2">
+<img src="docs/iPhone/3.png" width="200" alt="iPhone Screenshot 3">
+<img src="docs/iPhone/4.png" width="200" alt="iPhone Screenshot 4">
 
 ## 準備
 - `GoogleService-Info.plist`を用意する
