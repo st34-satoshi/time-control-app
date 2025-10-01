@@ -37,9 +37,13 @@ const Chart = (props: ChartProps) => {
     if (timeRecords.length === 0) {
       // データがない場合は今日を基準にした範囲を返す
       const today = new Date();
+      const minDate = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
+      minDate.setHours(0, 0, 0, 0);
+      const maxDate = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
+      maxDate.setHours(23, 59, 59, 999);
       return {
-        minDate: new Date(today.getFullYear() - 1, today.getMonth(), today.getDate()),
-        maxDate: new Date(today.getFullYear() + 1, today.getMonth(), today.getDate())
+        minDate,
+        maxDate
       };
     }
 
@@ -54,9 +58,14 @@ const Chart = (props: ChartProps) => {
       maxTime = Math.max(maxTime, endTime);
     });
 
+    const minDate = new Date(minTime);
+    minDate.setHours(0, 0, 0, 0);
+    const maxDate = new Date(maxTime);
+    maxDate.setHours(23, 59, 59, 999);
+
     return {
-      minDate: new Date(minTime),
-      maxDate: new Date(maxTime)
+      minDate,
+      maxDate
     };
   }, [timeRecords]);
 
@@ -101,6 +110,30 @@ const Chart = (props: ChartProps) => {
         setSelectedDate(selectedDate);
         onRefresh();
       }
+    }
+  };
+
+  // 前日に移動
+  const goToPreviousDay = () => {
+    const previousDay = new Date(selectedDate);
+    previousDay.setDate(previousDay.getDate() - 1);
+    
+    const { minDate, maxDate } = dateRange;
+    if (previousDay >= minDate && previousDay <= maxDate) {
+      setSelectedDate(previousDay);
+      onRefresh();
+    }
+  };
+
+  // 後日に移動
+  const goToNextDay = () => {
+    const nextDay = new Date(selectedDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+    
+    const { minDate, maxDate } = dateRange;
+    if (nextDay >= minDate && nextDay <= maxDate) {
+      setSelectedDate(nextDay);
+      onRefresh();
     }
   };
 
@@ -216,7 +249,14 @@ const Chart = (props: ChartProps) => {
   if (filteredRecords.length === 0) {
     return (
       <View style={styles.container}>
-        <View style={styles.dateSelectorContainer}>
+      <View style={styles.dateSelectorContainer}>
+        <View style={styles.dateSelectorRow}>
+          <TouchableOpacity
+            style={styles.arrowButton}
+            onPress={goToPreviousDay}
+          >
+            <Text style={styles.arrowText}>◀</Text>
+          </TouchableOpacity>
           <TouchableOpacity
             style={styles.dateSelector}
             onPress={() => setShowDatePicker(true)}
@@ -225,7 +265,14 @@ const Chart = (props: ChartProps) => {
               📅 {selectedDate.toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' })}
             </Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.arrowButton}
+            onPress={goToNextDay}
+          >
+            <Text style={styles.arrowText}>▶</Text>
+          </TouchableOpacity>
         </View>
+      </View>
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>記録されたデータがありません</Text>
           <Text style={styles.emptySubtext}>時間記録を開始すると、ここに表示されます</Text>
@@ -247,14 +294,28 @@ const Chart = (props: ChartProps) => {
   return (
     <View style={styles.container}>
       <View style={styles.dateSelectorContainer}>
-        <TouchableOpacity
-          style={styles.dateSelector}
-          onPress={() => setShowDatePicker(true)}
-        >
-          <Text style={styles.dateSelectorText}>
-            📅 {selectedDate.toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' })}
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.dateSelectorRow}>
+          <TouchableOpacity
+            style={styles.arrowButton}
+            onPress={goToPreviousDay}
+          >
+            <Text style={styles.arrowText}>◀</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.dateSelector}
+            onPress={() => setShowDatePicker(true)}
+          >
+            <Text style={styles.dateSelectorText}>
+              📅 {selectedDate.toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' })}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.arrowButton}
+            onPress={goToNextDay}
+          >
+            <Text style={styles.arrowText}>▶</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       {showDatePicker && (
         <DateTimePicker
