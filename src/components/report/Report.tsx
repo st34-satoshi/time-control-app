@@ -21,6 +21,7 @@ const Report = () => {
   const { user } = useAuth();
   const [timeRecords, setTimeRecords] = useState<TimeRecordDataForGet[]>([]);
   const [categoryManager, setCategoryManager] = useState<CategoryManager | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (user && !categoryManager) {
@@ -36,11 +37,16 @@ const Report = () => {
     useCallback(() => {
       if (user) {
         const initializeData = async () => {
-          // カテゴリマネージャーを再取得
-          const manager = await CategoryManager.create(user!.uid);
-          setCategoryManager(manager);
-          // タイムレコードも取得
-          await fetchAndSortRecords();
+          setIsLoading(true);
+          try {
+            // カテゴリマネージャーを再取得
+            const manager = await CategoryManager.create(user!.uid);
+            setCategoryManager(manager);
+            // タイムレコードも取得
+            await fetchAndSortRecords();
+          } finally {
+            setIsLoading(false);
+          }
         }
         initializeData();
       }
@@ -48,6 +54,7 @@ const Report = () => {
   );
 
   const onRefresh = async () => {
+    setIsLoading(true);
     try {
       if (user) {
         const manager = await CategoryManager.create(user.uid);
@@ -57,6 +64,8 @@ const Report = () => {
     } catch (err) {
       Alert.alert('データの取得に失敗しました');
       console.error('Error refreshing time records:', err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -99,6 +108,7 @@ const Report = () => {
               categoryManager={categoryManager} 
               onRefresh={onRefresh} 
               userId={user?.uid || ''} 
+              isLoading={isLoading}
             />
           ) : (
             <Chart timeRecords={timeRecords} categoryManager={categoryManager} onRefresh={onRefresh} />

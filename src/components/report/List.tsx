@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, FlatList, RefreshControl, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, RefreshControl, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { TimeRecordDataForGet } from '../../types/TimeRecord';
 import { styles } from '@root/src/components/report/List.styles';
 import { CategoryManager } from '@domain/Category';
@@ -16,10 +16,11 @@ interface ListProps {
   categoryManager: CategoryManager | null;
   onRefresh: () => void;
   userId: string;
+  isLoading: boolean;
 }
 
 const ReportList = (props: ListProps) => {
-  const { timeRecords, categoryManager, onRefresh, userId } = props;
+  const { timeRecords, categoryManager, onRefresh, userId, isLoading = false } = props;
   const [refreshing, setRefreshing] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState<TimeRecordDataForGet | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -102,6 +103,15 @@ const ReportList = (props: ListProps) => {
       </View>
     </TouchableOpacity>
   );
+
+  if (isLoading && timeRecords.length === 0) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#2563eb" />
+        <Text style={styles.loadingText}>読み込み中...</Text>
+      </View>
+    );
+  }
 
   if (timeRecords.length === 0) {
     return (
