@@ -6,6 +6,7 @@ import { CategoryManager } from '@domain/Category';
 import { PeriodType, PeriodSelector } from '@components/report/Chart/PeriodSelector';
 import { DailyData } from '@root/src/components/report/Chart/Daily';
 import { WeeklyData } from '@root/src/components/report/Chart/Weekly';
+import { MonthlyData } from '@root/src/components/report/Chart/Monthly';
 
 interface ChartProps {
   timeRecords: TimeRecordDataForGet[];
@@ -82,6 +83,15 @@ export const Chart = (props: ChartProps) => {
       />
       {selectedPeriod === 'week' ? (
         <WeeklyData 
+          dateRange={dateRange}
+          refreshing={refreshing}
+          handleRefresh={handleRefresh}
+          timeRecords={timeRecords}
+          onRefresh={onRefresh}
+          categoryManager={categoryManager}
+        />
+      ) : selectedPeriod === 'month' ? (
+        <MonthlyData 
           dateRange={dateRange}
           refreshing={refreshing}
           handleRefresh={handleRefresh}
