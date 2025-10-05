@@ -20,21 +20,22 @@ export type CategoryData = {
 };
 
 interface WeeklyDataProps {
-  timeRecords: TimeRecordDataForGet[];
-  categoryManager: CategoryManager;
   dateRange: {
     minDate: Date;
     maxDate: Date;
   };
-  refreshing?: boolean;
+  refreshing: boolean;
+  handleRefresh: () => void;
+  timeRecords: TimeRecordDataForGet[];
+  onRefresh: () => void;
+  categoryManager: CategoryManager;
 }
 
-export const WeeklyData = ({ 
-  timeRecords, 
-  categoryManager, 
-  dateRange, 
-  refreshing = false, 
-}: WeeklyDataProps) => {
+export const WeeklyData = (
+  { dateRange, 
+  refreshing, handleRefresh, 
+  timeRecords, onRefresh, categoryManager
+  }: WeeklyDataProps) => {
   const [formattedTimeRecords, setFormattedTimeRecords] = useState<TimeSlot[]>([]); // 時間の重複などをなくして指定した期間のデータにしたレコード
   const [selectedWeekEndDate, setSelectedWeekEndDate] = useState(() => new Date());
   const [showWeekPicker, setShowWeekPicker] = useState(false);
@@ -46,6 +47,7 @@ export const WeeklyData = ({
     newDate.setDate(newDate.getDate() - 7);
     if (newDate >= dateRange.minDate) {
       setSelectedWeekEndDate(newDate);
+      onRefresh();
     }
   };
 
@@ -55,6 +57,7 @@ export const WeeklyData = ({
     newDate.setDate(newDate.getDate() + 7);
     if (newDate <= dateRange.maxDate) {
       setSelectedWeekEndDate(newDate);
+      onRefresh();
     }
   };
 
@@ -63,6 +66,7 @@ export const WeeklyData = ({
     setShowWeekPicker(false);
     if (selectedDate) {
       setSelectedWeekEndDate(selectedDate);
+      onRefresh();
     }
   };
 
@@ -191,14 +195,12 @@ export const WeeklyData = ({
       <ScrollView
         contentContainerStyle={styles.contentContainer}
         refreshControl={
-          refreshing ? (
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={() => {}}
-              colors={['#2563eb']}
-              tintColor="#2563eb"
-            />
-          ) : undefined
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            colors={['#2563eb']}
+            tintColor="#2563eb"
+          />
         }
       >
         <View style={styles.summaryCard}>
