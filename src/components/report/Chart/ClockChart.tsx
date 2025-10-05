@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { styles } from '@root/src/components/report/Chart/ClockChart.styles';
-import { DailyTimePie } from '@root/src/components/report/Chart/DailyTimePie';
+import { TimePie } from '@root/src/components/report/Chart/TimePie';
 import { TimeSlot } from '@app-types/TimeRecord';
 
 interface ClockChartProps {
@@ -53,7 +53,7 @@ export const ClockChart = ({ formattedTimeRecords }: ClockChartProps) => {
       
       {/* SVG円グラフ */}
       <View style={styles.pieChartContainer}>
-        <DailyTimePie
+        <TimePie
           size={240}
           startAt="00:00"
           segments={segments}

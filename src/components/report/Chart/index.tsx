@@ -1,29 +1,18 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { View, Text, ScrollView, RefreshControl, TouchableOpacity } from 'react-native';
+import { View, Text } from 'react-native';
 import { TimeRecordDataForGet } from '../../../types/TimeRecord';
 import { styles } from '@root/src/components/report/Chart/index.styles';
 import { CategoryManager } from '@domain/Category';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { ClockChart } from '@components/report/Chart/ClockChart';
-import { CategoryBar } from '@components/report/Chart/CategoryBar';
 import { PRESET_COLORS } from '@app-types/Category';
 import { TimeSlot } from '@app-types/TimeRecord';
 import { PeriodType, PeriodSelector } from '@components/report/Chart/PeriodSelector';
-
-type CategoryData = {
-  categoryId: string;
-  categoryName: string;
-  totalDurationSeconds: number;
-  icon: string;
-  color: string;
-};
+import { DailyData, CategoryData } from '@components/report/Chart/DailyData';
 
 interface ChartProps {
   timeRecords: TimeRecordDataForGet[];
   categoryManager: CategoryManager | null;
   onRefresh: () => void;
 }
-
 
 export const Chart = (props: ChartProps) => {
   const { timeRecords, categoryManager, onRefresh } = props;
@@ -256,44 +245,27 @@ export const Chart = (props: ChartProps) => {
           selectedPeriod={selectedPeriod} 
           setSelectedPeriod={setSelectedPeriod} 
         />
-        <View style={styles.dateSelectorContainer}>
-          <View style={styles.dateSelectorRow}>
-            <TouchableOpacity
-              style={styles.arrowButton}
-              onPress={goToPreviousDay}
-            >
-              <Text style={styles.arrowText}>◀</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.dateSelector}
-              onPress={() => setShowDatePicker(true)}
-            >
-              <Text style={styles.dateSelectorText}>
-                📅 {selectedDate.toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' })}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.arrowButton}
-              onPress={goToNextDay}
-            >
-              <Text style={styles.arrowText}>▶</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        <DailyData 
+          filteredRecords={filteredRecords}
+          goToPreviousDay={goToPreviousDay}
+          goToNextDay={goToNextDay}
+          setShowDatePicker={setShowDatePicker}
+          selectedDate={selectedDate}
+          showDatePicker={showDatePicker}
+          onDateChange={onDateChange}
+          dateRange={dateRange}
+          refreshing={refreshing}
+          handleRefresh={handleRefresh}
+          formattedTimeRecords={formattedTimeRecords}
+          categoryData={categoryData}
+          formatDateForDisplay={formatDateForDisplay}
+          formatDuration={formatDuration}
+          getTotalDurationMinutes={getTotalDurationMinutes}
+        />
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>記録されたデータがありません</Text>
           <Text style={styles.emptySubtext}>時間記録を開始すると、ここに表示されます</Text>
         </View>
-        {showDatePicker && (
-          <DateTimePicker
-            value={selectedDate}
-            mode="date"
-            display="default"
-            onChange={onDateChange}
-            minimumDate={dateRange.minDate}
-            maximumDate={dateRange.maxDate}
-          />
-        )}
       </View>
     );
   }
@@ -304,67 +276,23 @@ export const Chart = (props: ChartProps) => {
         selectedPeriod={selectedPeriod} 
         setSelectedPeriod={setSelectedPeriod} 
       />
-      <View style={styles.dateSelectorContainer}>
-        <View style={styles.dateSelectorRow}>
-          <TouchableOpacity
-            style={styles.arrowButton}
-            onPress={goToPreviousDay}
-          >
-            <Text style={styles.arrowText}>◀</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.dateSelector}
-            onPress={() => setShowDatePicker(true)}
-          >
-            <Text style={styles.dateSelectorText}>
-              📅 {selectedDate.toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' })}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.arrowButton}
-            onPress={goToNextDay}
-          >
-            <Text style={styles.arrowText}>▶</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      {showDatePicker && (
-        <DateTimePicker
-          value={selectedDate}
-          mode="date"
-          display="default"
-          onChange={onDateChange}
-          minimumDate={dateRange.minDate}
-          maximumDate={dateRange.maxDate}
-        />
-      )}
-      <ScrollView
-        contentContainerStyle={styles.contentContainer}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            colors={['#2563eb']}
-            tintColor="#2563eb"
-          />
-        }
-      >
-        <View style={styles.summaryCard}>
-          <Text style={styles.summaryTitle}>{formatDateForDisplay(selectedDate)}</Text>
-          <Text style={styles.summaryDuration}>{formatDuration(getTotalDurationMinutes() * 60)}</Text>
-        </View>
-
-        <ClockChart 
-          formattedTimeRecords={formattedTimeRecords}
-        />
-
-        <View style={styles.chartContainer}>
-          <Text style={styles.chartTitle}>カテゴリ別作業時間</Text>
-          <CategoryBar 
-            categoryData={categoryData} 
-          />
-        </View>
-      </ScrollView>
+      <DailyData 
+        filteredRecords={filteredRecords}
+        goToPreviousDay={goToPreviousDay}
+        goToNextDay={goToNextDay}
+        setShowDatePicker={setShowDatePicker}
+        selectedDate={selectedDate}
+        showDatePicker={showDatePicker}
+        onDateChange={onDateChange}
+        dateRange={dateRange}
+        refreshing={refreshing}
+        handleRefresh={handleRefresh}
+        formattedTimeRecords={formattedTimeRecords}
+        categoryData={categoryData}
+        formatDateForDisplay={formatDateForDisplay}
+        formatDuration={formatDuration}
+        getTotalDurationMinutes={getTotalDurationMinutes}
+      />
     </View>
   );
 };
