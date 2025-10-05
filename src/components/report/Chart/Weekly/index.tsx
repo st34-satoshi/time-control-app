@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { TimeRecordDataForGet } from '@root/src/types/TimeRecord';
 import { CategoryManager } from '@domain/Category';
 import { WeekPicker } from '@components/report/Chart/Weekly/WeekPicker';
+import { EmptyData } from '@components/report/Chart/common/EmptyData';
 
 interface WeeklyDataProps {
   timeRecords: TimeRecordDataForGet[];
@@ -58,6 +59,23 @@ export const WeeklyData = ({ timeRecords, categoryManager, dateRange }: WeeklyDa
     const formattedRecords = FormatTimeRecords(timeRecords, categoryManager, startDay, endDay);
     setFormattedTimeRecords(formattedRecords);
   }, [timeRecords, selectedWeekEndDate, categoryManager]);
+
+  if (formattedTimeRecords.length === 0) {
+    return (
+      <View>
+        <WeekPicker
+          goToPreviousWeek={goToPreviousWeek}
+          goToNextWeek={goToNextWeek}
+          setShowWeekPicker={setShowWeekPicker}
+          selectedWeekEndDate={selectedWeekEndDate}
+          showWeekPicker={showWeekPicker}
+          onWeekEndDateChange={onWeekEndDateChange}
+          dateRange={dateRange}
+        />
+        <EmptyData />
+      </View>
+    );
+  }
 
   return (
     <View>

@@ -10,6 +10,7 @@ import { useState, useEffect } from 'react';
 import { CategoryManager } from '@domain/Category';
 import { PRESET_COLORS } from '@app-types/Category';
 import { FormatTimeRecords } from '@domain/Report/Chart/TimeRecordFormatter';
+import { EmptyData } from '@components/report/Chart/common/EmptyData';
 
 export type CategoryData = {
   categoryId: string;
@@ -189,10 +190,7 @@ export const DailyData = (
           onDateChange={onDateChange}
           dateRange={dateRange}
         />
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>記録されたデータがありません</Text>
-          <Text style={styles.emptySubtext}>時間記録を開始すると、ここに表示されます</Text>
-        </View>
+        <EmptyData />
       </View>
     );
   }
