@@ -8,7 +8,7 @@ interface ClockChartProps {
   formattedTimeRecords: TimeSlot[];
 }
 
-const ClockChart = ({ formattedTimeRecords }: ClockChartProps) => {
+export const ClockChart = ({ formattedTimeRecords }: ClockChartProps) => {
 
   const formatDurationMinutes = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
@@ -106,5 +106,3 @@ const ClockChart = ({ formattedTimeRecords }: ClockChartProps) => {
     </View>
   );
 };
-
-export default ClockChart;

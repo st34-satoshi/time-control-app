@@ -4,10 +4,11 @@ import { TimeRecordDataForGet } from '../../../types/TimeRecord';
 import { styles } from '@root/src/components/report/Chart/index.styles';
 import { CategoryManager } from '@domain/Category';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import ClockChart from '@root/src/components/report/Chart/ClockChart';
-import { CategoryBar } from '@root/src/components/report/Chart/CategoryBar';
+import { ClockChart } from '@components/report/Chart/ClockChart';
+import { CategoryBar } from '@components/report/Chart/CategoryBar';
 import { PRESET_COLORS } from '@app-types/Category';
 import { TimeSlot } from '@app-types/TimeRecord';
+import { PeriodType, PeriodSelector } from '@components/report/Chart/PeriodSelector';
 
 type CategoryData = {
   categoryId: string;
@@ -23,9 +24,8 @@ interface ChartProps {
   onRefresh: () => void;
 }
 
-type PeriodType = 'day' | 'week' | 'month';
 
-const Chart = (props: ChartProps) => {
+export const Chart = (props: ChartProps) => {
   const { timeRecords, categoryManager, onRefresh } = props;
   const [refreshing, setRefreshing] = useState(false);
   const [categoryData, setCategoryData] = useState<CategoryData[]>([]); // formattedTimeRecordsからカテゴリ別のデータを作成
@@ -252,52 +252,10 @@ const Chart = (props: ChartProps) => {
   if (filteredRecords.length === 0) {
     return (
       <View style={styles.container}>
-        <View style={styles.periodSelectorContainer}>
-          <View style={styles.periodSelectorRow}>
-            <TouchableOpacity
-              style={[
-                styles.periodButton,
-                selectedPeriod === 'day' && styles.periodButtonActive
-              ]}
-              onPress={() => setSelectedPeriod('day')}
-            >
-              <Text style={[
-                styles.periodButtonText,
-                selectedPeriod === 'day' && styles.periodButtonTextActive
-              ]}>
-                1日
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.periodButton,
-                selectedPeriod === 'week' && styles.periodButtonActive
-              ]}
-              onPress={() => setSelectedPeriod('week')}
-            >
-              <Text style={[
-                styles.periodButtonText,
-                selectedPeriod === 'week' && styles.periodButtonTextActive
-              ]}>
-                1週間
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.periodButton,
-                selectedPeriod === 'month' && styles.periodButtonActive
-              ]}
-              onPress={() => setSelectedPeriod('month')}
-            >
-              <Text style={[
-                styles.periodButtonText,
-                selectedPeriod === 'month' && styles.periodButtonTextActive
-              ]}>
-                1ヶ月
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        <PeriodSelector 
+          selectedPeriod={selectedPeriod} 
+          setSelectedPeriod={setSelectedPeriod} 
+        />
         <View style={styles.dateSelectorContainer}>
           <View style={styles.dateSelectorRow}>
             <TouchableOpacity
@@ -342,52 +300,10 @@ const Chart = (props: ChartProps) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.periodSelectorContainer}>
-        <View style={styles.periodSelectorRow}>
-          <TouchableOpacity
-            style={[
-              styles.periodButton,
-              selectedPeriod === 'day' && styles.periodButtonActive
-            ]}
-            onPress={() => setSelectedPeriod('day')}
-          >
-            <Text style={[
-              styles.periodButtonText,
-              selectedPeriod === 'day' && styles.periodButtonTextActive
-            ]}>
-              1日
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.periodButton,
-              selectedPeriod === 'week' && styles.periodButtonActive
-            ]}
-            onPress={() => setSelectedPeriod('week')}
-          >
-            <Text style={[
-              styles.periodButtonText,
-              selectedPeriod === 'week' && styles.periodButtonTextActive
-            ]}>
-              1週間
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.periodButton,
-              selectedPeriod === 'month' && styles.periodButtonActive
-            ]}
-            onPress={() => setSelectedPeriod('month')}
-          >
-            <Text style={[
-              styles.periodButtonText,
-              selectedPeriod === 'month' && styles.periodButtonTextActive
-            ]}>
-              1ヶ月
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      <PeriodSelector 
+        selectedPeriod={selectedPeriod} 
+        setSelectedPeriod={setSelectedPeriod} 
+      />
       <View style={styles.dateSelectorContainer}>
         <View style={styles.dateSelectorRow}>
           <TouchableOpacity
@@ -452,5 +368,3 @@ const Chart = (props: ChartProps) => {
     </View>
   );
 };
-
-export default Chart;

@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import { styles } from '@root/src/components/common/HeaderTab.styles';
 import ReportList from '@components/report/List';
-import Chart from '@root/src/components/report/Chart';
+import { Chart } from '@root/src/components/report/Chart/index';
 import { useAuth } from '@contexts/AuthContext';
 import { TimeRecordDataForGet } from '../../types/TimeRecord';
 import { CategoryManager } from '@domain/Category';
