@@ -1,11 +1,11 @@
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text } from 'react-native';
 import { styles } from '@components/report/Chart/DailyData.styles';
 import { TimeRecordDataForGet } from '@root/src/types/TimeRecord';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { ScrollView, RefreshControl } from 'react-native';
 import { ClockChart } from '@components/report/Chart/ClockChart';
 import { CategoryBar } from '@components/report/Chart/CategoryBar';
 import { TimeSlot } from '@root/src/types/TimeRecord';
+import { DatePicker } from '@components/report/Chart/DatePicker';
 
 export type CategoryData = {
   categoryId: string;
@@ -43,80 +43,30 @@ export const DailyData = (
   if (filteredRecords.length === 0) {
     return (
       <View>
-        <View style={styles.dateSelectorContainer}>
-          <View style={styles.dateSelectorRow}>
-            <TouchableOpacity
-              style={styles.arrowButton}
-              onPress={goToPreviousDay}
-            >
-              <Text style={styles.arrowText}>◀</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.dateSelector}
-              onPress={() => setShowDatePicker(true)}
-            >
-              <Text style={styles.dateSelectorText}>
-                📅 {selectedDate.toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' })}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.arrowButton}
-              onPress={goToNextDay}
-            >
-              <Text style={styles.arrowText}>▶</Text>
-            </TouchableOpacity>
-          </View>
-          {showDatePicker && (
-            <DateTimePicker
-              value={selectedDate}
-              mode="date"
-              display="default"
-              onChange={onDateChange}
-              minimumDate={dateRange.minDate}
-              maximumDate={dateRange.maxDate}
-            />
-          )}
-        </View>
+        <DatePicker
+          goToPreviousDay={goToPreviousDay}
+          goToNextDay={goToNextDay}
+          setShowDatePicker={setShowDatePicker}
+          selectedDate={selectedDate}
+          showDatePicker={showDatePicker}
+          onDateChange={onDateChange}
+          dateRange={dateRange}
+        />
       </View>
     );
   }
 
   return (
     <View>
-      <View style={styles.dateSelectorContainer}>
-        <View style={styles.dateSelectorRow}>
-          <TouchableOpacity
-            style={styles.arrowButton}
-            onPress={goToPreviousDay}
-          >
-            <Text style={styles.arrowText}>◀</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.dateSelector}
-            onPress={() => setShowDatePicker(true)}
-          >
-            <Text style={styles.dateSelectorText}>
-              📅 {selectedDate.toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' })}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.arrowButton}
-            onPress={goToNextDay}
-          >
-            <Text style={styles.arrowText}>▶</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      {showDatePicker && (
-        <DateTimePicker
-          value={selectedDate}
-          mode="date"
-          display="default"
-          onChange={onDateChange}
-          minimumDate={dateRange.minDate}
-          maximumDate={dateRange.maxDate}
-        />
-      )}
+      <DatePicker
+        goToPreviousDay={goToPreviousDay}
+        goToNextDay={goToNextDay}
+        setShowDatePicker={setShowDatePicker}
+        selectedDate={selectedDate}
+        showDatePicker={showDatePicker}
+        onDateChange={onDateChange}
+        dateRange={dateRange}
+      />
       <ScrollView
         contentContainerStyle={styles.contentContainer}
         refreshControl={
