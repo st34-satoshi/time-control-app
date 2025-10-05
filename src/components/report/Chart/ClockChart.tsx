@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
-import { styles } from '@root/src/components/report/ClockChart.styles';
-import { DailyTimePie } from '@components/report/DailyTimePie';
+import { styles } from '@root/src/components/report/Chart/ClockChart.styles';
+import { DailyTimePie } from '@root/src/components/report/Chart/DailyTimePie';
 import { TimeSlot } from '@app-types/TimeRecord';
 
 interface ClockChartProps {

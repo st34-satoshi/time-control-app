@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { View, Text, ScrollView, RefreshControl, TouchableOpacity } from 'react-native';
-import { TimeRecordDataForGet } from '../../types/TimeRecord';
-import { styles } from '@components/report/Chart.styles';
+import { TimeRecordDataForGet } from '../../../types/TimeRecord';
+import { styles } from '@root/src/components/report/Chart/index.styles';
 import { CategoryManager } from '@domain/Category';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import ClockChart from '@components/report/ClockChart';
-import { CategoryBar } from '@components/report/CategoryBar';
+import ClockChart from '@root/src/components/report/Chart/ClockChart';
+import { CategoryBar } from '@root/src/components/report/Chart/CategoryBar';
 import { PRESET_COLORS } from '@app-types/Category';
 import { TimeSlot } from '@app-types/TimeRecord';
 
