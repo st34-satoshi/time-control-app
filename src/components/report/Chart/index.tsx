@@ -81,7 +81,7 @@ export const Chart = (props: ChartProps) => {
         setSelectedPeriod={setSelectedPeriod} 
       />
       {selectedPeriod === 'week' ? (
-        <WeeklyData />
+        <WeeklyData timeRecords={timeRecords} categoryManager={categoryManager} dateRange={dateRange} />
       ) : (
         <DailyData 
           dateRange={dateRange}
