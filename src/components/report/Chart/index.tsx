@@ -1,10 +1,11 @@
 import React, { useState, useMemo } from 'react';
-import { View } from 'react-native';
+import { View, Text } from 'react-native';
 import { TimeRecordDataForGet } from '../../../types/TimeRecord';
 import { styles } from '@root/src/components/report/Chart/index.styles';
 import { CategoryManager } from '@domain/Category';
 import { PeriodType, PeriodSelector } from '@components/report/Chart/PeriodSelector';
-import { DailyData } from '@components/report/Chart/DailyData';
+import { DailyData } from '@root/src/components/report/Chart/Daily';
+import { WeeklyData } from '@root/src/components/report/Chart/Weekly';
 
 interface ChartProps {
   timeRecords: TimeRecordDataForGet[];
@@ -65,20 +66,32 @@ export const Chart = (props: ChartProps) => {
     }
   };
 
+  if (categoryManager === null) {
+    return (
+      <View style={styles.container}>
+        <Text>データの取得に失敗しました。しばらく経ってから再度お試しください。</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <PeriodSelector 
         selectedPeriod={selectedPeriod} 
         setSelectedPeriod={setSelectedPeriod} 
       />
-      <DailyData 
-        dateRange={dateRange}
-        refreshing={refreshing}
-        handleRefresh={handleRefresh}
-        timeRecords={timeRecords}
-        onRefresh={onRefresh}
-        categoryManager={categoryManager}
-      />
+      {selectedPeriod === 'week' ? (
+        <WeeklyData />
+      ) : (
+        <DailyData 
+          dateRange={dateRange}
+          refreshing={refreshing}
+          handleRefresh={handleRefresh}
+          timeRecords={timeRecords}
+          onRefresh={onRefresh}
+          categoryManager={categoryManager}
+        />
+      )}
     </View>
   );
 };

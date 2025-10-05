@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
-import { styles } from '@root/src/components/report/Chart/ClockChart.styles';
-import { TimePie } from '@root/src/components/report/Chart/TimePie';
+import { styles } from '@root/src/components/report/Chart/common/ClockChart.styles';
+import { TimePie } from '@root/src/components/report/Chart/common/TimePie';
 import { TimeSlot } from '@app-types/TimeRecord';
 
 interface ClockChartProps {

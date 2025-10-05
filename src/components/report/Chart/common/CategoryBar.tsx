@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native';
-import { styles } from '@root/src/components/report/Chart/CategoryBar.styles';
+import { styles } from '@root/src/components/report/Chart/common/CategoryBar.styles';
 
 type CategoryData = {
   categoryId: string;

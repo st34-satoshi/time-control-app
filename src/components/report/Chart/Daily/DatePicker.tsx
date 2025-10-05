@@ -1,6 +1,6 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { View } from 'react-native';
-import { styles } from '@components/report/Chart/DatePicker.styles';
+import { styles } from '@root/src/components/report/Chart/Daily/DatePicker.styles';
 import { TouchableOpacity } from 'react-native';
 import { Text } from 'react-native';
 

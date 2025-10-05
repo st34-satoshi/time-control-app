@@ -1,11 +1,11 @@
 import { View, Text } from 'react-native';
-import { styles } from '@components/report/Chart/DailyData.styles';
+import { styles } from '@root/src/components/report/Chart/Daily/index.styles';
 import { TimeRecordDataForGet } from '@root/src/types/TimeRecord';
 import { ScrollView, RefreshControl } from 'react-native';
-import { ClockChart } from '@components/report/Chart/ClockChart';
-import { CategoryBar } from '@components/report/Chart/CategoryBar';
+import { ClockChart } from '@root/src/components/report/Chart/common/ClockChart';
+import { CategoryBar } from '@root/src/components/report/Chart/common/CategoryBar';
 import { TimeSlot } from '@root/src/types/TimeRecord';
-import { DatePicker } from '@components/report/Chart/DatePicker';
+import { DatePicker } from '@root/src/components/report/Chart/Daily/DatePicker';
 import { useState, useEffect } from 'react';
 import { CategoryManager } from '@domain/Category';
 import { PRESET_COLORS } from '@app-types/Category';
@@ -27,7 +27,7 @@ interface DailyDataProps {
   handleRefresh: () => void;
   timeRecords: TimeRecordDataForGet[];
   onRefresh: () => void;
-  categoryManager: CategoryManager | null;
+  categoryManager: CategoryManager;
 }
 
 export const DailyData = (
@@ -209,7 +209,6 @@ export const DailyData = (
 
   if (filteredRecords.length === 0) {
     return (
-
       <View>
         <DatePicker
           goToPreviousDay={goToPreviousDay}
