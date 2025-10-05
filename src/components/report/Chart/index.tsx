@@ -1,12 +1,10 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { View, Text } from 'react-native';
+import React, { useState, useMemo } from 'react';
+import { View } from 'react-native';
 import { TimeRecordDataForGet } from '../../../types/TimeRecord';
 import { styles } from '@root/src/components/report/Chart/index.styles';
 import { CategoryManager } from '@domain/Category';
-import { PRESET_COLORS } from '@app-types/Category';
-import { TimeSlot } from '@app-types/TimeRecord';
 import { PeriodType, PeriodSelector } from '@components/report/Chart/PeriodSelector';
-import { DailyData, CategoryData } from '@components/report/Chart/DailyData';
+import { DailyData } from '@components/report/Chart/DailyData';
 
 interface ChartProps {
   timeRecords: TimeRecordDataForGet[];
@@ -17,11 +15,6 @@ interface ChartProps {
 export const Chart = (props: ChartProps) => {
   const { timeRecords, categoryManager, onRefresh } = props;
   const [refreshing, setRefreshing] = useState(false);
-  const [categoryData, setCategoryData] = useState<CategoryData[]>([]); // formattedTimeRecordsからカテゴリ別のデータを作成
-  const [selectedDate, setSelectedDate] = useState(() => new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [filteredRecords, setFilteredRecords] = useState<TimeRecordDataForGet[]>([]); // 日付てフィルタリングされたデータ
-  const [formattedTimeRecords, setFormattedTimeRecords] = useState<TimeSlot[]>([]); // 時間の重複などをなくして0~24時までのデータにしたレコード
   const [selectedPeriod, setSelectedPeriod] = useState<PeriodType>('day'); // 期間選択の状態
 
   // timeRecordsから日付の範囲を計算（メモ化）
@@ -72,204 +65,6 @@ export const Chart = (props: ChartProps) => {
     }
   };
 
-  // 選択した日付でレコードをフィルタリング
-  const filterRecordsByDate = (records: TimeRecordDataForGet[], date: Date) => {
-    const startOfDay = new Date(date);
-    startOfDay.setHours(0, 0, 0, 0);
-    
-    const endOfDay = new Date(date);
-    endOfDay.setHours(23, 59, 59, 999);
-    
-    return records.filter(record => {
-      const recordStartDate = new Date(record.startTime.seconds * 1000);
-      const recordEndDate = new Date(record.endTime.seconds * 1000);
-      return recordStartDate <= endOfDay && recordEndDate >= startOfDay;
-    });
-  };
-
-  // 日付が変更されたときにレコードをフィルタリング
-  useEffect(() => {
-    const filtered = filterRecordsByDate(timeRecords, selectedDate);
-    setFilteredRecords(filtered);
-  }, [timeRecords, selectedDate]);
-
-  const onDateChange = (event: any, selectedDate?: Date) => {
-    setShowDatePicker(false);
-    if (selectedDate) {
-      // 日付が有効な範囲内かチェック
-      const { minDate, maxDate } = dateRange;
-      if (selectedDate >= minDate && selectedDate <= maxDate) {
-        setSelectedDate(selectedDate);
-        onRefresh();
-      }
-    }
-  };
-
-  // 前日に移動
-  const goToPreviousDay = () => {
-    const previousDay = new Date(selectedDate);
-    previousDay.setDate(previousDay.getDate() - 1);
-    
-    const { minDate, maxDate } = dateRange;
-    if (previousDay >= minDate && previousDay <= maxDate) {
-      setSelectedDate(previousDay);
-      onRefresh();
-    }
-  };
-
-  // 後日に移動
-  const goToNextDay = () => {
-    const nextDay = new Date(selectedDate);
-    nextDay.setDate(nextDay.getDate() + 1);
-    
-    const { minDate, maxDate } = dateRange;
-    if (nextDay >= minDate && nextDay <= maxDate) {
-      setSelectedDate(nextDay);
-      onRefresh();
-    }
-  };
-
-  const isToday = (date: Date) => {
-    const today = new Date();
-    return date.toDateString() === today.toDateString();
-  };
-
-  const formatDateForDisplay = (date: Date) => {
-    if (isToday(date)) {
-      return '今日の総作業時間';
-    }
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    return `${month}月${day}日の総作業時間`;
-  };
-
-  // カテゴリ別の集計データを計算
-  useEffect(() => {
-    if (formattedTimeRecords.length > 0 && categoryManager) {
-      const categoryMap = new Map<string, { totalDurationSeconds: number; categoryName: string; icon: string; color: string }>();
-      
-      formattedTimeRecords.forEach(record => {
-        const category = record.category;
-        const categoryName = category?.label || 'Unknown';
-        const icon = category?.icon || '📋';
-        const color = category?.color || '#3b82f6'; // デフォルトカラー
-        
-        if (categoryMap.has(record.category.id!)) {
-          const existing = categoryMap.get(record.category.id!)!;
-          existing.totalDurationSeconds += record.durationMinutes * 60;
-        } else {
-          categoryMap.set(record.category.id!, {
-            totalDurationSeconds: record.durationMinutes * 60,
-            categoryName,
-            icon,
-            color
-          });
-        }
-      });
-
-      // フォールバック用の色配列（カテゴリに色が設定されていない場合）
-      const fallbackColors = PRESET_COLORS;
-      
-      const data: CategoryData[] = Array.from(categoryMap.entries()).map(([categoryId, data], index) => ({
-        categoryId,
-        categoryName: data.categoryName,
-        totalDurationSeconds: data.totalDurationSeconds,
-        icon: data.icon,
-        color: data.color || fallbackColors[index % fallbackColors.length]
-      }));
-
-      // 時間の長い順にソート
-      data.sort((a, b) => b.totalDurationSeconds - a.totalDurationSeconds);
-      setCategoryData(data);
-    } else {
-      setCategoryData([]);
-    }
-  }, [formattedTimeRecords, categoryManager]);
-
-  // formattedTimeRecordsを作成
-  useEffect(() => {
-    // 時間順にソート
-    const sortedRecords = [...timeRecords].sort((a, b) => a.startTime.seconds - b.startTime.seconds);
-    
-    const formattedRecords: TimeSlot[] = [];
-    let lastTime = new Date(selectedDate.setHours(0, 0, 0, 0));
-    const endOfDay = new Date(selectedDate.setHours(23, 59, 59, 999));
-    for (let i = 0; i < sortedRecords.length; i++) {
-      const record = sortedRecords[i];
-      let startTime = new Date(record.startTime.seconds * 1000);
-      let endTime = new Date(record.endTime.seconds * 1000);
-      if (startTime > endOfDay) {
-        continue;
-      }
-      if (endTime > endOfDay) {
-        endTime = endOfDay;
-      }
-      if (endTime < lastTime) {
-        continue;
-      }
-      if (startTime < lastTime) {
-        startTime = lastTime;
-      }
-
-      const category = categoryManager?.getAllCategories().find(cat => cat.id === record.categoryId) || { id: '', value: 'Unknown', label: 'Unknown', icon: '📋', color: '#3b82f6' };
-      formattedRecords.push({
-        category,
-        categoryColor: category.color || PRESET_COLORS[i % PRESET_COLORS.length],
-        startTime,
-        endTime,
-        task: record.task,
-        durationMinutes: (endTime.getTime() - startTime.getTime()) / 1000 / 60
-      });
-      lastTime = endTime;
-    }
-    setFormattedTimeRecords(formattedRecords);
-  }, [timeRecords]);
-
-  const formatDuration = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    if (hours > 0) {
-      return `${hours}h ${minutes}m`;
-    }
-    return `${minutes}m`;
-  };
-
-  const getTotalDurationMinutes = () => {
-    return formattedTimeRecords.reduce((total, record) => total + record.durationMinutes, 0);
-  };
-
-  if (filteredRecords.length === 0) {
-    return (
-      <View style={styles.container}>
-        <PeriodSelector 
-          selectedPeriod={selectedPeriod} 
-          setSelectedPeriod={setSelectedPeriod} 
-        />
-        <DailyData 
-          filteredRecords={filteredRecords}
-          goToPreviousDay={goToPreviousDay}
-          goToNextDay={goToNextDay}
-          setShowDatePicker={setShowDatePicker}
-          selectedDate={selectedDate}
-          showDatePicker={showDatePicker}
-          onDateChange={onDateChange}
-          dateRange={dateRange}
-          refreshing={refreshing}
-          handleRefresh={handleRefresh}
-          formattedTimeRecords={formattedTimeRecords}
-          categoryData={categoryData}
-          formatDateForDisplay={formatDateForDisplay}
-          formatDuration={formatDuration}
-          getTotalDurationMinutes={getTotalDurationMinutes}
-        />
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>記録されたデータがありません</Text>
-          <Text style={styles.emptySubtext}>時間記録を開始すると、ここに表示されます</Text>
-        </View>
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
       <PeriodSelector 
@@ -277,21 +72,12 @@ export const Chart = (props: ChartProps) => {
         setSelectedPeriod={setSelectedPeriod} 
       />
       <DailyData 
-        filteredRecords={filteredRecords}
-        goToPreviousDay={goToPreviousDay}
-        goToNextDay={goToNextDay}
-        setShowDatePicker={setShowDatePicker}
-        selectedDate={selectedDate}
-        showDatePicker={showDatePicker}
-        onDateChange={onDateChange}
         dateRange={dateRange}
         refreshing={refreshing}
         handleRefresh={handleRefresh}
-        formattedTimeRecords={formattedTimeRecords}
-        categoryData={categoryData}
-        formatDateForDisplay={formatDateForDisplay}
-        formatDuration={formatDuration}
-        getTotalDurationMinutes={getTotalDurationMinutes}
+        timeRecords={timeRecords}
+        onRefresh={onRefresh}
+        categoryManager={categoryManager}
       />
     </View>
   );
