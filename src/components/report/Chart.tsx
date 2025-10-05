@@ -23,6 +23,8 @@ interface ChartProps {
   onRefresh: () => void;
 }
 
+type PeriodType = 'day' | 'week' | 'month';
+
 const Chart = (props: ChartProps) => {
   const { timeRecords, categoryManager, onRefresh } = props;
   const [refreshing, setRefreshing] = useState(false);
@@ -31,6 +33,7 @@ const Chart = (props: ChartProps) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [filteredRecords, setFilteredRecords] = useState<TimeRecordDataForGet[]>([]); // 日付てフィルタリングされたデータ
   const [formattedTimeRecords, setFormattedTimeRecords] = useState<TimeSlot[]>([]); // 時間の重複などをなくして0~24時までのデータにしたレコード
+  const [selectedPeriod, setSelectedPeriod] = useState<PeriodType>('day'); // 期間選択の状態
 
   // timeRecordsから日付の範囲を計算（メモ化）
   const dateRange = useMemo(() => {
@@ -249,30 +252,76 @@ const Chart = (props: ChartProps) => {
   if (filteredRecords.length === 0) {
     return (
       <View style={styles.container}>
-      <View style={styles.dateSelectorContainer}>
-        <View style={styles.dateSelectorRow}>
-          <TouchableOpacity
-            style={styles.arrowButton}
-            onPress={goToPreviousDay}
-          >
-            <Text style={styles.arrowText}>◀</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.dateSelector}
-            onPress={() => setShowDatePicker(true)}
-          >
-            <Text style={styles.dateSelectorText}>
-              📅 {selectedDate.toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' })}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.arrowButton}
-            onPress={goToNextDay}
-          >
-            <Text style={styles.arrowText}>▶</Text>
-          </TouchableOpacity>
+        <View style={styles.periodSelectorContainer}>
+          <View style={styles.periodSelectorRow}>
+            <TouchableOpacity
+              style={[
+                styles.periodButton,
+                selectedPeriod === 'day' && styles.periodButtonActive
+              ]}
+              onPress={() => setSelectedPeriod('day')}
+            >
+              <Text style={[
+                styles.periodButtonText,
+                selectedPeriod === 'day' && styles.periodButtonTextActive
+              ]}>
+                1日
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.periodButton,
+                selectedPeriod === 'week' && styles.periodButtonActive
+              ]}
+              onPress={() => setSelectedPeriod('week')}
+            >
+              <Text style={[
+                styles.periodButtonText,
+                selectedPeriod === 'week' && styles.periodButtonTextActive
+              ]}>
+                1週間
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.periodButton,
+                selectedPeriod === 'month' && styles.periodButtonActive
+              ]}
+              onPress={() => setSelectedPeriod('month')}
+            >
+              <Text style={[
+                styles.periodButtonText,
+                selectedPeriod === 'month' && styles.periodButtonTextActive
+              ]}>
+                1ヶ月
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+        <View style={styles.dateSelectorContainer}>
+          <View style={styles.dateSelectorRow}>
+            <TouchableOpacity
+              style={styles.arrowButton}
+              onPress={goToPreviousDay}
+            >
+              <Text style={styles.arrowText}>◀</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.dateSelector}
+              onPress={() => setShowDatePicker(true)}
+            >
+              <Text style={styles.dateSelectorText}>
+                📅 {selectedDate.toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' })}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.arrowButton}
+              onPress={goToNextDay}
+            >
+              <Text style={styles.arrowText}>▶</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>記録されたデータがありません</Text>
           <Text style={styles.emptySubtext}>時間記録を開始すると、ここに表示されます</Text>
@@ -293,6 +342,52 @@ const Chart = (props: ChartProps) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.periodSelectorContainer}>
+        <View style={styles.periodSelectorRow}>
+          <TouchableOpacity
+            style={[
+              styles.periodButton,
+              selectedPeriod === 'day' && styles.periodButtonActive
+            ]}
+            onPress={() => setSelectedPeriod('day')}
+          >
+            <Text style={[
+              styles.periodButtonText,
+              selectedPeriod === 'day' && styles.periodButtonTextActive
+            ]}>
+              1日
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.periodButton,
+              selectedPeriod === 'week' && styles.periodButtonActive
+            ]}
+            onPress={() => setSelectedPeriod('week')}
+          >
+            <Text style={[
+              styles.periodButtonText,
+              selectedPeriod === 'week' && styles.periodButtonTextActive
+            ]}>
+              1週間
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.periodButton,
+              selectedPeriod === 'month' && styles.periodButtonActive
+            ]}
+            onPress={() => setSelectedPeriod('month')}
+          >
+            <Text style={[
+              styles.periodButtonText,
+              selectedPeriod === 'month' && styles.periodButtonTextActive
+            ]}>
+              1ヶ月
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
       <View style={styles.dateSelectorContainer}>
         <View style={styles.dateSelectorRow}>
           <TouchableOpacity
