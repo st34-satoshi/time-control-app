@@ -1,14 +1,14 @@
 import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
-import { styles } from '@root/src/components/report/ClockChart.styles';
-import { DailyTimePie } from '@components/report/DailyTimePie';
+import { styles } from '@root/src/components/report/Chart/common/ClockChart.styles';
+import { TimePie } from '@root/src/components/report/Chart/common/TimePie';
 import { TimeSlot } from '@app-types/TimeRecord';
 
 interface ClockChartProps {
   formattedTimeRecords: TimeSlot[];
 }
 
-const ClockChart = ({ formattedTimeRecords }: ClockChartProps) => {
+export const ClockChart = ({ formattedTimeRecords }: ClockChartProps) => {
 
   const formatDurationMinutes = (minutes: number) => {
     const hours = Math.floor(minutes / 60);
@@ -53,7 +53,7 @@ const ClockChart = ({ formattedTimeRecords }: ClockChartProps) => {
       
       {/* SVG円グラフ */}
       <View style={styles.pieChartContainer}>
-        <DailyTimePie
+        <TimePie
           size={240}
           startAt="00:00"
           segments={segments}
@@ -106,5 +106,3 @@ const ClockChart = ({ formattedTimeRecords }: ClockChartProps) => {
     </View>
   );
 };
-
-export default ClockChart;

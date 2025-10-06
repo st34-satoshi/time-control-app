@@ -55,7 +55,7 @@ const sectorPath = (
   ].join(' ');
 };
 
-export const DailyTimePie: React.FC<Props> = ({
+export const TimePie: React.FC<Props> = ({
   size = 280,
   startAt = '00:00',
   segments,
