@@ -9,7 +9,7 @@ import {
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { TimeRecordDataForGet, TimeRecordFormData } from '../../types/TimeRecord';
 import { Category } from '../../types/Category';
 import { CategoryManager } from '@domain/Category';
@@ -197,19 +197,21 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({
             >
               <Text style={styles.dateTimeText}>{formatDateTime(formData.startTime)}</Text>
             </TouchableOpacity>
-            {showStartTimePicker && (
-              <DateTimePicker
-                value={formData.startTime}
-                mode="datetime"
-                display="default"
-                onChange={(event, selectedDate) => {
-                  setShowStartTimePicker(false);
-                  if (selectedDate) {
-                    setFormData({ ...formData, startTime: selectedDate });
-                  }
-                }}
-              />
-            )}
+            <DateTimePickerModal
+              isVisible={showStartTimePicker}
+              mode="datetime"
+              onConfirm={(selectedDate) => {
+                setShowStartTimePicker(false);
+                setFormData({ ...formData, startTime: selectedDate });
+              }}
+              onCancel={() => setShowStartTimePicker(false)}
+              date={formData.startTime}
+              is24Hour={true}
+              locale="ja"
+              confirmTextIOS="決定"
+              cancelTextIOS="キャンセル"
+              maximumDate={new Date(Date.now() + 24 * 60 * 60 * 1000)} // 明日までの日時を選択可能
+            />
           </View>
 
           {/* 終了時間 */}
@@ -221,19 +223,21 @@ const EditRecordModal: React.FC<EditRecordModalProps> = ({
             >
               <Text style={styles.dateTimeText}>{formatDateTime(formData.endTime)}</Text>
             </TouchableOpacity>
-            {showEndTimePicker && (
-              <DateTimePicker
-                value={formData.endTime}
-                mode="datetime"
-                display="default"
-                onChange={(event, selectedDate) => {
-                  setShowEndTimePicker(false);
-                  if (selectedDate) {
-                    setFormData({ ...formData, endTime: selectedDate });
-                  }
-                }}
-              />
-            )}
+            <DateTimePickerModal
+              isVisible={showEndTimePicker}
+              mode="datetime"
+              onConfirm={(selectedDate) => {
+                setShowEndTimePicker(false);
+                setFormData({ ...formData, endTime: selectedDate });
+              }}
+              onCancel={() => setShowEndTimePicker(false)}
+              date={formData.endTime}
+              is24Hour={true}
+              locale="ja"
+              confirmTextIOS="決定"
+              cancelTextIOS="キャンセル"
+              maximumDate={new Date(Date.now() + 24 * 60 * 60 * 1000)} // 明日までの日時を選択可能
+            />
           </View>
 
           {/* 削除ボタン */}

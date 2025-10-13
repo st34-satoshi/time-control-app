@@ -184,7 +184,7 @@ const PastWorkRecord = () => {
           locale="ja"
           confirmTextIOS="決定"
           cancelTextIOS="キャンセル"
-          maximumDate={new Date()} // 今日以前の日時のみ選択可能
+          maximumDate={new Date(Date.now() + 24 * 60 * 60 * 1000)} // 明日までの日時を選択可能
         />
 
         {/* End DateTime Picker */}
@@ -197,7 +197,7 @@ const PastWorkRecord = () => {
           locale="ja"
           confirmTextIOS="決定"
           cancelTextIOS="キャンセル"
-          maximumDate={new Date()} // 今日以前の日時のみ選択可能
+          maximumDate={new Date(Date.now() + 24 * 60 * 60 * 1000)} // 明日までの日時を選択可能
         />
         
         {pastStartDateTime && pastEndDateTime && (
