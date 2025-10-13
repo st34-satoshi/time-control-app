@@ -100,15 +100,12 @@ export const DailyData = (
     }
   }, [formattedTimeRecords, categoryManager]);
 
-  const onDateChange = (event: any, selectedDate?: Date) => {
-    setShowDatePicker(false);
-    if (selectedDate) {
-      // 日付が有効な範囲内かチェック
-      const { minDate, maxDate } = dateRange;
-      if (selectedDate >= minDate && selectedDate <= maxDate) {
-        setSelectedDate(selectedDate);
-        onRefresh();
-      }
+  const onDateChange = (selectedDate: Date) => {
+    // 日付が有効な範囲内かチェック
+    const { minDate, maxDate } = dateRange;
+    if (selectedDate >= minDate && selectedDate <= maxDate) {
+      setSelectedDate(selectedDate);
+      onRefresh();
     }
   };
 

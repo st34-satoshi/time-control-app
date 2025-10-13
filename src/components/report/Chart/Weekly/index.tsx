@@ -62,12 +62,9 @@ export const WeeklyData = (
   };
 
   // 週の終了日が変更されたときの処理
-  const onWeekEndDateChange = (event: any, selectedDate?: Date) => {
-    setShowWeekPicker(false);
-    if (selectedDate) {
-      setSelectedWeekEndDate(selectedDate);
-      onRefresh();
-    }
+  const onWeekEndDateChange = (selectedDate: Date) => {
+    setSelectedWeekEndDate(selectedDate);
+    onRefresh();
   };
 
   useEffect(() => {

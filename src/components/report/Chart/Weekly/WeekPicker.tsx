@@ -1,4 +1,4 @@
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { View, TouchableOpacity, Text } from 'react-native';
 import { styles } from '@root/src/components/report/Chart/Weekly/WeekPicker.styles';
 
@@ -8,7 +8,7 @@ interface WeekPickerProps {
   setShowWeekPicker: (show: boolean) => void;
   selectedWeekEndDate: Date;
   showWeekPicker: boolean;
-  onWeekEndDateChange: (event: any, selectedDate?: Date) => void;
+  onWeekEndDateChange: (selectedDate: Date) => void;
   dateRange: {
     minDate: Date;
     maxDate: Date;
@@ -68,16 +68,21 @@ export const WeekPicker = ({
             <Text style={styles.arrowText}>▶</Text>
           </TouchableOpacity>
         </View>
-        {showWeekPicker && (
-          <DateTimePicker
-            value={selectedWeekEndDate}
-            mode="date"
-            display="default"
-            onChange={onWeekEndDateChange}
-            minimumDate={dateRange.minDate}
-            maximumDate={dateRange.maxDate}
-          />
-        )}
+        <DateTimePickerModal
+          isVisible={showWeekPicker}
+          mode="date"
+          onConfirm={(selectedDate) => {
+            setShowWeekPicker(false);
+            onWeekEndDateChange(selectedDate);
+          }}
+          onCancel={() => setShowWeekPicker(false)}
+          date={selectedWeekEndDate}
+          minimumDate={dateRange.minDate}
+          maximumDate={dateRange.maxDate}
+          locale="ja"
+          confirmTextIOS="決定"
+          cancelTextIOS="キャンセル"
+        />
       </View>
     </View>
   );

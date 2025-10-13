@@ -1,4 +1,4 @@
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { View } from 'react-native';
 import { styles } from '@root/src/components/report/Chart/Daily/DatePicker.styles';
 import { TouchableOpacity } from 'react-native';
@@ -11,7 +11,7 @@ interface DatePickerProps {
   setShowDatePicker: (show: boolean) => void;
   selectedDate: Date;
   showDatePicker: boolean;
-  onDateChange: (event: any, selectedDate?: Date) => void;
+  onDateChange: (selectedDate: Date) => void;
   dateRange: {
     minDate: Date;
     maxDate: Date;
@@ -44,16 +44,21 @@ export const DatePicker = ({ goToPreviousDay, goToNextDay, setShowDatePicker, se
             <Text style={styles.arrowText}>▶</Text>
           </TouchableOpacity>
         </View>
-        {showDatePicker && (
-          <DateTimePicker
-            value={selectedDate}
-            mode="date"
-            display="default"
-            onChange={onDateChange}
-            minimumDate={dateRange.minDate}
-            maximumDate={dateRange.maxDate}
-          />
-        )}
+        <DateTimePickerModal
+          isVisible={showDatePicker}
+          mode="date"
+          onConfirm={(selectedDate) => {
+            setShowDatePicker(false);
+            onDateChange(selectedDate);
+          }}
+          onCancel={() => setShowDatePicker(false)}
+          date={selectedDate}
+          minimumDate={dateRange.minDate}
+          maximumDate={dateRange.maxDate}
+          locale="ja"
+          confirmTextIOS="決定"
+          cancelTextIOS="キャンセル"
+        />
       </View>
     </View>
   );
