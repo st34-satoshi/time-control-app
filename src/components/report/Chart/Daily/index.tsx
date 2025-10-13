@@ -159,11 +159,11 @@ export const DailyData = (
 
   const formatDateForDisplay = (date: Date) => {
     if (isToday(date)) {
-      return '今日の総作業時間';
+      return '今日の記録時間合計';
     }
     const month = date.getMonth() + 1;
     const day = date.getDate();
-    return `${month}月${day}日の総作業時間`;
+    return `${month}月${day}日の記録時間合計`;
   };
 
   const formatDuration = (seconds: number) => {

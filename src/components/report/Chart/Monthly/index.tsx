@@ -204,7 +204,7 @@ export const MonthlyData = (
       >
         <View style={styles.summaryCard}>
           <Text style={styles.summaryTitle}>
-            {selectedMonth.getMonth() + 1}月({getMonthTotalHours()}時間)の総作業時間
+            {selectedMonth.getMonth() + 1}月({getMonthTotalHours()}時間)の記録時間合計
           </Text>
           <Text style={styles.summaryDuration}>
             {formatDuration(getTotalDurationMinutes() * 60)} ({((getTotalDurationMinutes() * 60) / (getMonthTotalHours() * 3600) * 100).toFixed(1)}%)

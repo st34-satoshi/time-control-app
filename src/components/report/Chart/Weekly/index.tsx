@@ -201,7 +201,7 @@ export const WeeklyData = (
         }
       >
         <View style={styles.summaryCard}>
-          <Text style={styles.summaryTitle}>1週間(168時間)の総作業時間</Text>
+          <Text style={styles.summaryTitle}>1週間(168時間)の記録時間合計</Text>
           <Text style={styles.summaryDuration}>
             {formatDuration(getTotalDurationMinutes() * 60)} ({((getTotalDurationMinutes() * 60) / (168 * 3600) * 100).toFixed(1)}%)
           </Text>
