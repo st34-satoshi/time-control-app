@@ -27,12 +27,12 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     orientation: "portrait",
     icon: "./assets/time-control-app-24-icon.png",
     userInterfaceStyle: "light",
-    newArchEnabled: true,
-    splash: {
+    plugins: [["expo-splash-screen", {
+      enableFullScreenImage_legacy: true,
       image: "./assets/time-control-app-24-icon.png",
       resizeMode: "contain",
       backgroundColor: "#ffffff"
-    },
+    }]],
     ios: {
       supportsTablet: true,
       bundleIdentifier: "com.stu345.time-control-app-24",
@@ -48,7 +48,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         foregroundImage: "./assets/adaptive-icon.png",
         backgroundColor: "#ffffff"
       },
-      edgeToEdgeEnabled: true,
       intentFilters: [
         {
           action: "VIEW",

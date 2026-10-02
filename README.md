@@ -11,6 +11,8 @@
 - `GoogleService-Info.plist`を用意する
 
 ## 開発
+- Expo SDK 57 / React Native 0.86（iOS 16.4以降）
+- Node.js 22以降を使用する。Xcodeが古いNodeを参照する場合は`ios/.xcode.env.local`の`NODE_BINARY`も更新する。
 - `npm install expo`
 - `npx expo start`
 - シミュレーターを起動: `npx expo start --ios`
@@ -27,15 +29,16 @@
 - `eas env:list`
 
 ### ビルド
+SDK 57ではprebuildが標準でネイティブディレクトリを作り直すため、既存のPodfileなどを維持するには`--no-clean`を指定する。
 - `npx expo run:ios` : 新しいシミュレーターでアプリがないときにはビルドが必要
-- `npx expo prebuild --platform ios`
+- `npx expo prebuild --platform ios --no-clean`
 
 ### バージョン
 - メジャー: 互換性に影響する大きな変更
 - マイナー: 互換性に影響しない新規機能追加
 - パッチ: バグ修正
 
-更新したら`npx expo prebuild --platform ios`を実行
+更新したら`npx expo prebuild --platform ios --no-clean`を実行
 
 
 ## デプロイ

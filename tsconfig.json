@@ -2,17 +2,16 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
-    "baseUrl": ".",
     "paths": {
       "@firebase/auth": ["./node_modules/firebase/node_modules/@firebase/auth/dist/index.rn.d.ts"],
       "@root/*": ["./*"],
-      "@components/*": ["src/components/*"],
-      "@navigation/*": ["src/navigation/*"],
-      "@screens/*": ["src/screens/*"],
-      "@services/*": ["src/services/*"],
-      "@app-types/*": ["src/types/*"],
-      "@contexts/*": ["src/contexts/*"],
-      "@domain/*": ["src/domain/*"]
+      "@components/*": ["./src/components/*"],
+      "@navigation/*": ["./src/navigation/*"],
+      "@screens/*": ["./src/screens/*"],
+      "@services/*": ["./src/services/*"],
+      "@app-types/*": ["./src/types/*"],
+      "@contexts/*": ["./src/contexts/*"],
+      "@domain/*": ["./src/domain/*"]
     }
   }
 }
